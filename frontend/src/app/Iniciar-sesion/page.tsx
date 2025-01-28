@@ -14,7 +14,7 @@ export default function IniciarSesion() {
                             />
                         </div>
                         <div className="mb-6">
-                            <label htmlFor="password" className="block text-sm font-medium">Contraseña</label>
+                            <label htmlFor="password" className="block text-sm font-medium">CONTRASEÑA</label>
                             <input 
                                 id="password" 
                                 type="password" 
