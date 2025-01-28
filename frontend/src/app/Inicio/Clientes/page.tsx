@@ -26,7 +26,7 @@ export default function Clientes() {
   
           {/* Main Content */}
           <main className="flex-grow p-6 bg-white">
-            <p className="text-center text-xl font-semibold">Contenido Principal</p>
+            <p className="text-center text-xl font-semibold text-black ">Buscar cliente</p>
 
            {/* Buttons */}
            <div className="flex flex-col items-center space-y-4">

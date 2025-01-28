@@ -29,53 +29,53 @@ export default function ClientesNuevos() {
   
             {/* Formulario */}
             <div className="max-w-4xl mx-auto p-4">
-              <h2 className="text-center text-2xl font-semibold mb-6">Formulario de Información</h2>
+              <h2 className="text-center text-2xl font-semibold mb-6">Información del cliente nuevo</h2>
               <form className="space-y-6">
                 <div>
-                  <label className="block text-lg font-medium mb-2">Campo 1</label>
+                  <label className="black text-lg font-medium mb-2 text-black">Nombre</label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md"
+                    className="w-full p-3 border text-black -300 rounded-md"
                     placeholder="Ingrese información"
                   />
                 </div>
                 <div>
-                  <label className="block text-lg font-medium mb-2">Campo 2</label>
+                  <label className="block text-lg font-medium mb-2 text-black"> Direccion</label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md"
+                    className="w-full p-3 border text-black -300 rounded-md"
                     placeholder="Ingrese información"
                   />
                 </div>
                 <div>
-                  <label className="block text-lg font-medium mb-2">Campo 3</label>
+                  <label className="block text-lg font-medium mb-2 text-black">Telefono</label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md"
+                    className="w-full p-3 border  text-black -300 rounded-md"
                     placeholder="Ingrese información"
                   />
                 </div>
                 <div>
-                  <label className="block text-lg font-medium mb-2">Campo 4</label>
+                  <label className="block text-lg font-medium mb-2 text-black">Nombre de la dependencia </label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md"
+                    className="w-full p-3 border text-black -300 rounded-md"
                     placeholder="Ingrese información"
                   />
                 </div>
                 <div>
-                  <label className="block text-lg font-medium mb-2">Campo 5</label>
+                  <label className="block text-lg font-medium mb-2 text-black">Contrato</label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md"
+                    className="w-full p-3 border text-black rounded-md"
                     placeholder="Ingrese información"
                   />
                 </div>
                 <div>
-                  <label className="block text-lg font-medium mb-2">Campo 6</label>
+                  <label className="block text-lg font-medium mb-2 text-black">Numero del medidor</label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-md"
+                    className="w-full p-3 border text-black -300 rounded-md"
                     placeholder="Ingrese información"
                   />
                 </div>
