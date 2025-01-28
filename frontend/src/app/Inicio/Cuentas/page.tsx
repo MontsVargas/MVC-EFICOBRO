@@ -12,6 +12,7 @@ export default function Cuentas() {
               <li className="hover:bg-[#6aa3af] p-2 rounded cursor-pointer">SERVICIOS</li>
               <li className="hover:bg-[#6aa3af] p-2 rounded cursor-pointer">CUENTAS</li>
               <li className="hover:bg-[#6aa3af] p-2 rounded cursor-pointer">DEUDAS</li>
+              <li className="hover:bg-[#6aa3af] p-2 rounded cursor-pointer">CARIÑAN</li>
             </ul>
           </nav>
         </aside>

@@ -12,3 +12,79 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+model cliente {
+  id                Int      @id @default(autoincrement())
+  nombre            String   @db.VarChar(64)
+  direccion         String   @db.VarChar(128)
+  telefono          String   @db.VarChar(15)
+  nombreDependencia String   @db.VarChar(64)
+  id_medidor        String   @db.VarChar(12)
+  deuda             Float    @db.Decimal(2,1)
+  contrato_id       Int?     // Relación opcional
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  contrato          contrato? @relation(fields: [contrato_id], references: [id])
+}
+
+model Convenio {
+  id            Int      @id @default(autoincrement())
+  descuento     Float    @db.Decimal(2,1)
+  fecha_limite  DateTime
+  pagado        Boolean   
+  clienteId     Int
+  cliente       cliente  @relation(fields: [clienteId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model compra {
+  id                 Int      @id @default(autoincrement())
+  clienteId          Int
+  cliente            cliente  @relation(fields: [clienteId], references: [id])
+  servicioId         Int
+  servicio           servicio @relation(fields: [servicioId], references: [id])
+  fecha              DateTime
+  cantidadServicio   Int
+  cobro              Float    @db.Decimal(2,1)
+  direccionCompra    String
+  plantaId           Int
+  planta             planta   @relation(fields: [plantaId], references: [id])
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model usuario {
+  id               Int      @id @default(autoincrement())
+  nombre           String   @db.VarChar(64)
+  telefono         String   @db.VarChar(15)
+  correo           String   @db.VarChar(48)
+  contrasenia      String   @db.VarChar(64)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model tiposervicio {
+  id              Int      @id @default(autoincrement())
+  nombre          String   @db.VarChar(48)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model servicio {
+  id              Int          @id @default(autoincrement())
+  tiposervicioId  Int
+  tiposervicio    tiposervicio @relation(fields: [tiposervicioId], references: [id])
+  descripcion     String   @db.VarChar(128)
+  costo           Float    @db.Decimal(2,1)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model planta {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @db.VarChar(64)
+  direccion   String   @db.VarChar(128)
+  telefono    String   @db.VarChar(15)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
