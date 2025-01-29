@@ -1,3 +1,8 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,7 +16,8 @@ model Contrato {
   descuento    Decimal   @db.Decimal(2,1)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-  cliente      Cliente?  @relation // Relación con Cliente
+  cliente      Cliente?  @relation(fields: [cliente_id], references: [id])
+  cliente_id   Int?      // Relación opcional con Cliente
 }
 
 model Cliente {
@@ -25,8 +31,7 @@ model Cliente {
   contrato_id       Int?      // Relación opcional con Contrato
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-
-  contrato          Contrato? @relation(fields: [contrato_id], references: [id]) // Relación con Contrato
+  contratos         Contrato[]
   convenios         Convenio[] // Relación con Convenio (uno a muchos)
   compras           Compra[]   // Relación con Compra (uno a muchos)
 }
@@ -46,14 +51,14 @@ model Compra {
   id                 Int        @id @default(autoincrement())
   clienteId          Int        // Relación con Cliente
   cliente            Cliente    @relation(fields: [clienteId], references: [id]) // Relación inversa
-  servicioId         Int
   servicio           Servicio  @relation(fields: [servicioId], references: [id])
+  servicioId         Int
   fecha              DateTime
   cantidadServicio   Int
   cobro              Decimal   @db.Decimal(2,1)
   direccionCompra    String
-  plantaId           Int
   planta             Planta    @relation(fields: [plantaId], references: [id])
+  plantaId           Int
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 }
@@ -73,16 +78,18 @@ model TipoServicio {
   nombre          String    @db.VarChar(48)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  servicios      Servicio[]
 }
 
 model Servicio {
   id              Int          @id @default(autoincrement())
-  TiposervicioId  Int
   TipoServicio    TipoServicio @relation(fields: [TipoServicioId], references: [id])
+  TipoServicioId  Int
   descripcion     String       @db.VarChar(128)
   costo           Decimal      @db.Decimal(2,1)
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+  compras         Compra[]
 }
 
 model Planta {
@@ -92,4 +99,5 @@ model Planta {
   telefono    String   @db.VarChar(15)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  compras    Compra[]
 }
