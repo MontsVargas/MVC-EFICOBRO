@@ -12,6 +12,13 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model contrato {
+  id           Int      @id @default(autoincrement())
+  descuento    Decimal   @db.Decimal(2,1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
 model cliente {
   id                Int      @id @default(autoincrement())
   nombre            String   @db.VarChar(64)
@@ -19,7 +26,7 @@ model cliente {
   telefono          String   @db.VarChar(15)
   nombreDependencia String   @db.VarChar(64)
   id_medidor        String   @db.VarChar(12)
-  deuda             Float    @db.Decimal(2,1)
+  deuda             Decimal    @db.Decimal(2,1)
   contrato_id       Int?     // Relación opcional
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -28,7 +35,7 @@ model cliente {
 
 model Convenio {
   id            Int      @id @default(autoincrement())
-  descuento     Float    @db.Decimal(2,1)
+  descuento     Decimal  @db.Decimal(2,1)
   fecha_limite  DateTime
   pagado        Boolean   
   clienteId     Int
@@ -45,7 +52,7 @@ model compra {
   servicio           servicio @relation(fields: [servicioId], references: [id])
   fecha              DateTime
   cantidadServicio   Int
-  cobro              Float    @db.Decimal(2,1)
+  cobro              Decimal   @db.Decimal(2,1)
   direccionCompra    String
   plantaId           Int
   planta             planta   @relation(fields: [plantaId], references: [id])
@@ -75,7 +82,7 @@ model servicio {
   tiposervicioId  Int
   tiposervicio    tiposervicio @relation(fields: [tiposervicioId], references: [id])
   descripcion     String   @db.VarChar(128)
-  costo           Float    @db.Decimal(2,1)
+  costo           Decimal   @db.Decimal(2,1)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
