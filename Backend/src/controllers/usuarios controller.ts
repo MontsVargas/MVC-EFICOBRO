@@ -5,52 +5,52 @@ import generateJWT from '../helpers/generateJWT';
 
 const prisma = new PrismaClient();
 
-const register = async (req: Request, res: Response) => {
+const registro = async (req: Request, res: Response) => {
     try {
         const { nombre, correo, contrasenia, telefono } = req.body;
 
         if (!nombre || !correo || !contrasenia || !telefono) {
 
-            return res.status(400).json({message:"TODOS LOS CAMPOS SON OBLIGATORIOS"});
+            return res.status(400).json({mensaje:"TODOS LOS CAMPOS SON OBLIGATORIOS"});
 
         }
-        const userExists = await prisma.usuario.findFirst({
+        const usuarioExiste = await prisma.usuario.findFirst({
             where:{
                 correo
             }
         });
 
-        if (userExists !== null) {
-            return res.status(409).json({ message:"EL USUARIO YA EXISTE"});
+        if (usuarioExiste !== null) {
+            return res.status(409).json({ mensaje:"EL USUARIO YA EXISTE"});
         }
 
-        const hashedPassword = await bcrypt.hash(contrasenia,10);
+        const contraseniaHasheada = await bcrypt.hash(contrasenia,10);
         await prisma.usuario.create({
             data:{
                 nombre,
                 correo,
-                contrasenia: hashedPassword,
+                contrasenia: contraseniaHasheada,
                 telefono
             }
         });
         
-        return res.status(200).json({message: "USUARIO REGISTRADO CORRECTAMENTE"});
+        return res.status(200).json({mensaje: "USUARIO REGISTRADO CORRECTAMENTE"});
     } catch (error) {
-        return res.status(500).json({ message: "ERROR DEL SERVIDOR" });
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
 }
 };
 //AQUI ESTOY CREANDO UN USUARIO EN MI MODELO USUARIO Y ESTOY INCRIPTANDO LA CONTRASEÑA CON LA FUNCION DE HASHING bcrypt.
 
 
-const login = async (req: Request, res: Response) => {
+const iniciarSesion = async (req: Request, res: Response) => {
     try {
         const { correo, contrasenia } = req.body;
 
         if (!correo || !contrasenia) {
-            return res.status(400).json({ message: "TODOS LOS CAMPOS SON OBLIGATORIOS" });
+            return res.status(400).json({ mensaje: "TODOS LOS CAMPOS SON OBLIGATORIOS" });
         }
 
-        const user = await prisma.usuario.findFirst({
+        const usuario = await prisma.usuario.findFirst({
             where: {
                 correo
             },
@@ -61,17 +61,17 @@ const login = async (req: Request, res: Response) => {
             }
         });
 
-        if (user === null) {
-            return res.status(404).json({ message: "El USUARIO NO EXISTE" });
+        if (usuario === null) {
+            return res.status(404).json({ mensaje: "El USUARIO NO EXISTE" });
         }
 
-        const passwordMatch = await bcrypt.compare(contrasenia, user.contrasenia);
+        const contraseñaCoincide = await bcrypt.compare(contrasenia, usuario.contrasenia);
 
-        if (!passwordMatch) {
-            return res.status(401).json({ message: "CONTRASEÑA INCORRECTA" });
+        if (!contraseñaCoincide) {
+            return res.status(401).json({ mensaje: "CONTRASEÑA INCORRECTA" });
         }
 
-        const token = generateJWT(user.id, user.nombre);
+        const token = generateJWT(usuario.id, usuario.nombre);
 
         res.cookie('auth-token', token, {
             httpOnly: true,
@@ -80,14 +80,14 @@ const login = async (req: Request, res: Response) => {
             expires: new Date(Date.now() + 1000 * 60 * 60 * 12),
         });
 
-        return res.status(200).json({ message: "USUARIO LOGUEADO CORRECTAMENTE" });
+        return res.status(200).json({ mensaje: "USUARIO LOGUEADO CORRECTAMENTE" });
     } catch (error) {
-        return res.status(500).json({ message: "ERROR DEL SERVIDOR" });
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
 //AQUI ESTOY HACIENDO QUE SE CONFIRME EL USUARIO Y VERIFICO LA CONTRASEÑA A LA VEZ QUE GENERO EL TOKEN JWK ESO ES UNA TIPO FIRMA EN CLABE 
 
-const logout = async (req: Request, res: Response) => {
+const cerrarSesion = async (req: Request, res: Response) => {
     try {
         res.clearCookie('auth-token', {
             httpOnly: true,
@@ -95,10 +95,17 @@ const logout = async (req: Request, res: Response) => {
             sameSite: 'none'
         });
 
-        return res.status(200).json({ message: "Usuario deslogueado correctamente" });
+        return res.status(200).json({ mensaje: "Usuario deslogueado correctamente" });
     } catch (error) {
-        return res.status(500).json({ message: "Error interno del servidor" });
+        return res.status(500).json({ mensaje: "Error interno del servidor" });
     }
 };
 
 //ESTO ELIMINA EL TOKEN JWT PARA CERRAR LA SESION DEL USUARIO.
+
+export {
+    registro,
+    iniciarSesion,
+    cerrarSesion,
+
+}
