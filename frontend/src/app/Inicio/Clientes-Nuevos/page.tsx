@@ -1,8 +1,6 @@
 export default function ClientesNuevos() {
   return (
         <main className="flex-grow p-6 bg-white">
-          <p className="text-center text-xl font-semibold mb-6">Contenido Principal</p>
-
           {/* Formulario con Bordes y Fondo */}
           <div className="max-w-4xl mx-auto p-6 bg-[#f0f8fb] border border-gray-300 shadow-lg rounded-lg">
             <h2 className="text-center text-2xl font-semibold mb-6 text-[#195c97]">Información del cliente nuevo</h2>
