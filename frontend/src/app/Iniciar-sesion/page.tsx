@@ -1,5 +1,10 @@
+"use client"
+import { FieldErrors, useForm } from "react-hook-form";
 import Image from 'next/image';
 import Link from 'next/link';
+import iniciarSesionSchema from "@/schemas/iniciar-sesion-schema";
+import { zodResolver } from "hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 export default function IniciarSesion() {
     return (
