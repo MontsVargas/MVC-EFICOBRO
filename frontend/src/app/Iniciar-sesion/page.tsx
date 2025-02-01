@@ -3,10 +3,14 @@ import { FieldErrors, useForm } from "react-hook-form";
 import Image from 'next/image';
 import Link from 'next/link';
 import iniciarSesionSchema from "@/schemas/iniciar-sesion-schema";
-import { zodResolver } from "hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 
 export default function IniciarSesion() {
+    const router = useRouter();
+    const { register, handleSubmit } = useForm<{usuario: string, contrasenia: string}>({
+        resolver: zodResolver(iniciarSesionSchema),
+    });
     return (
         <div 
             className="flex justify-center items-center min-h-screen bg-blue-800" 
