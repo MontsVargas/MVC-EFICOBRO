@@ -31,14 +31,14 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction): 
 
         // Verificar y decodificar el token
         const decodificado = jwt.verify(token, secreto) as JwtPayload;
-        if (!decodificado.id) {
+        if (!decodificado.uid) {
             res.status(401).json({ mensaje: "Token inválido" });
             return;
         }
 
         // Buscar el usuario en la base de datos usando Prisma
         const usuario = await prisma.usuario.findUnique({
-            where: { id: decodificado.id },
+            where: { id: Number (decodificado.uid) },
             select: { id: true, nombre: true }
         });
 
