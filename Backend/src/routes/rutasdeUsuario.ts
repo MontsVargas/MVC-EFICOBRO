@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { registro, iniciarSesion, cerrarSesion } from "../controllers/usuarios controller";
+import { registro, iniciarSesion, cerrarSesion } from "../controllers/usuariosController";
 import authMiddleware from "../helpers/authMiddleware";
 
 const rutas= Router();
