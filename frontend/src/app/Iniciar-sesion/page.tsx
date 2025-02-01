@@ -8,9 +8,17 @@ import { useRouter } from "next/navigation";
 
 export default function IniciarSesion() {
     const router = useRouter();
-    const { register, handleSubmit } = useForm<{usuarios: string, contrasenia: string}>({
+    const { register, handleSubmit } = useForm<{usuarios: string, contraseña: string}>({
         resolver: zodResolver(iniciarSesionSchema),
-    });
+    });const onSuccess = () => {
+        router.push("/Inicio");
+    };
+
+    const onError = (errors: FieldErrors) => {
+        console.log(errors);
+    };
+
+
     return (
         <div 
             className="flex justify-center items-center min-h-screen bg-blue-800" 
@@ -26,21 +34,23 @@ export default function IniciarSesion() {
                     <Image src="/iniciarSesion.svg" alt="Clientes Icon" width={150} height={150} />
                 </div>
                 <h2 className="text-2xl font-semibold text-center mb-6 text-blue-800">BIENVENIDO</h2>
-                <form>
+                <form onSubmit={handleSubmit(onSuccess, onError)}>
                     <div className="mb-4">
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">USUARIO</label>
                         <input 
                             id="email" 
                             type="email" // text en caso de la elección del usuario
+                            {...register("usuarios")}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" 
                             placeholder="Correo electrónico"
                         />
                     </div>
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">CONTRASEÑA</label>
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">CONTRASEÑA</label>
                         <input 
-                            id="email" 
-                            type="email" // text en caso de la elección del usuario
+                            id="password" 
+                            type="password" 
+                            {...register("contraseña")}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" 
                             placeholder="Correo electrónico"
                         />
