@@ -21,11 +21,18 @@ export default function ClientesCariñan() {
               />
             </div>
   
-            {/* Report Button */}
-            <div className="flex justify-center mt-6">
+            {/* Select costumer button*/}
+            <div className="flex justify-left mt-6">
               <button className="bg-[#4ab9d2] text-white px-4 py-2 rounded shadow hover:bg-[#3a99b2]">
-                Mostrar Clientes
+                Mostrar Clientes Seleccionado
               </button>
+
+               {/* Select costumer button*/}
+            <div className="flex justify-rigth mt-6">
+              <button className="bg-[#4ab9d2] text-white px-4 py-2 rounded shadow hover:bg-[#3a99b2]">
+                Mostrar todos los clientes
+              </button>
+              </div>
             </div>
           </main>
     );
