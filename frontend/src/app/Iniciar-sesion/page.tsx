@@ -1,7 +1,6 @@
 "use client"
 import { FieldErrors, useForm } from "react-hook-form";
 import Image from 'next/image';
-import Link from 'next/link';
 import iniciarSesionSchema from "@/schemas/iniciar-sesion-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -55,13 +54,13 @@ export default function IniciarSesion() {
                             placeholder="Correo electrónico"
                         />
                     </div>
-                    <Link href="Inicio">
+                    
                         <button
                             type="submit"
                             className="w-full bg-blue-800 text-white py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             Acceder
                         </button>
-                    </Link>
+                   
                 </form>
             </div>
         </div>
