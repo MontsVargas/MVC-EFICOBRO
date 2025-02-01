@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 export default function IniciarSesion() {
     const router = useRouter();
-    const { register, handleSubmit } = useForm<{usuario: string, contrasenia: string}>({
+    const { register, handleSubmit } = useForm<{usuarios: string, contrasenia: string}>({
         resolver: zodResolver(iniciarSesionSchema),
     });
     return (
