@@ -22,7 +22,7 @@ export default function ClientesCariñan() {
             </div>
   
             {/* Select costumer button*/}
-            <div className="flex justify-left mt-6">
+            <div className="flex justify-left mt-6 ">
               <button className="bg-[#4ab9d2] text-white px-4 py-2 rounded shadow hover:bg-[#3a99b2]">
                 Mostrar Clientes Seleccionado
               </button>
