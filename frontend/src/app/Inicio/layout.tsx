@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             <div className="flex-grow flex flex-col">
                 {/* Top Bar */}
                 <header className="w-full bg-[#529fe4] text-white p-4 text-lg font-bold shadow-md flex items-center gap-4">
-                    <Image src="logo.svg" alt="logo Icon" width={20} height={20}/>
+                  
                     EFICOBRO
                 </header>
 
