@@ -30,10 +30,10 @@ export default function IniciarSesion() {
             }
 
             const message = await response.json();
-            alert(message.message); // Muestra mensaje de éxito
-            router.push("/Inicio");
-        } catch (error) {
-            alert("Error al iniciar sesión"); // Te redirige a la pagina de inicio si es exitoso
+            alert(message.mensaje); // Muestra mensaje de éxito
+            router.push("/Inicio");// Te redirige a la pagina de inicio si es exitoso
+        } catch{
+            alert("Error al iniciar sesión"); 
         }
     };
     const onError = (errors: FieldErrors) => {
