@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 export default function IniciarSesion() {
     const router = useRouter();
     const { register, handleSubmit } = useForm<{ usuarios: string; contraseña: string }>({
-        resolver: zodResolver(iniciarSesionSchema),
+        resolver: zodResolver(iniciarSesionSchema)
     });
 
     const onSuccess = async (data: { usuarios: string; contraseña: string }) => {
@@ -25,12 +25,12 @@ export default function IniciarSesion() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                alert(errorData.message); // Mensaje de error
+                alert(errorData.message); // Muestra mensaje de error
                 return;
             }
 
             const message = await response.json();
-            alert(message.message); // Mensaje de éxito
+            alert(message.message); // Muestra mensaje de éxito
             router.push("/Inicio");
         } catch (error) {
             alert("Error al iniciar sesión"); // Manejo de errores
