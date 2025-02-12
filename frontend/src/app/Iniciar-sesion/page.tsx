@@ -14,9 +14,9 @@ export default function IniciarSesion() {
 
     const onSuccess = async (data: { usuarios: string; contraseña: string }) => {
         try {
-            const response = await fetch(`http://localhost:4000/userio/liniciarSesion`, {
+            const response = await fetch(`http://localhost:4000/usuario/liniciarSesion`, {
                 method: "POST",
-                body: JSON.stringify({ correp: data.usuarios, password: data.contraseña }),
+                body: JSON.stringify({ correo: data.usuarios, cobtrasenia: data.contraseña }),
                 headers: {
                     "Content-Type": "application/json"
                 },
