@@ -7,13 +7,14 @@ import rutasUsuario from "./src/routes/rutasdeUsuario";
 
 const app = express();
 
-app.use(cors())
-
 dotenv.config();
 
-app.use(cors({
+const corsOptions = {
+    origin: process.env.FRONTEND_URL,
     credentials: true,
-}))
+}
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 

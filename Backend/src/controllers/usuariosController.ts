@@ -77,6 +77,7 @@ const iniciarSesion = async (req: Request, res: Response) => {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
+            path: '/',
             expires: new Date(Date.now() + 1000 * 60 * 60 * 12),
         });
 
