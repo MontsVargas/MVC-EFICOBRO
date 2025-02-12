@@ -40,7 +40,7 @@ export default function IniciarSesion() {
         let errorMessages = '';
         Object.entries(errors).forEach(([, value]) => {
             if (value && value.message) {
-                errorMessages += value.message + '\n'; // Solo agrega si hay un mensaje
+                errorMessages += value.message + '\n'; //  agrega si hay un mensaje
             }
         });
         alert(errorMessages.trim()); 
@@ -74,7 +74,7 @@ export default function IniciarSesion() {
                             id="email" 
                             type="email" 
                             {...register("usuarios")}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black" 
                             placeholder="Correo electrónico"
                         />
                     </div>
@@ -84,8 +84,8 @@ export default function IniciarSesion() {
                             id="password" 
                             type="password" 
                             {...register("contraseña")}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" 
-                            placeholder="********"
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-black" 
+                            placeholder="******** "
                         />
                     </div>
                     <button
