@@ -14,9 +14,9 @@ export default function IniciarSesion() {
 
     const onSuccess = async (data: { usuarios: string; contraseña: string }) => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}users/login`, {
+            const response = await fetch(`http://localhost:4000/userio/liniciarSesion`, {
                 method: "POST",
-                body: JSON.stringify({ email: data.usuarios, password: data.contraseña }),
+                body: JSON.stringify({ correp: data.usuarios, password: data.contraseña }),
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -33,7 +33,7 @@ export default function IniciarSesion() {
             alert(message.message); // Muestra mensaje de éxito
             router.push("/Inicio");
         } catch (error) {
-            alert("Error al iniciar sesión"); // Manejo de errores
+            alert("Error al iniciar sesión"); // Te redirige a la pagina de inicio si es exitoso
         }
     };
     const onError = (errors: FieldErrors) => {
