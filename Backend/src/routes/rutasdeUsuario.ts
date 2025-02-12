@@ -4,7 +4,7 @@ import authMiddleware from "../helpers/authMiddleware";
 
 const rutas= Router();
 
-rutas.post('/registro', (req: Request, res: Response) => {
+rutas.post('/registro', authMiddleware, (req: Request, res: Response) => {
     registro(req, res);
 });
 
