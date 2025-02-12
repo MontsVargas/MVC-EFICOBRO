@@ -14,9 +14,9 @@ export default function IniciarSesion() {
 
     const onSuccess = async (data: { usuarios: string; contraseña: string }) => {
         try {
-            const response = await fetch(`http://localhost:4000/usuario/liniciarSesion`, {
+            const response = await fetch(`http://localhost:4000/usuario/iniciarSesion`, {
                 method: "POST",
-                body: JSON.stringify({ correo: data.usuarios, cobtrasenia: data.contraseña }),
+                body: JSON.stringify({ correo: data.usuarios, contrasenia: data.contraseña }),
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -32,7 +32,7 @@ export default function IniciarSesion() {
             const message = await response.json();
             alert(message.mensaje); // Muestra mensaje de éxito
             router.push("/Inicio");// Te redirige a la pagina de inicio si es exitoso
-        } catch{
+        } catch {
             alert("Error al iniciar sesión"); 
         }
     };
