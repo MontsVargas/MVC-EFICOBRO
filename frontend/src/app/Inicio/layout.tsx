@@ -29,6 +29,11 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <nav className="flex-grow">
                     <ul className="space-y-4 p-4">
                         {opciones.map((opcion, index) => <OpcionDeNavegacion opcion={opcion} key={index} />)}
+                        <li className="hover:bg-[#6aa3af] p-2 rounded cursor-pointer">
+                            <Link href="/Cerrar-Sesion" className="flex flex-col items-center justify-center">
+                                <Image src="/exit.svg" alt="Cerrar Sesión Icon" width={20} height={20} />CERRAR SESIÓN
+                            </Link>
+                </li>
                     </ul>
                 </nav>
             </aside>
@@ -36,7 +41,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {/* Main Content Area */}
             <div className="flex-grow flex flex-col">
                 {/* Top Bar */}
-                <header className="w-full bg-[#529fe4] text-white p-4 text-lg font-bold shadow-md flex items-center gap-4">
+                <header className="w-full bg-[#529fe4] text-white p-4 text-lg font-bold shadow-md flex items-center gap-4 ">
                   
                     EFICOBRO
                 </header>
