@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cookieParser from 'cookie-parser';
 
 import rutasUsuario from "./src/routes/rutasdeUsuario";
+import rutasCliente from "./src/routes/rutasdeCliente";
 
 const app = express();
 
@@ -21,7 +22,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/usuario', rutasUsuario);
-
+app.use('/cliente', rutasCliente)
 
 const PORT: number = Number(process.env.PORT) || 3000
 
