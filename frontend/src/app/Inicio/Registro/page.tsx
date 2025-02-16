@@ -8,7 +8,7 @@ import registroSchema from "@/schemas/registro-schema";
 interface RegistroData {
     nombre: string;
     correo: string;
-    contraseña: string;
+    contrasenia: string;
     telefono: string;
   }
   
@@ -21,11 +21,12 @@ export default function RegistroForm() {
   const onSuccess = async (data: RegistroData) => { 
     try {
       const response = await fetch(`http://localhost:4000/registro`, {
-        method: "POST",
+        method: "POST", 
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -35,7 +36,6 @@ export default function RegistroForm() {
       }
 
       alert("Registro agregado exitosamente");
-      router.push("/registros"); 
     } catch {
       alert("Error al agregar el registro");
     }
@@ -79,7 +79,7 @@ export default function RegistroForm() {
             <label className="block text-lg font-medium mb-2 text-black">Contraseña</label>
             <input
               type="password"
-              {...register("contraseña")}
+              {...register("contrasenia")}
               className="w-full p-3 border border-gray-400 rounded-md text-black"
               placeholder="Ingrese su contraseña"
             />
