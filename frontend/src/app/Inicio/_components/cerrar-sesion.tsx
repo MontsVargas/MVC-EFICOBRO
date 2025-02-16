@@ -7,13 +7,13 @@ export default function LogoutButton() {//exportamos el boton de cierre de sesio
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:4000/usuario/cerrarrSesion", {
+      const res = await fetch("http://localhost:4001/usuario/cerrarSesion", {
         method: "POST",
         credentials: "include", // cookies
       });
 
       if (res.ok) {
-        router.push("/login"); // Redirigir al login después de cerrar sesión
+        router.push("/Iniciar-sesion"); // Redirigir al login después de cerrar sesión
       } else {
         console.error("Error al cerrar sesión");
       }
