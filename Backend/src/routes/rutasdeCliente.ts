@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { buscarCliente } from "../controllers/clientescontroller";
+import { buscarCliente, mostrarCliente,agregarCliente } from "../controllers/clientescontroller";
 import authMiddleware from "../helpers/authMiddleware";
 
 const rutas= Router();
@@ -10,4 +10,14 @@ rutas.get('/buscar', authMiddleware, (req: Request, res: Response) => {
 });
 //preguntar a carlos si debo crear un get en postman 
 
+// Ruta para mostrar un cliente por ID
+rutas.get('/clientes/:id', authMiddleware, (req: Request, res: Response) => {
+        mostrarCliente(req, res)
+    });
+
+// Ruta para agregar un nuevo cliente
+rutas.post('/clientes', authMiddleware, (req: Request, res: Response) => {
+    agregarCliente(req, res)
+});
 export default rutas;
+
