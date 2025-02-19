@@ -7,7 +7,7 @@ export default function LogoutButton() {//exportamos el boton de cierre de sesio
 
   const handleLogout = async () => {
     try {
-      const res = await fetch("http://localhost:4001/usuario/cerrarSesion", {
+      const res = await fetch("http://localhost:4000/usuario/cerrarSesion", {
         method: "POST",
         credentials: "include", // cookies
       });
