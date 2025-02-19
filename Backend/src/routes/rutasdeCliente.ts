@@ -8,7 +8,7 @@ const rutas= Router();
 rutas.get('/buscar', authMiddleware, (req: Request, res: Response) => {
     buscarCliente(req, res)
 });
-//preguntar a carlos si debo crear un get en postman 
+//preguntar si debo crear un get en postman 
 
 // Ruta para mostrar un cliente por ID
 rutas.get('/clientes/:id', authMiddleware, (req: Request, res: Response) => {

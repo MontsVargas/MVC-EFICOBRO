@@ -25,7 +25,7 @@ model Cliente {
   nombre            String    @db.VarChar(64)
   direccion         String    @db.VarChar(128)
   telefono          String    @db.VarChar(15)
-  nombreDependencia String    @db.VarChar(64)
+  nombreDependencia String?   @db.VarChar(64)
   id_medidor        String    @db.VarChar(12)
   deuda             Decimal   @db.Decimal(2,1)
   contrato_id       Int?      // Relación opcional con Contrato

@@ -57,10 +57,10 @@ const mostrarCliente = async (req: Request, res: Response) => {
 
 const agregarCliente = async (req: Request, res: Response) => {
     try {
-        const { nombre, direccion, telefono,} = req.body;
+        const { nombre, direccion, telefono,nombreDependencia, id_medidor} = req.body;
 
         // Verificar si todos los campos necesarios están presentes
-        if (!nombre || !direccion || !telefono)  {
+        if (!nombre || !direccion || !telefono || !id_medidor)  {
             return res.status(400).json({ mensaje: 'Faltan campos necesarios para agregar el cliente' });
         }
 
@@ -70,8 +70,8 @@ const agregarCliente = async (req: Request, res: Response) => {
                 nombre,
                 direccion,
                 telefono,
-                nombreDependencia: '', // Agrgar el valor apropiado
-                id_medidor: '0', // Agregar el valor apropiado
+                nombreDependencia, 
+                id_medidor, 
                 deuda: 0, // Agregar el valor apropiado
             },
         });
