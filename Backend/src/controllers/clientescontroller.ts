@@ -12,7 +12,6 @@ const buscarCliente = async (req: Request, res: Response) => {
         if (nombre) {
             filtros.nombre = {
                 contains: nombre as string,
-                mode: 'insensitive' // sirve para hacer la búsqueda insensible a mayúsculas/minúsculas
             };
         }
 
@@ -26,7 +25,7 @@ const buscarCliente = async (req: Request, res: Response) => {
             return res.status(404).json({ mensaje: 'No existe este cliente' });
         }
 
-        return res.status(200).json(clientes); //si los encuentra los muestra
+        return res.status(200).json({clientes}); //si los encuentra los muestra
 
     } catch (error) {
         console.error(error);
@@ -48,7 +47,7 @@ const mostrarCliente = async (req: Request, res: Response) => {
             return res.status(404).json({ mensaje: 'Cliente no encontrado' });
         }
 
-        return res.status(200).json(cliente); // Si se encuentra, se muestra
+        return res.status(200).json({cliente}); // Si se encuentra, se muestra
     } catch (error) {
         console.error(error);
         return res.status(500).json({ mensaje: 'Hubo un error al mostrar el cliente' });
@@ -76,7 +75,7 @@ const agregarCliente = async (req: Request, res: Response) => {
             },
         });
 
-        return res.status(201).json(nuevoCliente); // Retornar el cliente creado
+        return res.status(201).json({nuevoCliente}); // te dirije el cliente creado
     } catch (error) {
         console.error(error);
         return res.status(500).json({ mensaje: 'Hubo un error al agregar el cliente' });
