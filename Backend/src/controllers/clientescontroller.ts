@@ -18,7 +18,12 @@ const buscarCliente = async (req: Request, res: Response) => {
         // Realizar la búsqueda desde la base de datos
         const clientes = await prisma.cliente.findMany({
             where: filtros,
-        });
+            select: {
+                contrato_id: true,
+                nombre: true,
+                direccion: true 
+            },
+        }); // Seleccionar los campos que se quieren mostrar
 
         // Si no se encontrar clientes te manda este mensajito
         if (clientes.length === 0) {
