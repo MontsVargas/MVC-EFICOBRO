@@ -75,8 +75,8 @@ const iniciarSesion = async (req: Request, res: Response) => {
 
         res.cookie('auth-token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'none',
+            secure: false,
+            sameSite: 'strict',
             path: '/',
             expires: new Date(Date.now() + 1000 * 60 * 60 * 12),
         });
