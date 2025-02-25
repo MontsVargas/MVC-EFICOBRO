@@ -4,7 +4,7 @@ import {PrismaClient} from "@prisma/client";
 const prisma = new PrismaClient ();
 
 const buscarServiciosPorTipo = async (req: Request, res: Response) => {
-    const { nombredelTiposervicio } = req.params;  // Obtener el parámetro 'nombreTipo' de la URL
+    const { nombredelTiposervicio } = req.params;  // esto es para que se pueda buscar por el nombre del tipo de servicio
     
     const servicios = await prisma.servicio.findMany({
         where: {
@@ -25,3 +25,6 @@ const buscarServiciosPorTipo = async (req: Request, res: Response) => {
 };
 
 export { buscarServiciosPorTipo };
+//post agregar sercios 
+//get mostrar servicios por cliente
+//pach por si se equivocan y quieren cambiarlo 
