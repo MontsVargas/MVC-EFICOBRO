@@ -3,7 +3,7 @@ import { buscarServiciosPorTipo}  from "../controllers/serviciosController";
 
 const rutas = Router();
 
-rutas.get('/servicios/:nombreTipo',(req: Request, res : Response) =>{
+rutas.get('/servicios',(req: Request, res : Response) =>{
     buscarServiciosPorTipo(req,res);
 });
 
