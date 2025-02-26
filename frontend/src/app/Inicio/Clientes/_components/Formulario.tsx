@@ -20,7 +20,7 @@ export default function Formulario() {
                 setClientes([]);
                 return;
             }
-            const response = await fetch(`http://localhost:4000/cliente/buscar?nombre=${cliente}`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}cliente/buscar?nombre=${cliente}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

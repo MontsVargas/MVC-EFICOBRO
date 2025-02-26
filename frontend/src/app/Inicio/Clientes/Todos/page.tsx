@@ -15,7 +15,7 @@ export default function Todos() {
   useEffect(() => {
     async function obtenerClientes() {
       try {
-        const response = await fetch("http://localhost:4000/cliente/buscar", {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}cliente/buscar`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

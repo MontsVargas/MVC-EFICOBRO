@@ -23,7 +23,7 @@ export default function ClientesNuevos() {
 
   const onSubmit = async (data: ClienteNuevo) => {
     try {
-      const response = await fetch("http://localhost:4000/cliente/clientes", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}cliente/clientes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

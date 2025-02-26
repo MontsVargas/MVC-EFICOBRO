@@ -20,7 +20,7 @@ export default function RegistroForm() {
 
   const onSuccess = async (data: RegistroData) => { 
     try {
-      const response = await fetch(`http://localhost:4000/registro`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}registro`, {
         method: "POST", 
         body: JSON.stringify(data),
         headers: {

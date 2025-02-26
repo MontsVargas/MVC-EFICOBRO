@@ -14,7 +14,7 @@ export default function IniciarSesion() {
 
     const onSuccess = async (data: { usuarios: string; contraseña: string }) => {
         try {
-            const response = await fetch(`http://localhost:4000/usuario/iniciarSesion`, {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}usuario/iniciarSesion`, {
                 method: "POST",
                 body: JSON.stringify({ correo: data.usuarios, contrasenia: data.contraseña }),
                 headers: {
