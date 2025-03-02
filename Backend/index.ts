@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 
 import rutasUsuario from "./src/routes/rutasdeUsuario";
 import rutasCliente from "./src/routes/rutasdeCliente";
+import rutasServicios from "./src/routes/rutasdeServicio";
 
 const app = express();
 
@@ -22,7 +23,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/usuario', rutasUsuario);
-app.use('/cliente', rutasCliente)
+app.use('/cliente', rutasCliente);
+app.use('/servicios', rutasServicios);
 
 const PORT: number = Number(process.env.PORT) || 3000
 
