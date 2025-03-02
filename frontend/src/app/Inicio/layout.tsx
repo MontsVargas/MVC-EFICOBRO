@@ -30,9 +30,11 @@ export default function Layout({ children }: { children: ReactNode }) {
           backgroundPosition: "left",
         }}
       >
-        <div className="text-center text-lg font-bold p-4 border-b border-gray-300">
-          INICIO
-        </div>
+        <Link href="/Inicio">
+          <div className="text-center text-lg font-bold p-4 border-b border-gray-300 cursor-pointer hover:bg-blue-700 transition">
+            INICIO
+          </div>
+        </Link>
 
         <nav className="flex-grow">
           <ul className="space-y-4 p-4">
@@ -62,10 +64,10 @@ export default function Layout({ children }: { children: ReactNode }) {
 
 function OpcionDeNavegacion({ opcion }: { opcion: Opcion }) {
   return (
-    <li className="hover:bg-[#6aa3af] p-2 rounded cursor-pointer">
+    <li className="hover:bg-[#6aa3af] p-2 rounded cursor-pointer transition duration-300">
       <Link href={opcion.ruta} className="flex flex-col items-center justify-center">
-        <Image src={opcion.icono} alt={opcion.texto_alterno} width={20} height={20} />
-        {opcion.texto}
+        <Image src={opcion.icono} alt={opcion.texto_alterno} width={24} height={24} />
+        <span className="mt-1 text-sm font-semibold">{opcion.texto}</span>
       </Link>
     </li>
   );
