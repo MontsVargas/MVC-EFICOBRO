@@ -1,19 +1,21 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const buscarClientesCariñan = async (req: Request, res: Response) => {
+export const buscarClientesCarinan = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { nombre } = req.query;
 
-        const filtros: any = {
+        // Definir filtros con el tipado correcto
+        const filtros: Record<string, any> = {
             nombreDependencia: "Cariñan", // Filtrar solo los clientes de Cariñan
         };
 
         if (nombre) {
             filtros.nombre = {
                 contains: nombre as string,
+                mode: "insensitive", // Hace la búsqueda sin distinguir mayúsculas/minúsculas
             };
         }
 
@@ -25,19 +27,18 @@ const buscarClientesCariñan = async (req: Request, res: Response) => {
                 nombre: true,
                 direccion: true,
                 telefono: true,
-                deuda: true
+                deuda: true,
             },
         });
 
-        // Si no hay clientes, retorna un mensaje
         if (clientes.length === 0) {
-            return res.status(404).json({ mensaje: 'No hay clientes en Cariñan con ese nombre' });
+            res.status(404).json({ mensaje: "No hay clientes en Cariñan con ese nombre" });
+            return;
         }
 
-        return res.status(200).json({ clientes });
+        res.status(200).json({ clientes });
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ mensaje: 'Hubo un error al buscar los clientes de Cariñan' });
+        next(error); // Pasamos el error al middleware de manejo de errores
     }
 };
