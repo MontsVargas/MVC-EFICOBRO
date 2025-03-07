@@ -1,10 +1,9 @@
 "use client";
-
 import { useState, useEffect } from "react";
 
 type Servicio = {
   id: number;
-  nombre: string;
+  descripcion: string;
 };
 
 export default function Servicios() {
@@ -21,11 +20,11 @@ export default function Servicios() {
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [servicios, setServicios] = useState<Servicio[]>([]);
 
-  // Obtener servicios de la base de datos
   useEffect(() => {
     async function fetchServicios() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicio`, {
+        // Asegúrate de que la URL esté bien formada
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -33,12 +32,11 @@ export default function Servicios() {
           credentials: "include",
         });
 
-        if (!response.ok) {
-          throw new Error("Error al obtener los servicios");
-        }
+        if (!response.ok) throw new Error("Error al obtener los servicios");
 
         const data = await response.json();
-        setServicios(data.servicios || []); // Asegurar que haya datos
+        // Asegurar que 'data.servicios' sea un array
+        setServicios(Array.isArray(data.servicios) ? data.servicios : []);
       } catch (error) {
         console.error("Error:", error);
         setMensaje("No se pudieron cargar los servicios.");
@@ -62,12 +60,12 @@ export default function Servicios() {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // Mantiene la sesión del usuario
+        credentials: "include",
         body: JSON.stringify(form),
       });
 
@@ -80,14 +78,14 @@ export default function Servicios() {
       setMensaje((error as Error).message);
     }
   };
+
   return (
     <main className="flex-grow p-6 bg-white">
       <div className="max-w-4xl mx-auto p-6 bg-[#f0f8fb] border border-gray-300 shadow-lg rounded-lg">
-        <h2 className="text-center text-2xl font-semibold mb-6 text-[#195c97]">Contratación de Servicio</h2>
+        <h2 className="text-center text-2xl font-semibold mb-6 text-[#195c97]">Seleccionar un Servicio</h2>
         {mensaje && <div className="text-center text-red-500 mb-4">{mensaje}</div>}
         <form className="space-y-6" onSubmit={handleSubmit}>
-          
-          {/* Funcion para seleccior servicios desde la base */}
+          {/* Selección de servicio */}
           <div>
             <label htmlFor="servicio" className="block text-lg font-medium mb-2 text-black">
               Servicio a Contratar
@@ -102,14 +100,14 @@ export default function Servicios() {
             >
               <option value="">Seleccione un servicio</option>
               {servicios.map((servicio) => (
-                <option key={servicio.id} value={servicio.nombre}>
-                  {servicio.nombre}
+                <option key={servicio.id} value={servicio.descripcion}>
+                  {servicio.descripcion}
                 </option>
               ))}
             </select>
           </div>
-          {/* Campos a llenar manualmente */}
-          {[
+          {/* Campos adicionales */}
+          {[ 
             { label: "Nombre del Cliente", name: "nombre", type: "text" },
             { label: "Fecha de Contratación", name: "fecha", type: "date" },
             { label: "Cifra de Servicio", name: "cifra", type: "text" },
@@ -148,4 +146,3 @@ export default function Servicios() {
     </main>
   );
 }
-//revisar codigo linea por linea
