@@ -41,3 +41,4 @@ const buscarClientesCariñan = async (req: Request, res: Response) => {
         return res.status(500).json({ mensaje: 'Hubo un error al buscar los clientes de Cariñan' });
     }
 };
+export {buscarClientesCariñan}
