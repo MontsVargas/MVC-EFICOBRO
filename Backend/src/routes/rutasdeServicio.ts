@@ -1,10 +1,12 @@
-import { Request,Response,Router } from "express";
-import { buscarServiciosPorTipo}  from "../controllers/serviciosController";
+import { Router } from "express";
+import { buscarServiciosPorTipo, obtenerServicios}  from "../controllers/serviciosController";
 
 const rutas = Router();
 
-rutas.get('/servicios',(req: Request, res : Response) =>{
-    buscarServiciosPorTipo(req,res);
-});
+// Ruta para obtener todos los servicios
+rutas.get("/servicios", obtenerServicios);
 
-export default rutas; 
+// Ruta para obtener servicios con su tipo
+rutas.get("/servicios/tipo", buscarServiciosPorTipo);
+
+export default rutas;
