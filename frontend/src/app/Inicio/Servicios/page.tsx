@@ -77,7 +77,7 @@ export default function Servicios() {
 
     async function fetchTiposDeServicio() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/tipo`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicio/tipo`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
