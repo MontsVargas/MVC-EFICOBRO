@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { obtenerServicios, buscarServiciosPorTipo, obtenerPlantas } from "../controllers/serviciosController"; 
+import { obtenerServicios, listarServicios, obtenerPlantas } from "../controllers/serviciosController"; 
 
 const rutas = Router();
 
@@ -9,7 +9,7 @@ rutas.get("/servicios", (req: Request, res: Response) => {
 });
 
 rutas.get("/servicios/tipo", (req: Request, res: Response) => {
-    buscarServiciosPorTipo(req, res);
+    listarServicios(req, res);
 });
 
 // Ruta para obtener plantas

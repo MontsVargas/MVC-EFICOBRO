@@ -62,4 +62,4 @@ const obtenerPlantas = async (req: Request, res: Response) => {
     }
 };
 
-export { obtenerServicios, buscarServiciosPorTipo, obtenerPlantas };
+export { obtenerServicios,listarServicios, obtenerPlantas };
