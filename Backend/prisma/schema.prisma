@@ -73,7 +73,7 @@ model Usuario {
   updatedAt        DateTime  @updatedAt
 }
 
-model TipoServicio {
+model tipoServicio {
   id              Int       @id @default(autoincrement())
   nombre          String    @db.VarChar(48)
   createdAt       DateTime  @default(now())
@@ -83,7 +83,7 @@ model TipoServicio {
 
 model Servicio {
   id              Int          @id @default(autoincrement())
-  TipoServicio    TipoServicio @relation(fields: [TipoServicioId], references: [id])
+  TipoServicio    tipoServicio @relation(fields: [TipoServicioId], references: [id])
   TipoServicioId  Int
   descripcion     String       @db.VarChar(128)
   costo           Decimal      @db.Decimal(2,1)
