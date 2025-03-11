@@ -23,32 +23,22 @@ const obtenerServicios = async (req: Request, res: Response) => {
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });  // Siempre retorna una respuesta
     }
 };
-
-// Buscar servicios por tipo
-const buscarServiciosPorTipo = async (req: Request, res: Response) => {
+// Listar todos los servicios sin filtrar por tipo
+const listarServicios = async (req: Request, res: Response) => {
     try {
-        const TipoServicio = await prisma.servicio.findMany({
-            select: {
-                id: true,
-                descripcion: true,
-                TipoServicio: {
-                    select: {
-                        nombre: true
-                    }
-                }
-            }
-        });
+        const servicios = await prisma.servicio.findMany(); // Obtiene todos los servicios
 
-        if (TipoServicio.length === 0) {
+        if (servicios.length === 0) {
             return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
         }
 
-        return res.status(200).json({ TipoServicio });
+        return res.status(200).json({ servicios }); // Devuelve el listado tal cual
     } catch (error) {
         console.error("Error en el servidor:", error);
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
+
 
 // Obtener plantas de la empresa
 const obtenerPlantas = async (req: Request, res: Response) => {
