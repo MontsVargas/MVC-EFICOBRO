@@ -17,31 +17,12 @@ const obtenerServicios = async (req: Request, res: Response) => {
             return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
         }
 
-        return res.status(200).json({ servicios });  //  Siempre retorna una respuesta
-    } catch (error) {
-        console.error("Error en el servidor:", error);
-        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });  // Siempre retorna una respuesta
-    }
-};
-
-const listarServicios = async (req: Request, res: Response) => {
-    try {
-        // Consultar la tabla 'tiposervicio' para obtener todos los registros
-        const TipoServicio = await prisma.tipoServicio.findMany(); // Aquí usamos la tabla correcta
-
-        console.log("Tipos de servicios obtenidos:", TipoServicio); // Para depuración
-
-        if (TipoServicio.length === 0) {
-            return res.status(404).json({ mensaje: "NO EXISTEN TIPOS DE SERVICIOS" });
-        }
-
-        return res.status(200).json({TipoServicio }); // Devolvemos el listado de tipos de servicios
+        return res.status(200).json({ servicios });
     } catch (error) {
         console.error("Error en el servidor:", error);
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
-
 
 // Obtener plantas de la empresa
 const obtenerPlantas = async (req: Request, res: Response) => {
@@ -65,4 +46,34 @@ const obtenerPlantas = async (req: Request, res: Response) => {
     }
 };
 
-export { obtenerServicios,listarServicios, obtenerPlantas };
+// Obtener tipos de servicio
+const obtenerTiposDeServicio = async (req: Request, res: Response) => {
+    try {
+        const tiposDeServicio = await prisma.tipoServicio.findMany({
+            select: {
+                id: true,
+                nombre: true,
+                createdAt: true,
+                updatedAt: true,
+                servicios: {
+                    select: {
+                        id: true,
+                        descripcion: true
+                    }
+                }
+            }
+        });
+
+        if (tiposDeServicio.length === 0) {
+            return res.status(404).json({ mensaje: "NO EXISTEN TIPOS DE SERVICIO REGISTRADOS" });
+        }
+
+        return res.status(200).json({ tiposDeServicio });
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
+    }
+};
+
+export { obtenerServicios, obtenerPlantas, obtenerTiposDeServicio };
+
