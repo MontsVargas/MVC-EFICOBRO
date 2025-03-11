@@ -17,12 +17,28 @@ const obtenerServicios = async (req: Request, res: Response) => {
             return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
         }
 
-        return res.status(200).json({ servicios });
+        return res.status(200).json({ servicios });  //  Siempre retorna una respuesta
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });  // Siempre retorna una respuesta
+    }
+};
+// Listar todos los servicios sin filtrar por tipo
+const listarServicios = async (req: Request, res: Response) => {
+    try {
+        const servicios = await prisma.servicio.findMany(); // Obtiene todos los servicios
+
+        if (servicios.length === 0) {
+            return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
+        }
+
+        return res.status(200).json({ servicios }); // Devuelve el listado tal cual
     } catch (error) {
         console.error("Error en el servidor:", error);
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
+
 
 // Obtener plantas de la empresa
 const obtenerPlantas = async (req: Request, res: Response) => {
@@ -46,26 +62,4 @@ const obtenerPlantas = async (req: Request, res: Response) => {
     }
 };
 
-// Obtener tipos de servicio
-const obtenerTipoServicio = async (req: Request, res: Response) => {
-    try {
-        const tipoServicio = await prisma.tipoServicio.findMany({
-            select: {
-                id: true,
-                nombre: true,
-            }
-        });
-
-        if (tipoServicio.length === 0) {
-            return res.status(404).json({ mensaje: "NO EXISTEN TIPOS DE SERVICIO REGISTRADOS" });
-        }
-
-        return res.status(200).json({ tipoServicio });
-    } catch (error) {
-        console.error("Error en el servidor:", error);
-        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
-    }
-};
-
-export { obtenerServicios, obtenerPlantas, obtenerTipoServicio };
-
+export { obtenerServicios,listarServicios, obtenerPlantas };
