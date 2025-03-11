@@ -50,18 +50,18 @@ const obtenerPlantas = async (req: Request, res: Response) => {
 // Obtener tipos de servicio
 const obtenerTipoServicio = async (req: Request, res: Response) => {
     try {
-        const tipoServicio = await prisma.tipoServicio.findMany({
+        const tiposervicio = await prisma.tipoServicio.findMany({
             select: {
                 id: true,
                 nombre: true,
             }
         });
 
-        if (tipoServicio.length === 0) {
+        if (tiposervicio.length === 0) {
             return res.status(404).json({ mensaje: "NO EXISTEN TIPOS DE SERVICIO REGISTRADOS" });
         }
 
-        return res.status(200).json({ tipoServicio });
+        return res.status(200).json({ tiposervicio });
     } catch (error) {
         console.error("Error en el servidor:", error);
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
