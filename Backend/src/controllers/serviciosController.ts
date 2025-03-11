@@ -50,7 +50,7 @@ const obtenerPlantas = async (req: Request, res: Response) => {
 // Obtener tipos de servicio
 const obtenerTipoServicio = async (req: Request, res: Response) => {
     try {
-        const tiposervicio = await prisma.tipoServicio.findMany({
+        const tiposervicio = await prisma.tiposervicio.findMany({
             select: {
                 id: true,
                 nombre: true,
