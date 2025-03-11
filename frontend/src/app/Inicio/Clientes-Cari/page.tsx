@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 
 type Cliente = {
@@ -18,33 +18,37 @@ export default function ClientesCariñan() {
   useEffect(() => {
     const fetchClientes = async () => {
       setLoading(true);
-      setMensaje(null);
-      try {const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}buscarClientesCariñan?nombre=${nombre}`, {
-
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+      setMensaje(null); // Limpiar mensaje antes de buscar
+      try {
+        // Asegurarse de que la URL del backend esté correctamente construida
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/clientes?nombre=${nombre}`, // Corregir la ruta aquí
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Error al obtener los clientes");
         }
 
         const data = await response.json();
-        setClientes(data.clientes);
+        setClientes(data.clientes); // Asignar los clientes encontrados
       } catch (error) {
         setMensaje("No se pudieron cargar los clientes.");
         console.error(error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Dejar de mostrar el indicador de carga
       }
     };
 
     if (nombre) {
-      fetchClientes();
+      fetchClientes(); // Solo buscar si el nombre no está vacío
     } else {
-      setClientes([]); // Si no hay nombre, limpiamos la lista de clientes
+      setClientes([]); // Si no hay nombre, limpiar la lista de clientes
     }
   }, [nombre]); // Cuando 'nombre' cambie, vuelve a buscar clientes
 

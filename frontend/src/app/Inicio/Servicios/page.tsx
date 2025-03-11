@@ -33,7 +33,7 @@ export default function Servicios() {
   const [plantas, setPlantas] = useState<Planta[]>([]);
   const [tiposDeServicio, setTiposDeServicio] = useState<TipoServicio[]>([]);
 
-  // Obtener servicios
+  // Obtener servicios, plantas y tipos de servicio
   useEffect(() => {
     async function fetchServicios() {
       try {
@@ -57,7 +57,7 @@ export default function Servicios() {
 
     async function fetchPlantas() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/plantas`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/plantas`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -114,7 +114,7 @@ export default function Servicios() {
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/plantas`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
