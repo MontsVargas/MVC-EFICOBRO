@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { buscarClientesCarinan } from "../controllers/cariñancontroller";
+import { buscarClientesCariñan } from "../controllers/cariñancontroller";
 
 
 const rutas = Router();
 
-rutas.get("/clientes/cariñan", buscarClientesCarinan);
+rutas.get("/clientes/cariñan", buscarClientesCariñan);
 
 export default rutas;

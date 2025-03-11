@@ -3,15 +3,16 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const buscarClientesCarinan = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const buscarClientesCariñan = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { nombre } = req.query;
 
-        // Definir filtros con el tipado correcto
+        // Filtros básicos para buscar en la base de datos
         const filtros: Record<string, any> = {
             nombreDependencia: "Cariñan", // Filtrar solo los clientes de Cariñan
         };
 
+        // Si se pasa un nombre, añadirlo al filtro de búsqueda (insensible a mayúsculas/minúsculas)
         if (nombre) {
             filtros.nombre = {
                 contains: nombre as string,
@@ -19,7 +20,7 @@ export const buscarClientesCarinan = async (req: Request, res: Response, next: N
             };
         }
 
-        // Buscar en la base de datos
+        // Buscar los clientes en la base de datos
         const clientes = await prisma.cliente.findMany({
             where: filtros,
             select: {
@@ -31,15 +32,18 @@ export const buscarClientesCarinan = async (req: Request, res: Response, next: N
             },
         });
 
+        // Si no se encuentran clientes, devolver un mensaje de error
         if (clientes.length === 0) {
             res.status(404).json({ mensaje: "No hay clientes en Cariñan con ese nombre" });
             return;
         }
 
+        // Si se encuentran clientes, devolver la lista
         res.status(200).json({ clientes });
 
     } catch (error) {
         next(error); // Pasamos el error al middleware de manejo de errores
     }
 };
-export {buscarClientesCariñan}
+
+
