@@ -1,10 +1,10 @@
-import { RequestHandler } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 // Obtener servicios
-export const obtenerServicios: RequestHandler = async (req, res) => {
+const obtenerServicios = async (req: Request, res: Response) => {
     try {
         const servicios = await prisma.servicio.findMany({
             select: {
@@ -14,20 +14,18 @@ export const obtenerServicios: RequestHandler = async (req, res) => {
         });
 
         if (servicios.length === 0) {
-            res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
-            return;
+            return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
         }
 
-        res.status(200).json({ servicios });
-
+        return res.status(200).json({ servicios });  //  Siempre retorna una respuesta
     } catch (error) {
         console.error("Error en el servidor:", error);
-        res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });  // Siempre retorna una respuesta
     }
 };
 
 // Buscar servicios por tipo
-export const buscarServiciosPorTipo: RequestHandler = async (req, res) => {
+const buscarServiciosPorTipo = async (req: Request, res: Response) => {
     try {
         const servicios = await prisma.servicio.findMany({
             select: {
@@ -42,20 +40,18 @@ export const buscarServiciosPorTipo: RequestHandler = async (req, res) => {
         });
 
         if (servicios.length === 0) {
-            res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
-            return;
+            return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
         }
 
-        res.status(200).json({ servicios });
-
+        return res.status(200).json({ servicios });
     } catch (error) {
         console.error("Error en el servidor:", error);
-        res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
 
 // Obtener plantas de la empresa
-export const obtenerPlantas: RequestHandler = async (req, res) => {
+const obtenerPlantas = async (req: Request, res: Response) => {
     try {
         const plantas = await prisma.planta.findMany({
             select: {
@@ -66,14 +62,14 @@ export const obtenerPlantas: RequestHandler = async (req, res) => {
         });
 
         if (plantas.length === 0) {
-            res.status(404).json({ mensaje: "NO EXISTEN PLANTAS REGISTRADAS" });
-            return;
+            return res.status(404).json({ mensaje: "NO EXISTEN PLANTAS REGISTRADAS" });
         }
 
-        res.status(200).json({ plantas });
-
+        return res.status(200).json({ plantas });
     } catch (error) {
         console.error("Error en el servidor:", error);
-        res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
+
+export { obtenerServicios, buscarServiciosPorTipo, obtenerPlantas };
