@@ -88,7 +88,8 @@ export default function Servicios() {
         if (!response.ok) throw new Error("Error al obtener los tipos de servicio");
 
         const data = await response.json();
-        setTiposDeServicio(Array.isArray(data.tiposDeServicio) ? data.tiposDeServicio : []);
+        console.log("Tipos de servicio recibidos:", data); 
+        setTiposDeServicio(Array.isArray(data.tiposervicio) ? data.tiposervicio : []);
       } catch (error) {
         console.error("Error:", error);
         setMensaje("No se pudieron cargar los tipos de servicio.");
