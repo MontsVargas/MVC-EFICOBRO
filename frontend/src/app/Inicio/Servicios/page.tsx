@@ -149,27 +149,6 @@ export default function Servicios() {
         <h2 className="text-center text-2xl font-semibold mb-6 text-[#195c97]">Seleccionar un Servicio</h2>
         {mensaje && <div className="text-center text-red-500 mb-4">{mensaje}</div>}
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Selección de servicio */}
-          <div>
-            <label htmlFor="servicio" className="block text-lg font-medium mb-2 text-black">
-              Servicio a Contratar
-            </label>
-            <select
-              id="servicio"
-              name="servicio"
-              className="w-full p-3 border border-gray-400 rounded-md text-black"
-              value={form.servicio}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Seleccione un servicio</option>
-              {servicios.map((servicio) => (
-                <option key={servicio.id} value={servicio.descripcion}>
-                  {servicio.descripcion}
-                </option>
-              ))}
-            </select>
-          </div>
           {/* Tipo de servicio */}
           <div>
             <label htmlFor="tipoServicio" className="block text-lg font-medium mb-2 text-black">
@@ -187,6 +166,27 @@ export default function Servicios() {
               {tiposDeServicio.map((tipo) => (
                 <option key={tipo.id} value={tipo.id}>
                   {tipo.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Selección de servicio */}
+          <div>
+            <label htmlFor="servicio" className="block text-lg font-medium mb-2 text-black">
+              Servicio a Contratar
+            </label>
+            <select
+              id="servicio"
+              name="servicio"
+              className="w-full p-3 border border-gray-400 rounded-md text-black"
+              value={form.servicio}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Seleccione un servicio</option>
+              {servicios.map((servicio) => (
+                <option key={servicio.id} value={servicio.descripcion}>
+                  {servicio.descripcion}
                 </option>
               ))}
             </select>
