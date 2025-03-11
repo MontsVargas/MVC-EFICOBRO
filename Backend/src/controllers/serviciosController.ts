@@ -23,16 +23,19 @@ const obtenerServicios = async (req: Request, res: Response) => {
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });  // Siempre retorna una respuesta
     }
 };
-// Listar todos los servicios sin filtrar por tipo
+
 const listarServicios = async (req: Request, res: Response) => {
     try {
-        const tiposervicios = await prisma.servicio.findMany(); // Obtiene todos los servicios
+        // Consultar la tabla 'tiposervicio' para obtener todos los registros
+        const tiposervicios = await prisma.tipoServicio.findMany(); // Aquí usamos la tabla correcta
+
+        console.log("Tipos de servicios obtenidos:", tiposervicios); // Para depuración
 
         if (tiposervicios.length === 0) {
-            return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
+            return res.status(404).json({ mensaje: "NO EXISTEN TIPOS DE SERVICIOS" });
         }
 
-        return res.status(200).json({ tiposervicios}); // Devuelve el listado tal cual
+        return res.status(200).json({ tiposervicios }); // Devolvemos el listado de tipos de servicios
     } catch (error) {
         console.error("Error en el servidor:", error);
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
