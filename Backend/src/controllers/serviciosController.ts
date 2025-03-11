@@ -27,15 +27,15 @@ const obtenerServicios = async (req: Request, res: Response) => {
 const listarServicios = async (req: Request, res: Response) => {
     try {
         // Consultar la tabla 'tiposervicio' para obtener todos los registros
-        const tiposervicios = await prisma.tipoServicio.findMany(); // Aquí usamos la tabla correcta
+        const TipoServicio = await prisma.tipoServicio.findMany(); // Aquí usamos la tabla correcta
 
-        console.log("Tipos de servicios obtenidos:", tiposervicios); // Para depuración
+        console.log("Tipos de servicios obtenidos:", TipoServicio); // Para depuración
 
-        if (tiposervicios.length === 0) {
+        if (TipoServicio.length === 0) {
             return res.status(404).json({ mensaje: "NO EXISTEN TIPOS DE SERVICIOS" });
         }
 
-        return res.status(200).json({ tiposervicios }); // Devolvemos el listado de tipos de servicios
+        return res.status(200).json({TipoServicio }); // Devolvemos el listado de tipos de servicios
     } catch (error) {
         console.error("Error en el servidor:", error);
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
