@@ -45,4 +45,3 @@ export const buscarClientesCariñan = async (req: Request, res: Response, next: 
         next(error); // Pasamos el error al middleware de manejo de errores
     }
 };
-export {buscarClientesCariñan}
