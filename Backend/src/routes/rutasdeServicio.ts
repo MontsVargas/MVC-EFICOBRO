@@ -1,12 +1,13 @@
 import { Router } from "express";
-import { buscarServiciosPorTipo, obtenerServicios}  from "../controllers/serviciosController";
+import { obtenerServicios, buscarServiciosPorTipo, obtenerPlantas } from "../controllers/serviciosController"; 
 
-const rutas = Router();
+const router = Router();
 
-// Ruta para obtener todos los servicios
-rutas.get("/servicios", obtenerServicios);
+// Rutas para servicios
+router.get("/servicios", obtenerServicios);
+router.get("/servicios/tipo", buscarServiciosPorTipo);
 
-// Ruta para obtener servicios con su tipo
-rutas.get("/servicios/tipo", buscarServiciosPorTipo);
+// Ruta para obtener plantas de la empresa
+router.get("/plantas", obtenerPlantas);
 
-export default rutas;
+export default router;
