@@ -27,7 +27,7 @@ const obtenerServicios = async (req: Request, res: Response) => {
 // Buscar servicios por tipo
 const buscarServiciosPorTipo = async (req: Request, res: Response) => {
     try {
-        const servicios = await prisma.servicio.findMany({
+        const TipoServicio = await prisma.servicio.findMany({
             select: {
                 id: true,
                 descripcion: true,
@@ -39,11 +39,11 @@ const buscarServiciosPorTipo = async (req: Request, res: Response) => {
             }
         });
 
-        if (servicios.length === 0) {
+        if (TipoServicio.length === 0) {
             return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
         }
 
-        return res.status(200).json({ servicios });
+        return res.status(200).json({ TipoServicio });
     } catch (error) {
         console.error("Error en el servidor:", error);
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
