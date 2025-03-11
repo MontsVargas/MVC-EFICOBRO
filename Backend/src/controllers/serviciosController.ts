@@ -8,6 +8,9 @@ const prisma = new PrismaClient();
 const obtenerServicios = async (req: Request, res: Response) => {
     try {
         const servicios = await prisma.servicio.findMany({
+            where: {
+                id: { in: [1, 2, 3, 4, 5] }  // Filtra solo los servicios
+            },
             select: {
                 id: true,
                 descripcion: true
@@ -24,6 +27,7 @@ const obtenerServicios = async (req: Request, res: Response) => {
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
+
 
 // Obtener plantas de la empresa
 const obtenerPlantas = async (req: Request, res: Response) => {
