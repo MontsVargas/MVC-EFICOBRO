@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra } from "../controllers/serviciosController"; 
+import { obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra} from "../controllers/serviciosController"; 
 
 const rutas = Router();
 
