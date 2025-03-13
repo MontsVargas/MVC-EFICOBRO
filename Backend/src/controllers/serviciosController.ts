@@ -4,10 +4,13 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Obtener servicios
+// Obtener todos los servicios que ofrece Inagua
 const obtenerServicios = async (req: Request, res: Response) => {
     try {
         const servicios = await prisma.servicio.findMany({
+            where: {
+                id: { in: [1, 2, 3, 4, 5] }  // Filtra solo los servicios por numero de tipo de servicio
+            },
             select: {
                 id: true,
                 descripcion: true
@@ -25,7 +28,8 @@ const obtenerServicios = async (req: Request, res: Response) => {
     }
 };
 
-// Obtener plantas de la empresa
+
+// Obtener todas las plantas de la empresa
 const obtenerPlantas = async (req: Request, res: Response) => {
     try {
         const plantas = await prisma.planta.findMany({

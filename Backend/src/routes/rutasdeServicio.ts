@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { obtenerServicios, obtenerPlantas, obtenerTipoServicio } from "../controllers/serviciosController"; 
+import { obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra } from "../controllers/serviciosController"; 
 
 const rutas = Router();
 
@@ -17,5 +17,9 @@ rutas.get("/plantas", (req: Request, res: Response) => {
     obtenerPlantas(req, res);
 });
 
+// Ruta para realizar una compra
+rutas.post("/compras", (req: Request, res: Response) => {
+    realizarCompra(req, res);
+});
+
 export default rutas;
- 
