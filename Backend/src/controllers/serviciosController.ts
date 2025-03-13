@@ -4,12 +4,12 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Obtener servicios
+// Obtener todos los servicios que ofrece Inagua
 const obtenerServicios = async (req: Request, res: Response) => {
     try {
         const servicios = await prisma.servicio.findMany({
             where: {
-                id: { in: [1, 2, 3, 4, 5] }  // Filtra solo los servicios
+                id: { in: [1, 2, 3, 4, 5] }  // Filtra solo los servicios por numero de tipo de servicio
             },
             select: {
                 id: true,
@@ -29,7 +29,7 @@ const obtenerServicios = async (req: Request, res: Response) => {
 };
 
 
-// Obtener plantas de la empresa
+// Obtener todas las plantas de la empresa
 const obtenerPlantas = async (req: Request, res: Response) => {
     try {
         const plantas = await prisma.planta.findMany({
@@ -72,4 +72,57 @@ const obtenerTipoServicio = async (req: Request, res: Response) => {
     }
 };
 
-export { obtenerServicios, obtenerPlantas, obtenerTipoServicio };  
+const realizarCompra = async (req: Request, res: Response) => {
+    try {
+        const { clienteId, servicioId, cantidadServicio, cobro, direccionCompra, plantaId } = req.body;
+
+        // Validar que los datos obligatorios estén presentes
+        if (!clienteId || !servicioId || !cantidadServicio || !cobro || !direccionCompra || !plantaId) {
+            return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
+        }
+
+        // Verificar que el cliente exista
+        const cliente = await prisma.cliente.findUnique({
+            where: { id: clienteId }
+        });
+        if (!cliente) {
+            return res.status(404).json({ mensaje: "El cliente no existe" });
+        }
+
+        // Verificar que el servicio exista
+        const servicio = await prisma.servicio.findUnique({
+            where: { id: servicioId }
+        });
+        if (!servicio) {
+            return res.status(404).json({ mensaje: "El servicio no existe" });
+        }
+
+        // Verificar que la planta exista
+        const planta = await prisma.planta.findUnique({
+            where: { id: plantaId }
+        });
+        if (!planta) {
+            return res.status(404).json({ mensaje: "La planta no existe" });
+        }
+
+        // Crear la compra en la base de datos
+        const compra = await prisma.compra.create({
+            data: {
+                clienteId,
+                servicioId,
+                fecha: new Date(), // Se registra la fecha actual de la compra
+                cantidadServicio,
+                cobro,
+                direccionCompra,
+                plantaId,
+            }
+        });
+
+        return res.status(201).json({ mensaje: "Compra realizada con éxito", compra });
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
+    }
+};
+
+export { obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra };  
