@@ -7,19 +7,20 @@ export const buscarClientesCarinan = async (req: Request, res: Response) => {
     try {
         const { nombre } = req.query;
 
-        // Definir filtros
+        // Filtros para clientes de dependencia Cariñan
         const filtros: Record<string, any> = {
-            nombreDependencia: "Cariñan", // Filtrar solo los clientes de Cariñan
+            nombreDependencia: "Cariñan",
         };
 
+        // Si hay un nombre en la consulta, agregarlo al filtro
         if (nombre) {
             filtros.nombre = {
                 contains: nombre as string,
-                mode: "insensitive", // Búsqueda sin distinguir mayúsculas/minúsculas
+                mode: "insensitive", // No distingue mayúsculas/minúsculas
             };
         }
 
-        // Buscar en la base de datos
+        // Buscar clientes en la base de datos
         const clientes = await prisma.cliente.findMany({
             where: filtros,
             select: {
@@ -31,10 +32,12 @@ export const buscarClientesCarinan = async (req: Request, res: Response) => {
             },
         });
 
+        // Si no hay clientes, devolver un mensaje de error
         if (clientes.length === 0) {
             return res.status(404).json({ mensaje: "No hay clientes en Cariñan con ese nombre" });
         }
 
+        // Responder con los clientes encontrados
         return res.status(200).json({ clientes });
 
     } catch (error) {
