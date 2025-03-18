@@ -12,7 +12,8 @@ const obtenerServicios = async (req: Request, res: Response) => {
             },
             select: {
                 id: true,
-                descripcion: true
+                descripcion: true,
+                tipoServicioId: true,
             }
         });
 

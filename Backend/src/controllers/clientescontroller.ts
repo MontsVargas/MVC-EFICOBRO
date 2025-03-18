@@ -61,7 +61,7 @@ const mostrarCliente = async (req: Request, res: Response) => {
 
 const agregarCliente = async (req: Request, res: Response) => {
     try {
-        const { nombre, direccion, telefono,nombreDependencia, id_medidor} = req.body;
+        const { nombre, direccion, telefono, nombreDependencia, id_medidor} = req.body;
 
         // Verificar si todos los campos necesarios están presentes
         if (!nombre || !direccion || !telefono || !id_medidor)  {
