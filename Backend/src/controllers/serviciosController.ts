@@ -1,4 +1,3 @@
-
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
@@ -125,4 +124,4 @@ const realizarCompra = async (req: Request, res: Response) => {
     }
 };
 
-export { obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra };  
+export { obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra };
