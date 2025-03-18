@@ -3,7 +3,7 @@ import { z } from "zod";
 const registroSchema = z.object({
     nombre: z
       .string({ required_error: "El campo de nombre es obligatorio" })
-      .min(64, { message: "Ingresa un nombre valido" }),
+      .min(2, { message: "Ingresa un nombre valido" }),
       
     correo: z
       .string({ required_error: "El campo de correo es obligatorio" })

@@ -9,10 +9,11 @@ type TipoServicio = {
 type Servicio = {
   id: number;
   descripcion: string;
+  tipoServicioId: number;  // esto permite que arroje la lista solo de los servicios dentro de tipo servicio 
 };
 
 type Planta = {
-  id: number;
+  id: string;
   nombre: string;
 };
 
@@ -26,14 +27,16 @@ export default function Servicios() {
     costo: "",
     direccion: "",
     planta: "",
+    clienteId: "",
   });
 
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [serviciosFiltrados, setServiciosFiltrados] = useState<Servicio[]>([]);
   const [plantas, setPlantas] = useState<Planta[]>([]);
   const [tiposDeServicio, setTiposDeServicio] = useState<TipoServicio[]>([]);
 
-  // Obtener servicios, plantas y tipos de servicio
+  // servicios, plantas y tipos de servicio
   useEffect(() => {
     async function fetchServicios() {
       try {
@@ -49,6 +52,7 @@ export default function Servicios() {
 
         const data = await response.json();
         setServicios(Array.isArray(data.servicios) ? data.servicios : []);
+        setServiciosFiltrados(Array.isArray(data.servicios) ? data.servicios : []);  // Al principio mostramos todos los servicios
       } catch (error) {
         console.error("Error:", error);
         setMensaje("No se pudieron cargar los servicios.");
@@ -75,7 +79,7 @@ export default function Servicios() {
       }
     }
 
-    async function fetchTiposDeServicio() {
+    async function fetchTiposDeServicio() { 
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/tipo`, {
           method: "GET",
@@ -84,22 +88,42 @@ export default function Servicios() {
           },
           credentials: "include",
         });
-
-        if (!response.ok) throw new Error("Error al obtener los tipos de servicio");
-
+    
+        if (!response.ok) {
+          console.error("Error al obtener los tipos de servicio");
+          setMensaje("No se pudieron cargar los tipos de servicio.");
+          return;
+        }
+    
         const data = await response.json();
-        console.log("Tipos de servicio recibidos:", data); 
+        console.log("Tipos de servicio recibidos:", data);
         setTiposDeServicio(Array.isArray(data.tiposervicio) ? data.tiposervicio : []);
       } catch (error) {
         console.error("Error:", error);
         setMensaje("No se pudieron cargar los tipos de servicio.");
       }
     }
+    
 
     fetchServicios();
     fetchPlantas();
     fetchTiposDeServicio();
   }, []);
+
+  // Filtrar los servicios cuando el tipo de servicio cambie
+  const handleTipoServicioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const tipoSeleccionado = e.target.value;
+    setForm({ ...form, tipoServicio: tipoSeleccionado });
+
+    if (tipoSeleccionado) {
+      const serviciosFiltrados = servicios.filter(
+        (servicio) => servicio.tipoServicioId === parseInt(tipoSeleccionado)
+      );
+      setServiciosFiltrados(serviciosFiltrados);
+    } else {
+      setServiciosFiltrados(servicios); // Si no hay tipo seleccionado, mostramos todos los servicios
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -114,14 +138,23 @@ export default function Servicios() {
       return;
     }
 
+    const requestBody = {
+      clienteId: form.clienteId,
+      servicioId: form.servicio,
+      cantidadServicio: form.cifra,
+      cobro: form.costo,
+      direccionCompra: form.direccion,
+      plantaId: form.planta,
+    };
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/compras`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(form),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -137,6 +170,7 @@ export default function Servicios() {
         costo: "",
         direccion: "",
         planta: "",
+        clienteId: "",
       });
     } catch (error) {
       setMensaje((error as Error).message);
@@ -159,7 +193,7 @@ export default function Servicios() {
               name="tipoServicio"
               className="w-full p-3 border border-gray-400 rounded-md text-black"
               value={form.tipoServicio}
-              onChange={handleChange}
+              onChange={handleTipoServicioChange} // Cambié el manejador para filtrar
               required
             >
               <option value="">Seleccione un tipo de servicio</option>
@@ -184,8 +218,8 @@ export default function Servicios() {
               required
             >
               <option value="">Seleccione un servicio</option>
-              {servicios.map((servicio) => (
-                <option key={servicio.id} value={servicio.descripcion}>
+              {serviciosFiltrados.map((servicio) => (
+                <option key={servicio.id} value={servicio.id}>
                   {servicio.descripcion}
                 </option>
               ))}
