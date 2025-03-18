@@ -51,8 +51,8 @@ export default function Servicios() {
         if (!response.ok) throw new Error("Error al obtener los servicios");
 
         const data = await response.json();
-        setServicios(Array.isArray(data.servicios) ? data.servicios : []);
-        setServiciosFiltrados(Array.isArray(data.servicios) ? data.servicios : []);  // Al principio mostramos todos los servicios
+        setServicios((data.servicios));
+        setServiciosFiltrados((data.servicio) ? data.servicio : []);  // Al principio mostramos todos los servicios
       } catch (error) {
         console.error("Error:", error);
         setMensaje("No se pudieron cargar los servicios.");
@@ -115,10 +115,14 @@ export default function Servicios() {
     const tipoSeleccionado = e.target.value;
     setForm({ ...form, tipoServicio: tipoSeleccionado });
 
+    console.log(tipoSeleccionado);
+    console.log (servicios)
+
     if (tipoSeleccionado) {
       const serviciosFiltrados = servicios.filter(
         (servicio) => servicio.tipoServicioId === parseInt(tipoSeleccionado)
       );
+      console.log (serviciosFiltrados)
       setServiciosFiltrados(serviciosFiltrados);
     } else {
       setServiciosFiltrados(servicios); // Si no hay tipo seleccionado, mostramos todos los servicios

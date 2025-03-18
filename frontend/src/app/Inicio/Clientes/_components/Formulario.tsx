@@ -1,74 +1,100 @@
 "use client"
 
-import { ChangeEvent, FormEvent, useState } from "react";
-import { useRouter } from "next/navigation"; // Para redirigir a otra página
+import { ChangeEvent, FormEvent, useCallback, useState } from "react";
+import debounce from 'just-debounce-it';
+
+type Cliente = {
+    nombre: string;
+    direccion: string;
+    contrato_id?: number;
+};
 
 export default function Formulario() {
-    const router = useRouter();
 
     const [nombre, setNombre] = useState('');
-    const [direccion, setDireccion] = useState('');
-    const [dependencia, setDependencia] = useState(''); // Campo de la zona
+    const [clientes, setClientes] = useState<Cliente[]>([]);
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-
-        const nuevoCliente = {
-            nombre,
-            direccion,
-            dependencia,
-        };
-
+    async function buscarCliente(cliente: string) {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}cliente/crear`, {
-                method: 'POST',
+            if (cliente === '') {
+                setClientes([]);
+                return;
+            }
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}cliente/buscar?nombre=${cliente}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: 'include',
-                body: JSON.stringify(nuevoCliente),
+                credentials: 'include'
             });
 
             if (!response.ok) {
-                throw new Error('Error al registrar el cliente');
+                const errorData = await response.json();
+                alert(errorData.message || 'Error desconocido');
+                return;
             }
 
-            if (dependencia.toLowerCase() === "cariñan") {
-                router.push("/Clientes-cari"); // Redirige a la página de clientes de Cariñan
-            }
-        } catch (error) {
-            console.error("Error al registrar el cliente:", error);
+            const data = await response.json();
+            setClientes(data.clientes || []);
+
+        } catch {
+            alert('Error al buscar clientes');
         }
-    };
+    }
+
+    const debounceCliente = useCallback(
+        debounce(async (nombre: string) => {
+            await buscarCliente(nombre);
+        }, 1000),
+        []
+    )
+
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        buscarCliente(nombre);
+    }
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const nuevoNombre = e.target.value;
+        setNombre(nuevoNombre);
+        debounceCliente(nuevoNombre);
+    }
 
     return (
         <div>
             <form onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
-                    placeholder="Nombre"
+                <input type="text" name="" id=""
                     className="bg-white border-2 border-black text-black py-2 px-4 rounded"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                />
-                <input 
-                    type="text" 
-                    placeholder="Dirección"
-                    className="bg-white border-2 border-black text-black py-2 px-4 rounded"
-                    value={direccion}
-                    onChange={(e) => setDireccion(e.target.value)}
-                />
-                <input 
-                    type="text" 
-                    placeholder="Dependencia"
-                    className="bg-white border-2 border-black text-black py-2 px-4 rounded"
-                    value={dependencia}
-                    onChange={(e) => setDependencia(e.target.value)}
+                    onChange={handleChange}
                 />
                 <button type="submit" className="bg-[#6aa3af] text-white py-2 px-4 rounded hover:bg-[#558c98]">
-                    Registrar Cliente
+                    Buscar
                 </button>
             </form>
+
+            <table className="w-full bg-white shadow-lg rounded-lg overflow-hidden border border-blue-300">
+                <thead className="bg-blue-600 text-white">
+                    <tr>
+                        <th className="p-4 text-left">Nombre</th>
+                        <th className="p-4 text-left">Dirección</th>
+                        <th className="p-4 text-left">Contrato ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {clientes.map((cliente, index) => (
+                        <tr
+                            key={index}
+                            className="border-b border-blue-200 hover:bg-blue-100 transition"
+                        >
+                            <td className="p-4 text-blue-900">{cliente.nombre}</td>
+                            <td className="p-4 text-blue-900">{cliente.direccion}</td>
+                            <td className="p-4 text-blue-900">
+                                {cliente.contrato_id ? cliente.contrato_id : "Sin Contrato"}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 }

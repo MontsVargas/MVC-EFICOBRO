@@ -10,19 +10,19 @@ type Cliente = {
 };
 
 export default function ClientesCariñan() {
-  const [nombre, setNombre] = useState<string>(""); // Estado para el nombre del cliente
-  const [clientes, setClientes] = useState<Cliente[]>([]); // Estado para los clientes
+  const [nombre, setNombre] = useState<string>(""); // el nombre del cliente
+  const [clientes, setClientes] = useState<Cliente[]>([]); // para los clientes
   const [mensaje, setMensaje] = useState<string | null>(null); // Mensaje de error o éxito
-  const [loading, setLoading] = useState<boolean>(false); // Estado para cargar clientes
+  const [loading, setLoading] = useState<boolean>(false); // carga clientes
 
   useEffect(() => {
     const fetchClientes = async () => {
       setLoading(true);
-      setMensaje(null); // Limpiar mensaje antes de buscar
+      setMensaje(null); // Limpiar mensaje antes de buscar 
       try {
-        // Asegurarse de que la URL del backend esté correctamente construida
+
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/clientes?nombre=${nombre}`, // Corregir la ruta aquí
+          `${process.env.NEXT_PUBLIC_API_URL}clientes/cariñan`, // Endpoint del backend
           {
             method: "GET",
             headers: {
