@@ -9,27 +9,24 @@ type Cliente = {
   deuda: number;
 };
 
-export default function ClientesCariñan() {
-  const [nombre, setNombre] = useState<string>(""); // el nombre del cliente
-  const [clientes, setClientes] = useState<Cliente[]>([]); // para los clientes
+export default function ClientesCarinan() {
+  const [nombre, setNombre] = useState<string>(""); // El nombre del cliente
+  const [clientes, setClientes] = useState<Cliente[]>([]); // Para los clientes
   const [mensaje, setMensaje] = useState<string | null>(null); // Mensaje de error o éxito
-  const [loading, setLoading] = useState<boolean>(false); // carga clientes
+  const [loading, setLoading] = useState<boolean>(false); // Carga clientes
 
   useEffect(() => {
     const fetchClientes = async () => {
       setLoading(true);
-      setMensaje(null); // Limpiar mensaje antes de buscar 
+      setMensaje(null); // Limpiar mensaje antes de buscar
       try {
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}clientes/cariñan`, // Endpoint del backend
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}clientes/clientes/carinan`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Error al obtener los clientes");
@@ -45,16 +42,12 @@ export default function ClientesCariñan() {
       }
     };
 
-    if (nombre) {
-      fetchClientes(); // Solo buscar si el nombre no está vacío
-    } else {
-      setClientes([]); // Si no hay nombre, limpiar la lista de clientes
-    }
-  }, [nombre]); // Cuando 'nombre' cambie, vuelve a buscar clientes
+    fetchClientes(); // Obtener los clientes de Carinan siempre que el componente se cargue
+  }, []); // El array vacío significa que solo se ejecuta cuando el componente se muestra
 
   return (
     <main className="flex-grow p-6 bg-white">
-      <p className="text-center text-xl font-semibold mb-6 text-blue-900">Clientes Cariñan</p>
+      <p className="text-center text-xl font-semibold mb-6 text-blue-900">Clientes Carinan</p>
 
       {/* Barra de búsqueda */}
       <div className="max-w-2xl mx-auto p-4 bg-gray-100 rounded-md shadow-md">
@@ -70,23 +63,23 @@ export default function ClientesCariñan() {
 
       {/* Mensajes de error o éxito */}
       {mensaje && (
-        <div className="text-center text-red-500 mt-4">{mensaje}</div>
+        <div className="text-center text-blue-500 mt-4">{mensaje}</div>
       )}
 
       {/* Mostrar clientes */}
       <div className="mt-6">
         {loading ? (
-          <p className="text-center text-blue-500">Cargando...</p>
+          <p className="text-center text-blue-800">Cargando...</p>
         ) : (
           <div>
             {clientes.length === 0 ? (
-              <p className="text-center text-gray-500">No se encontraron clientes.</p>
+              <p className="text-center text-black">No se encontraron clientes.</p>
             ) : (
               <div className="space-y-4">
-                {clientes.map((cliente) => (
+                {clientes.map((cliente, index) => (
                   <div
-                    key={cliente.contrato_id}
-                    className="p-4 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                    key={index}
+                    className="p-4 bg-blue-300 border border-blue-500 rounded-md shadow-sm"
                   >
                     <p className="font-semibold">{cliente.nombre}</p>
                     <p>{cliente.direccion}</p>
