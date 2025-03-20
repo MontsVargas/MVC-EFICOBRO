@@ -7,9 +7,6 @@ const prisma = new PrismaClient();
 const obtenerServicios = async (req: Request, res: Response) => {
     try {
         const servicios = await prisma.servicio.findMany({
-            where: {
-                id: { in: [1, 2, 3, 4, 5] }  // Filtra solo los servicios por numero de tipo 
-            },
             select: {
                 id: true,
                 descripcion: true,
