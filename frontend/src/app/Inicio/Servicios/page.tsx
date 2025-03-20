@@ -9,7 +9,7 @@ type TipoServicio = {
 type Servicio = {
   id: number;
   descripcion: string;
-  tipoServicioId: number;  // esto permite que arroje la lista solo de los servicios dentro de tipo servicio 
+  TipoServicioId: number;  // esto permite que arroje la lista solo de los servicios dentro de tipo servicio 
 };
 
 type Planta = {
@@ -103,8 +103,6 @@ export default function Servicios() {
         setMensaje("No se pudieron cargar los tipos de servicio.");
       }
     }
-    
-
     fetchServicios();
     fetchPlantas();
     fetchTiposDeServicio();
@@ -120,7 +118,7 @@ export default function Servicios() {
 
     if (tipoSeleccionado) {
       const serviciosFiltrados = servicios.filter(
-        (servicio) => servicio.tipoServicioId === parseInt(tipoSeleccionado)
+        (servicio) => servicio.TipoServicioId === parseInt(tipoSeleccionado)
       );
       console.log (serviciosFiltrados)
       setServiciosFiltrados(serviciosFiltrados);
@@ -143,16 +141,16 @@ export default function Servicios() {
     }
 
     const requestBody = {
-      clienteId: form.clienteId,
-      servicioId: form.servicio,
-      cantidadServicio: form.cifra,
-      cobro: form.costo,
-      direccionCompra: form.direccion,
-      plantaId: form.planta,
+      nombreCliente: form.nombre,  //Se envía el nombre del cliente
+      servicioId: Number(form.servicio),  //el dato se envia como número
+      cantidadServicio: Number(form.cifra),  //el dato se envia como  número
+      cobro: Number(form.costo),  //tipo numero
+      direccionCompra: form.direccion,  // tipo string
+      plantaId: Number(form.planta),  // tipo numero
     };
-
+    
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/compras`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/compras`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -185,7 +183,7 @@ export default function Servicios() {
     <main className="flex-grow p-6 bg-white">
       <div className="max-w-4xl mx-auto p-6 bg-[#f0f8fb] border border-gray-300 shadow-lg rounded-lg">
         <h2 className="text-center text-2xl font-semibold mb-6 text-[#195c97]">Seleccionar un Servicio</h2>
-        {mensaje && <div className="text-center text-red-500 mb-4">{mensaje}</div>}
+        {mensaje && <div className="text-center to-blue-700 mb-4">{mensaje}</div>}
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Tipo de servicio */}
           <div>
