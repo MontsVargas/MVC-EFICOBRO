@@ -55,7 +55,7 @@ model Compra {
   servicioId         Int
   fecha              DateTime
   cantidadServicio   Int
-  cobro              Decimal   @db.Decimal(2,1)
+  cobro              Decimal   @db.Decimal(10,2)
   direccionCompra    String
   planta             Planta    @relation(fields: [plantaId], references: [id])
   plantaId           Int
