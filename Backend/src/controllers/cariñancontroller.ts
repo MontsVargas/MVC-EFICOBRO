@@ -45,3 +45,38 @@ export const buscarClientesCarinan = async (req: Request, res: Response) => {
         return res.status(500).json({ mensaje: "Error del servidor" });
     }
 };
+export const buscarClientesCarinanPorNombre = async (req: Request, res: Response) => {
+    try {
+        const { nombre } = req.query;
+
+        if (!nombre) {
+            return res.status(400).json({ mensaje: "Debe proporcionar un nombre para la búsqueda" });
+        }
+
+        const clientes = await prisma.cliente.findMany({
+            where: {
+                nombreDependencia: "Cariñan",
+                nombre: {
+                    contains: nombre as string,
+                },
+            },
+            select: {
+                contrato_id: true,
+                nombre: true,
+                direccion: true,
+                telefono: true,
+                deuda: true,
+            },
+        });
+
+        if (clientes.length === 0) {
+            return res.status(404).json({ mensaje: `No hay clientes en Cariñan con el nombre "${nombre}"` });
+        }
+
+        return res.status(200).json({ clientes });
+
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        return res.status(500).json({ mensaje: "Error del servidor" });
+    }
+};
