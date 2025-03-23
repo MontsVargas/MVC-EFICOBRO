@@ -16,7 +16,6 @@ export const buscarClientesCarinan = async (req: Request, res: Response) => {
         if (nombre) {
             filtros.nombre = {
                 contains: nombre as string,
-                mode: "insensitive", // No distingue mayúsculas/minúsculas
             };
         }
 
