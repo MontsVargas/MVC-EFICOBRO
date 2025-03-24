@@ -77,7 +77,7 @@ export default function Formulario() {
                     <tr>
                         <th className="p-4 text-left">Nombre</th>
                         <th className="p-4 text-left">Dirección</th>
-                        <th className="p-4 text-left">Contrato ID</th>
+                        <th className="p-4 text-left">Contrato </th>
                     </tr>
                 </thead>
                 <tbody>

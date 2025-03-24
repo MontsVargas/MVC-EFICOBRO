@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import Formulario from "./_components/Formulario";
+import Formulario from "./_components/Recuadro-busqueda";
 
 export default function Clientes() {
   const [mostrarInput, setMostrarInput] = useState(false);
