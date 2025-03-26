@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// 🔍 Buscar cliente por nombre (con filtro opcional)
+// Buscar cliente por nombre (con filtro opcional)
 const buscarCliente = async (req: Request, res: Response) => {
     try {
         const { nombre } = req.query;
@@ -42,7 +42,7 @@ const buscarCliente = async (req: Request, res: Response) => {
     }
 };
 
-// 🔍 Mostrar cliente por ID
+// Mostrar cliente por ID
 const mostrarCliente = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
