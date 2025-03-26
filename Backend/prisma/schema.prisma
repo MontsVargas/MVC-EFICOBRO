@@ -13,7 +13,7 @@ datasource db {
 }
 model Contrato {
   id           Int       @id @default(autoincrement())
-  descuento    Decimal   @db.Decimal(2,1)
+  descuento    Decimal   @db.Decimal(10,2)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   cliente      Cliente?  @relation(fields: [cliente_id], references: [id])
