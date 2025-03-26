@@ -7,6 +7,7 @@ import rutasUsuario from "./src/routes/rutasdeUsuario";
 import rutasCliente from "./src/routes/rutasdeCliente";
 import rutasServicios from "./src/routes/rutasdeServicio";
 import rutasCariñan from "./src/routes/rutasCarinan";
+import rutasPdf from "./src/routes/rutasdeGReporte"
 const app = express();
 
 dotenv.config();
@@ -26,6 +27,8 @@ app.use('/usuario', rutasUsuario);  // Agregamos la ruta de usuario
 app.use('/cliente', rutasCliente); // Agregamos la ruta de cliente
 app.use('/servicios', rutasServicios); // Agregamos la ruta de servicios
 app.use('/clientes', rutasCariñan); // Agregamos la ruta de cariñan
+app.use('/pdf', rutasPdf); // Agregamos la ruta de pdf
+
 
 
 const PORT: number = Number(process.env.PORT) || 3000
