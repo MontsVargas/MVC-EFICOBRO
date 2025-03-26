@@ -17,7 +17,6 @@ export default function ClientesCarinan() {
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Función para obtener los clientes por nombre
   const buscarCliente = async (nombreCliente: string) => {
     if (!nombreCliente) {
       setMensaje("Por favor ingresa un nombre de cliente.");
@@ -51,7 +50,6 @@ export default function ClientesCarinan() {
     }
   };
 
-  // Debounce aplicado a la función buscarCliente
   const debounceCliente = useCallback(
     debounce(async (nombre: string) => {
       await buscarCliente(nombre);
@@ -66,50 +64,48 @@ export default function ClientesCarinan() {
   }, [nombre, debounceCliente]);
 
   return (
-    <main className="flex-grow p-6 bg-white">
-      <p className="text-center text-xl font-semibold mb-6 text-blue-900">Clientes Carinan</p>
+    <main className="flex-grow p-6 bg-gradient-to-r from-blue-50 to-blue-100">
+      <p className="text-center text-3xl font-semibold mb-8 text-blue-700">Clientes Carinan</p>
 
-      <div className="max-w-2xl mx-auto p-4 bg-gray-100 rounded-md shadow-md">
-        <label className="block text-lg font-medium mb-2 text-black">Buscar por nombre</label>
+      <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-xl">
+        <label className="block text-lg font-medium mb-2 text-gray-700">Buscar por nombre</label>
         <input
           type="text"
-          className="w-full p-3 border text-black rounded-md"
+          className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           placeholder="Nombre del cliente"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
         />
       </div>
 
-      {mensaje && <div className="text-center text-blue-500 mt-4">{mensaje}</div>}
+      {mensaje && <div className="text-center text-blue-600 mt-4">{mensaje}</div>}
 
       {loading ? (
-        <p className="text-center text-blue-800">Cargando...</p>
+        <p className="text-center text-blue-700 mt-4">Cargando...</p>
       ) : (
-        <div className="mt-6">
+        <div className="mt-8 space-y-4">
           {clientes.length === 0 ? (
-            <p className="text-center text-black">No se encontraron clientes.</p>
+            <p className="text-center text-gray-700">No se encontraron clientes.</p>
           ) : (
-            <div className="space-y-4">
-              {clientes.map((cliente, index) => (
-                <div
-                  key={cliente.contrato_id || index}
-                  className="p-4 bg-blue-300 border border-blue-500 rounded-md shadow-sm"
-                >
-                  <p className="font-semibold">{cliente.nombre}</p>
-                  <p>{cliente.direccion}</p>
-                  <p>{cliente.telefono}</p>
-                  <p>Deuda: ${cliente.deuda}</p>
-                </div>
-              ))}
-            </div>
+            clientes.map((cliente, index) => (
+              <div
+                key={cliente.contrato_id || index}
+                className="p-4 bg-white border border-blue-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+              >
+                <p className="font-semibold text-xl text-blue-700">{cliente.nombre}</p>
+                <p className="text-gray-600">{cliente.direccion}</p>
+                <p className="text-gray-600">{cliente.telefono}</p>
+                <p className="font-semibold text-blue-600">Deuda: ${cliente.deuda}</p>
+              </div>
+            ))
           )}
         </div>
       )}
 
-      <div className="text-center mt-4">
+      <div className="text-center mt-8">
         <Link href={`/Inicio/Clientes-Cari/Todos-Cari`}>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-            Todos los clientes
+          <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all ease-in-out duration-300 shadow-md">
+            Ver Todos los Clientes
           </button>
         </Link>
       </div>
