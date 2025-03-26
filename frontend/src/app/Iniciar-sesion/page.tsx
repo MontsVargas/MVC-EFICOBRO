@@ -1,10 +1,11 @@
-"use client"
+"use client";
 import { FieldErrors, useForm } from "react-hook-form";
 import Image from 'next/image';
 import iniciarSesionSchema from "@/schemas/iniciar-sesion-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import Link from "next/link"; // Importamos el componente Link para la navegación
 
 export default function IniciarSesion() {
     const router = useRouter();
@@ -31,21 +32,22 @@ export default function IniciarSesion() {
 
             const message = await response.json();
             alert(message.mensaje); // Muestra mensaje de éxito
-            router.push("/Inicio");// Te redirige a la pagina de inicio si es exitoso
+            router.push("/Inicio");// Te redirige a la página de inicio si es exitoso
         } catch {
-            alert("Error al iniciar sesión"); 
+            alert("Error al iniciar sesión");
         }
     };
+
     const onError = (errors: FieldErrors) => {
         let errorMessages = '';
         Object.entries(errors).forEach(([, value]) => {
             if (value && value.message) {
-                errorMessages += value.message + '\n'; //  agrega si hay un mensaje
+                errorMessages += value.message + '\n'; // agrega si hay un mensaje
             }
         });
-        alert(errorMessages.trim()); 
+        alert(errorMessages.trim());
     };
-    
+
     return (
         <div 
             className="flex justify-center items-center min-h-screen bg-blue-800" 
@@ -94,8 +96,16 @@ export default function IniciarSesion() {
                         Acceder
                     </button>
                 </form>
+                {/* Agregamos el texto de redirección al registro */}
+                <div className="mt-4 text-center">
+                    <span className="text-sm text-gray-700">
+                        ¿No tienes cuenta?{" "}
+                        <Link href="/Registro" className="text-blue-600 hover:underline">
+                            Regístrate aquí
+                        </Link>
+                    </span>
+                </div>
             </motion.div>
         </div>
     );
 }
-
