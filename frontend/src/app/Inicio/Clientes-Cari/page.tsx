@@ -63,6 +63,19 @@ export default function ClientesCarinan() {
     }
   }, [nombre, debounceCliente]);
 
+  // Función para resaltar el texto que coincide con el término de búsqueda
+  const highlightText = (text: string) => {
+    if (!nombre) return text;
+    const parts = text.split(new RegExp(`(${nombre})`, "gi")); // Se divide el texto en partes coincidentes
+    return parts.map((part, index) =>
+      part.toLowerCase() === nombre.toLowerCase() ? (
+        <span key={index} className="text-blue-500 font-semibold">{part}</span>
+      ) : (
+        part
+      )
+    );
+  };
+
   return (
     <main className="flex-grow p-6 bg-gradient-to-r from-blue-50 to-blue-100">
       <p className="text-center text-3xl font-semibold mb-8 text-blue-700">Clientes Carinan</p>
@@ -87,12 +100,14 @@ export default function ClientesCarinan() {
           {clientes.length === 0 ? (
             <p className="text-center text-gray-700">No se encontraron clientes.</p>
           ) : (
-            clientes.map((cliente, index) => (
+            clientes.map((cliente) => (
               <div
-                key={cliente.contrato_id || index}
+                key={cliente.contrato_id}
                 className="p-4 bg-white border border-blue-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
               >
-                <p className="font-semibold text-xl text-blue-700">{cliente.nombre}</p>
+                <p className="font-semibold text-xl text-blue-700">
+                  {highlightText(cliente.nombre)}
+                </p>
                 <p className="text-gray-600">{cliente.direccion}</p>
                 <p className="text-gray-600">{cliente.telefono}</p>
                 <p className="font-semibold text-blue-600">Deuda: ${cliente.deuda}</p>

@@ -9,7 +9,7 @@ type TipoServicio = {
 type Servicio = {
   id: number;
   descripcion: string;
-  TipoServicioId: number;  // esto permite que arroje la lista solo de los servicios dentro de tipo servicio 
+  TipoServicioId: number;
 };
 
 type Planta = {
@@ -24,6 +24,7 @@ export default function Servicios() {
     tipoServicio: "",
     fecha: "",
     cifra: "",
+    unidad: "cifra", // Unidades: "cifra" o "metrosCubicOs"
     costo: "",
     direccion: "",
     planta: "",
@@ -51,8 +52,8 @@ export default function Servicios() {
         if (!response.ok) throw new Error("Error al obtener los servicios");
 
         const data = await response.json();
-        setServicios((data.servicios));
-        setServiciosFiltrados((data.servicio) ? data.servicio : []);  // Al principio mostramos todos los servicios
+        setServicios(data.servicios);
+        setServiciosFiltrados(data.servicio || []); // Al principio mostramos todos los servicios
       } catch (error) {
         console.error("Error:", error);
         setMensaje("No se pudieron cargar los servicios.");
@@ -79,7 +80,7 @@ export default function Servicios() {
       }
     }
 
-    async function fetchTiposDeServicio() { 
+    async function fetchTiposDeServicio() {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/tipo`, {
           method: "GET",
@@ -88,13 +89,13 @@ export default function Servicios() {
           },
           credentials: "include",
         });
-    
+
         if (!response.ok) {
           console.error("Error al obtener los tipos de servicio");
           setMensaje("No se pudieron cargar los tipos de servicio.");
           return;
         }
-    
+
         const data = await response.json();
         console.log("Tipos de servicio recibidos:", data);
         setTiposDeServicio(Array.isArray(data.tiposervicio) ? data.tiposervicio : []);
@@ -103,6 +104,7 @@ export default function Servicios() {
         setMensaje("No se pudieron cargar los tipos de servicio.");
       }
     }
+
     fetchServicios();
     fetchPlantas();
     fetchTiposDeServicio();
@@ -113,14 +115,10 @@ export default function Servicios() {
     const tipoSeleccionado = e.target.value;
     setForm({ ...form, tipoServicio: tipoSeleccionado });
 
-    console.log(tipoSeleccionado);
-    console.log (servicios)
-
     if (tipoSeleccionado) {
       const serviciosFiltrados = servicios.filter(
         (servicio) => servicio.TipoServicioId === parseInt(tipoSeleccionado)
       );
-      console.log (serviciosFiltrados)
       setServiciosFiltrados(serviciosFiltrados);
     } else {
       setServiciosFiltrados(servicios); // Si no hay tipo seleccionado, mostramos todos los servicios
@@ -129,6 +127,10 @@ export default function Servicios() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setForm({ ...form, unidad: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -141,14 +143,15 @@ export default function Servicios() {
     }
 
     const requestBody = {
-      nombreCliente: form.nombre,  //Se envía el nombre del cliente
-      servicioId: Number(form.servicio),  //el dato se envia como número
-      cantidadServicio: Number(form.cifra),  //el dato se envia como  número
-      cobro: Number(form.costo),  //tipo numero
-      direccionCompra: form.direccion,  // tipo string
-      plantaId: Number(form.planta),  // tipo numero
+      nombreCliente: form.nombre, // Se envía el nombre del cliente
+      servicioId: Number(form.servicio), // el dato se envia como número
+      cantidadServicio: Number(form.cifra), // el dato se envia como número
+      unidadServicio: form.unidad, // Se añade la unidad seleccionada
+      cobro: Number(form.costo), // tipo numero
+      direccionCompra: form.direccion, // tipo string
+      plantaId: Number(form.planta), // tipo numero
     };
-    
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/compras`, {
         method: "POST",
@@ -169,6 +172,7 @@ export default function Servicios() {
         tipoServicio: "",
         fecha: "",
         cifra: "",
+        unidad: "cifra", // Restablecer a cifra por defecto
         costo: "",
         direccion: "",
         planta: "",
@@ -183,7 +187,7 @@ export default function Servicios() {
     <main className="flex-grow p-6 bg-white">
       <div className="max-w-4xl mx-auto p-6 bg-[#f0f8fb] border border-gray-300 shadow-lg rounded-lg">
         <h2 className="text-center text-2xl font-semibold mb-6 text-[#195c97]">Seleccionar un Servicio</h2>
-        {mensaje && <div className="text-center to-blue-700 mb-4">{mensaje}</div>}
+        {mensaje && <div className="text-center text-blue-700 mb-4">{mensaje}</div>}
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Tipo de servicio */}
           <div>
@@ -195,7 +199,7 @@ export default function Servicios() {
               name="tipoServicio"
               className="w-full p-3 border border-gray-400 rounded-md text-black"
               value={form.tipoServicio}
-              onChange={handleTipoServicioChange} // Cambié el manejador para filtrar
+              onChange={handleTipoServicioChange}
               required
             >
               <option value="">Seleccione un tipo de servicio</option>
@@ -248,11 +252,43 @@ export default function Servicios() {
               ))}
             </select>
           </div>
+          {/* Tipo de unidad (Cifra o Metros Cúbicos) */}
+          <div>
+            <label htmlFor="unidad" className="block text-lg font-medium mb-2 text-black">
+              Tipo de Unidad
+            </label>
+            <select
+              id="unidad"
+              name="unidad"
+              className="w-full p-3 border border-gray-400 rounded-md text-black"
+              value={form.unidad}
+              onChange={handleUnitChange}
+              required
+            >
+              <option value="cifra">Cifra</option>
+              <option value="metrosCubicos">Metros Cúbicos</option>
+            </select>
+          </div>
+          {/* Consumo */}
+          <div>
+            <label htmlFor="cifra" className="block text-lg font-medium mb-2 text-black">
+              Consumo
+            </label>
+            <input
+              id="cifra"
+              name="cifra"
+              type="text"
+              className="w-full p-3 border border-gray-400 rounded-md text-black"
+              placeholder={form.unidad === "cifra" ? "Ingrese la cifra" : "Ingrese los metros cúbicos"}
+              value={form.cifra}
+              onChange={handleChange}
+              required
+            />
+          </div>
           {/* Campos de llenado manual */}
           {[ 
             { label: "Nombre del Cliente", name: "nombre", type: "text" },
             { label: "Fecha de Contratación", name: "fecha", type: "date" },
-            { label: "Consumo", name: "cifra", type: "text" },
             { label: "Costo del Servicio", name: "costo", type: "number", step: "0.01" },
             { label: "Dirección", name: "direccion", type: "text" },
           ].map(({ label, name, type, step }) => (

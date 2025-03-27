@@ -68,8 +68,7 @@ export default function Formulario() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Buscar Cliente</h2>
-
+      
       {/* Formulario de búsqueda */}
       <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
         <motion.input
@@ -121,7 +120,7 @@ export default function Formulario() {
                     {cliente.contrato_id ? `Contrato #${cliente.contrato_id}` : "Sin Contrato"}
                   </td>
                   <td className="p-3 text-blue-600 underline">
-                    <Link href={`/Inicio/Clientes/Historial/${encodeURIComponent(cliente.nombre)}`}>Ver Historial</Link>
+                    <Link href={`/Inicio/Historial/${encodeURIComponent(cliente.nombre)}`}>Ver Historial</Link>
                   </td>
                 </motion.tr>
               ))}
