@@ -61,12 +61,15 @@ const mostrarCliente = async (req: Request, res: Response) => {
 
 const agregarCliente = async (req: Request, res: Response) => {
     try {
-        const { nombre, direccion, telefono, nombreDependencia, id_medidor} = req.body;
+        const { nombre, direccion, telefono, nombreDependencia, id_medidor, contrato_id } = req.body;
 
-        // Verificar si todos los campos necesarios están presentes
+        // Verificar si los campos obligatorios están presentes
         if (!nombre || !direccion || !telefono || !id_medidor)  {
             return res.status(400).json({ mensaje: 'Faltan campos necesarios para agregar el cliente' });
         }
+
+        // Verificar si el cliente tiene contrato o no
+        const contratoAsignado = contrato_id ? Number(contrato_id) : null; // Si no tiene contrato, asigna null
 
         // Crear un nuevo cliente en la base de datos
         const nuevoCliente = await prisma.cliente.create({
@@ -76,16 +79,18 @@ const agregarCliente = async (req: Request, res: Response) => {
                 telefono,
                 nombreDependencia, 
                 id_medidor, 
-                deuda: 0, // Agregar el valor apropiado
+                contrato_id: contratoAsignado, // Se asigna el contrato si existe, si no, se guarda null
+                deuda: 0, // Se inicia con deuda en 0
             },
         });
 
-        return res.status(201).json({nuevoCliente}); // te dirije el cliente creado
+        return res.status(201).json({ nuevoCliente }); // Retorna el cliente creado
     } catch (error) {
         console.error(error);
         return res.status(500).json({ mensaje: 'Hubo un error al agregar el cliente' });
     }
 };
+
 export { 
     buscarCliente,
     mostrarCliente,
