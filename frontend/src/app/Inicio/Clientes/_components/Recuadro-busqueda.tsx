@@ -3,6 +3,7 @@
 import { ChangeEvent, FormEvent, useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import debounce from "just-debounce-it";
+import Link from "next/link";
 
 type Cliente = {
   nombre: string;
@@ -102,6 +103,7 @@ export default function Formulario() {
                 <th className="p-3 text-left">Nombre</th>
                 <th className="p-3 text-left">Dirección</th>
                 <th className="p-3 text-left">Contrato</th>
+                <th className="p-3 text-left">Información</th>
               </tr>
             </thead>
             <tbody>
@@ -115,8 +117,11 @@ export default function Formulario() {
                 >
                   <td className="p-3 text-blue-900 font-medium">{cliente.nombre}</td>
                   <td className="p-3 text-gray-700">{cliente.direccion}</td>
-                  <td className={`p-3 font-semibold ${cliente.contrato_id ? "text-green-600" : "text-red-600"}`}>
+                  <td className={`p-3 font-semibold ${cliente.contrato_id ? "text-blue-600" : "text-blue-600"}`}>
                     {cliente.contrato_id ? `Contrato #${cliente.contrato_id}` : "Sin Contrato"}
+                  </td>
+                  <td className="p-3 text-blue-600 underline">
+                    <Link href={`/Inicio/Clientes/Historial/${encodeURIComponent(cliente.nombre)}`}>Ver Historial</Link>
                   </td>
                 </motion.tr>
               ))}
