@@ -91,4 +91,4 @@ export {
     mostrarCliente,
     agregarCliente,
  };
-//tuve que llamar todo lo que tengo en clientes prisma para que me funcionara.
+//tuve que llamar todo lo que tengo en clientes prisma para que me funcionara. 
