@@ -13,7 +13,6 @@ interface ClienteNuevo {
   telefono: string;
   nombreDependencia?: string;
   id_medidor: string;
-  contrato?: string; // Agregar el campo para contrato
 }
 
 export default function ClientesNuevos() {
@@ -96,19 +95,7 @@ export default function ClientesNuevos() {
               />
             </div>
           ))}
-
-          {/* Campo para mostrar la información del contrato */}
-          <div>
-            <label className="block text-lg font-medium mb-2 text-black">Contrato</label>
-            <input
-              type="text"
-              value={contratoInfo || ""}
-              readOnly  // Campo de solo lectura
-              className="w-full p-3 border border-gray-400 rounded-md text-black"
-              placeholder="Información del contrato"
-            />
-          </div>
-
+          
           <div className="text-center mt-6">
             <button
               type="submit"

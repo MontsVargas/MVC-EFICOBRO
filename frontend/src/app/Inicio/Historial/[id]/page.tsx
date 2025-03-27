@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import { motion } from "framer-motion";
+import { useParams } from 'next/navigation'
 
 type Historial = {
   id: number;
@@ -11,19 +11,17 @@ type Historial = {
 };
 
 export default function HistorialCliente() {
-  const router = useRouter();
-  const { nombre } = router.query;
+  const { id } = useParams();
+  console.log(id);
   const [historial, setHistorial] = useState<Historial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
-    if (!nombre) return;
 
     async function fetchHistorial() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}cliente/historial?nombre=${encodeURIComponent(nombre as string)}`,
+          `${process.env.NEXT_PUBLIC_API_URL}cliente/historial?nombre=${encodeURIComponent(id as string)}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -45,7 +43,7 @@ export default function HistorialCliente() {
     }
 
     fetchHistorial();
-  }, [nombre]);
+  }, [id]);
 
   return (
     <motion.div
@@ -55,7 +53,7 @@ export default function HistorialCliente() {
       transition={{ duration: 0.5 }}
     >
       <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        Historial de {nombre}
+        Historial de {id}
       </h2>
       {loading ? (
         <p className="text-gray-500">Cargando...</p>
