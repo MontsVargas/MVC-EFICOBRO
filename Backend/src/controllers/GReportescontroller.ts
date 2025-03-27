@@ -23,7 +23,7 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
                 convenios: true,
                 compras: {
                     include: {
-                        servicio: true,  // Incluir detalles del servicio
+                        servicio: true,
                         planta: true
                     }
                 }
@@ -65,21 +65,15 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
                     startY = 20;
                 }
 
-                const precioServicio = compra.servicio.costo || 0; // Tomar el costo del servicio
-                const cantidad = 1; // Asumir cantidad como 1 ya que no existe en el objeto
-                const totalCompra = Number(precioServicio) * cantidad;
-
                 doc.text(`Compra #${index + 1}`, 10, startY);
                 doc.text(`Fecha: ${new Date(compra.fecha).toLocaleDateString()}`, 10, startY + 10);
                 doc.text(`Servicio: ${compra.servicio.descripcion}`, 10, startY + 20);
                 doc.text(`Planta: ${compra.planta.nombre}`, 10, startY + 30);
-                doc.text(`Cantidad: ${cantidad}`, 10, startY + 40);
-                doc.text(`Precio unitario: $${precioServicio.toFixed(2)}`, 10, startY + 50);
-                doc.text(`Total: $${totalCompra.toFixed(2)}`, 10, startY + 60);
-                doc.line(10, startY + 65, 200, startY + 65); // Línea separadora
-                startY += 70;
+                doc.text(`Monto: $${compra.servicio.costo.toFixed(2)}`, 10, startY + 40);
+                doc.line(10, startY + 45, 200, startY + 45); // Línea separadora
+                startY += 50;
 
-                totalCompras += totalCompra; // Sumar el total de cada compra
+                totalCompras += Number(compra.servicio.costo); // Convertir Decimal a número antes de sumar
             });
 
             // Mostrar el total al final del historial
