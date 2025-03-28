@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useParams } from 'next/navigation'
+import { useParams } from 'next/navigation';
 
 type Historial = {
   id: number;
@@ -11,17 +11,25 @@ type Historial = {
 };
 
 export default function HistorialCliente() {
-  const { id } = useParams();
-  console.log(id);
+  const { id } = useParams();  // Obtener el ID dinámico de la URL
+  console.log("ID recibido en el frontend:", id);  // Verificar que estamos obteniendo el ID correcto
+
   const [historial, setHistorial] = useState<Historial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    if (!id) {
+      setError("El ID del cliente no está disponible");
+      setLoading(false);
+      return;
+    }
 
     async function fetchHistorial() {
       try {
+        // Usar el ID dinámico en la URL
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}historial/historial${encodeURIComponent(id as string)}`,
+          `${process.env.NEXT_PUBLIC_API_URL}historial/historial/${id}`,  
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -34,7 +42,7 @@ export default function HistorialCliente() {
         }
 
         const data = await response.json();
-        setHistorial(data.historial || []);
+        setHistorial(data.historialCompras || []);
       } catch (error) {
         setError("No se pudo cargar el historial");
       } finally {
