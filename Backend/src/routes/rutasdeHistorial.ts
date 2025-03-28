@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { Historial } from "../controllers/historialcontroller";
+import { HistorialCompras } from "../controllers/historialcontroller";
 
 const rutas = Router();
 
@@ -7,7 +7,7 @@ const rutas = Router();
 rutas.get("/historial/:id", async (req: Request, res: Response) => {
     const id = decodeURIComponent(req.params.id);
     console.log("ID recibido:", id);
-    await Historial(req, res);
+    await HistorialCompras(req, res);
 });
 
 export default rutas; 
