@@ -31,7 +31,7 @@ export const Historial = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        res.status(200).json(historialCompras);
+        res.status(200).json({historialCompras});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error al obtener el historial de compras", error });
