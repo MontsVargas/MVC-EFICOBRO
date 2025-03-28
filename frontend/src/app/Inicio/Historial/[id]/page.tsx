@@ -21,7 +21,7 @@ export default function HistorialCliente() {
     async function fetchHistorial() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}cliente/historial?nombre=${encodeURIComponent(id as string)}`,
+          `${process.env.NEXT_PUBLIC_API_URL}historial/historial${encodeURIComponent(id as string)}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
