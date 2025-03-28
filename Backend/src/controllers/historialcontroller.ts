@@ -10,7 +10,7 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
         // Validar que el ID es un número válido
         const clienteId = Number(id);
         if (isNaN(clienteId)) {
-            res.status(400).json({ message: "El ID del cliente debe ser un número válido" });
+            res.status(400).json({ mensaje: "El ID del cliente debe ser un número válido" });
             return;
         }
 
@@ -30,7 +30,7 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
 
         // Si no hay compras, responder con 404
         if (historialCompras.length === 0) {
-            res.status(404).json({ message: "No se encontraron compras para este cliente" });
+            res.status(404).json({ mensaje: "No se encontraron compras para este cliente" });
             return;
         }
 
@@ -38,6 +38,6 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
         res.status(200).json({historialCompras});
     } catch (error) {
         console.error("Error al obtener el historial:", error);
-        res.status(500).json({ message: "Error al obtener el historial de compras", error });
+        res.status(500).json({ mensaje: "Error al obtener el historial de compras", error });
     }
 };
