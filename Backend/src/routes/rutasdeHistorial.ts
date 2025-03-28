@@ -1,13 +1,9 @@
-import { Router, Request, Response } from "express";
-import { HistorialCompras } from "../controllers/historialcontroller";
+import { Router } from "express";
+import { HistorialCompras } from "../controllers/historialcontroller"; // Importamos el controlador
 
 const rutas = Router();
 
-//RUTA DE GET PARA OBTENER EL HISTORIAL DE COMPRAS DE CADA CLIENTE
-rutas.get("/historial/:id", async (req: Request, res: Response) => {
-    const id = decodeURIComponent(req.params.id);
-    console.log("ID recibido:", id);
-    await HistorialCompras(req, res);
-});
+// Ruta para obtener el historial de compras de un cliente por ID
+rutas.get("/historial/:id", HistorialCompras);
 
-export default rutas; 
+export default rutas;
