@@ -13,11 +13,10 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
             return;
         }  
 
-        console.log(nombre); 
+        console.log(nombre);
 
-        // Buscar el cliente por nombre en la base de datos
         const cliente = await prisma.cliente.findFirst({
-            where: { nombre: nombre as string },
+            where: { nombre: { equals: nombre as string } },
             include: {
                 contratos: true,
                 convenios: true,
@@ -37,7 +36,6 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
             return;
         }
 
-        // Crear el documento PDF
         const doc = new jsPDF();
         doc.setFontSize(16);
         doc.text("Instituto del Agua del Estado", 60, 10);
@@ -49,49 +47,55 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
         doc.text(`Teléfono: ${cliente.telefono}`, 10, startY + 10);
         doc.text(`Deuda actual: $${cliente.deuda}`, 10, startY + 20);
         
-        startY += 40; // Espacio antes del historial de compras
+        startY += 40;
 
         doc.setFontSize(14);
         doc.text("Historial de Compras", 10, startY);
         doc.setFontSize(12);
         startY += 10;
 
-        let totalCompras = 0; // Variable para sumar el total
+        let totalGastado = 0;
 
         if (cliente.compras.length > 0) {
             cliente.compras.forEach((compra, index) => {
-                if (startY > 270) { // Salto de página si se llena la hoja
+                if (startY > 270) { 
                     doc.addPage();
-                    startY = 20;
+                    startY = 20; 
                 }
+
+                const costoServicio = parseFloat(compra.servicio.costo.toString());
+                const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
+                const totalCompra = costoServicio * metrosCubicos;
 
                 doc.text(`Compra #${index + 1}`, 10, startY);
                 doc.text(`Fecha: ${new Date(compra.fecha).toLocaleDateString()}`, 10, startY + 10);
                 doc.text(`Servicio: ${compra.servicio.descripcion}`, 10, startY + 20);
                 doc.text(`Planta: ${compra.planta.nombre}`, 10, startY + 30);
-                doc.text(`Monto: $${compra.servicio.costo.toFixed(2)}`, 10, startY + 40);
-                doc.line(10, startY + 45, 200, startY + 45); // Línea separadora
-                startY += 50;
+                doc.text(`Cantidad de servicio: ${metrosCubicos.toFixed(2)}`, 10, startY + 40);
+                doc.text(`Costo por unidad: $${costoServicio.toFixed(2)}`, 10, startY + 50);
+                doc.text(`Total de la compra: $${totalCompra.toFixed(2)}`, 10, startY + 60);
+                doc.line(10, startY + 65, 200, startY + 65);
+                startY += 70;
 
-                totalCompras += Number(compra.servicio.costo); // Convertir Decimal a número antes de sumar
+                totalGastado += totalCompra;
             });
 
-            // Mostrar el total al final del historial
             if (startY > 270) {
                 doc.addPage();
                 startY = 20;
             }
 
             doc.setFontSize(14);
-            doc.text(`Total gastado en compras: $${totalCompras.toFixed(2)}`, 10, startY);
+            doc.text(`Total gastado en compras: $${totalGastado.toFixed(2)}`, 10, startY);
         } else {
             doc.text("No hay compras registradas.", 10, startY);
         }
 
-        // Guardar y enviar el PDF
-        const filePath = `estado_cuenta_cliente_${cliente.nombre}.pdf`;
-        doc.save(filePath);
-        res.download(filePath);
+        const pdfBuffer = doc.output("arraybuffer");
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename="estado_cuenta_cliente_${cliente.nombre}.pdf"`);
+        res.send(Buffer.from(pdfBuffer));
+
     } catch (error) {
         console.error("Error al generar el PDF:", error);
         res.status(500).json({ message: "Error interno del servidor" });
