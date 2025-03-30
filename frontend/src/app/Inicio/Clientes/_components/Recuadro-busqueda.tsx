@@ -9,6 +9,7 @@ type Cliente = {
   nombre: string;
   direccion: string;
   contrato_id?: number;
+  id: number;
 };
 
 export default function Formulario() {
@@ -120,7 +121,7 @@ export default function Formulario() {
                     {cliente.contrato_id ? `Contrato #${cliente.contrato_id}` : "Sin Contrato"}
                   </td>
                   <td className="p-3 text-blue-600 underline">
-                    <Link href={`/Inicio/Historial/1${encodeURIComponent(cliente.nombre)}`}>Ver Historial</Link>
+                    <Link href={`/Inicio/Historial/${cliente.id}`}>Ver Historial</Link>
                   </td>
                 </motion.tr>
               ))}

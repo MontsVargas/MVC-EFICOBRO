@@ -19,6 +19,7 @@ const buscarCliente = async (req: Request, res: Response) => {
         const clientes = await prisma.cliente.findMany({
             where: filtros,
             select: {
+                id: true,
                 contrato_id: true,
                 nombre: true,
                 direccion: true 

@@ -11,7 +11,7 @@ type Historial = {
 };
 
 export default function HistorialCliente() {
-  const { id } = useParams();  // Obtener el ID dinámico de la URL
+  const { id } = useParams();  
   console.log("ID recibido en el frontend:", id);  // Verificar que estamos obteniendo el ID correcto
 
   const [historial, setHistorial] = useState<Historial[]>([]);
