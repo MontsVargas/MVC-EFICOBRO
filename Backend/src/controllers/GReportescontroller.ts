@@ -37,17 +37,25 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
         }
 
         const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text("Instituto del Agua del Estado", 60, 10);
-        doc.setFontSize(12);
-        doc.text(`Reporte del Cliente: ${cliente.nombre}`, 10, 20);
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.text("Instituto del Agua del Estado", 65, 20);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "italic");
+        doc.text("Reporte de Cliente", 85, 25);
+        
 
         let startY = 30;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "italic");
         doc.text(`Dirección: ${cliente.direccion}`, 10, startY);
         doc.text(`Teléfono: ${cliente.telefono}`, 10, startY + 10);
         doc.text(`Deuda actual: $${cliente.deuda}`, 10, startY + 20);
         
         startY += 40;
+        
+
+
 
         doc.setFontSize(14);
         doc.text("Historial de Compras", 10, startY);
