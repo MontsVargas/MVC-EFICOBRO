@@ -29,7 +29,7 @@ app.use('/cliente', rutasCliente); // Agregamos la ruta de cliente
 app.use('/servicios', rutasServicios); // Agregamos la ruta de servicios
 app.use('/clientes', rutasCariñan); // Agregamos la ruta de cariñan
 app.use('/pdf', rutasPdf); // Agregamos la ruta de pdf
-app.get('/historial', rutasdeHistorial); // Agregamos la ruta de historial
+app.use('/historial', rutasdeHistorial); // Agregamos la ruta de historial
 
 
 
