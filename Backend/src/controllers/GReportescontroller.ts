@@ -2,13 +2,10 @@
 import { Request, Response } from "express";
 import { jsPDF } from "jspdf";
 import { PrismaClient } from "@prisma/client";
-import { subDays, subMonths } from "date-fns";
 
 const prisma = new PrismaClient();
 
-// ==================================================================
 // Reporte por nombre de cliente (función original adaptada)
-// ==================================================================
 export const generatePDFByClientName = async (req: Request, res: Response): Promise<void> => {
   try {
     const { nombre } = req.query;
@@ -105,9 +102,7 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
   }
 };
 
-// ==================================================================
-// Reporte General de Todos los Clientes
-// ==================================================================
+// Reporte General 
 export const generateGeneralReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const clientes = await prisma.cliente.findMany({
@@ -168,12 +163,10 @@ export const generateGeneralReport = async (req: Request, res: Response): Promis
   }
 };
 
-// ==================================================================
-// Reporte Semanal (compras en la semana actual)
-// ==================================================================
+// Reporte Semanal 
 export const generateWeeklyReport = async (req: Request, res: Response): Promise<void> => {
   try {
-    // Calcular el inicio y fin de la semana actual.
+    // Calcula el inicio y fin de la semana actual.
     const startOfWeek = new Date();
     startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
     const endOfWeek = new Date(startOfWeek);
@@ -233,9 +226,7 @@ export const generateWeeklyReport = async (req: Request, res: Response): Promise
   }
 };
 
-// ==================================================================
-// Reporte Mensual (compras en el mes actual)
-// ==================================================================
+// Reporte Mensual
 export const generateMonthlyReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const startOfMonth = new Date();
@@ -298,9 +289,7 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
   }
 };
 
-// ==================================================================
 // Reporte Anual (suma de las compras por mes del año)
-// ==================================================================
 export const generateYearlyReport = async (req: Request, res: Response): Promise<void> => {
   try {
     // Se puede enviar el año en el query, si no se usa el año actual
@@ -320,7 +309,7 @@ export const generateYearlyReport = async (req: Request, res: Response): Promise
       }
     });
 
-    // Inicializamos un objeto para acumular los totales por mes (0: Enero, 11: Diciembre)
+    // Inicializamos un objeto para acumular los totales por mes 
     const monthlyTotals: { [key: number]: number } = {};
     for (let i = 0; i < 12; i++) {
       monthlyTotals[i] = 0;
@@ -328,7 +317,7 @@ export const generateYearlyReport = async (req: Request, res: Response): Promise
 
     compras.forEach(compra => {
       const fechaCompra = new Date(compra.fecha);
-      const mes = fechaCompra.getMonth(); // 0-indexado
+      const mes = fechaCompra.getMonth(); 
       const costoServicio = compra.servicio && compra.servicio.costo
         ? parseFloat(compra.servicio.costo.toString())
         : 0;
