@@ -1,11 +1,10 @@
-
 import { Request, Response } from "express";
 import { jsPDF } from "jspdf";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Reporte por nombre de cliente (función original adaptada)
+// Reporte por nombre de cliente 
 export const generatePDFByClientName = async (req: Request, res: Response): Promise<void> => {
   try {
     const { nombre } = req.query;
