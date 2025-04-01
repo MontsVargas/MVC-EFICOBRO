@@ -285,9 +285,9 @@ export default function Servicios() {
              { label: "Fecha de Contratación", name: "fecha", type: "date" }
             ].map(({ label, name, type }) => (
            <div key={name}>
-         <label htmlFor={name} className="block text-lg font-medium mb-2 text-black">
-         {label}
-      </label>
+    <label htmlFor={name} className="block text-lg font-medium mb-2 text-black">
+      {label}
+    </label>
     <input
       id={name}
       name={name}
