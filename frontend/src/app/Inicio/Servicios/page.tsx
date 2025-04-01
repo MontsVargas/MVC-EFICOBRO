@@ -25,8 +25,6 @@ export default function Servicios() {
     fecha: "",
     cifra: "",
     unidad: "cifra", // Unidades: "cifra" o "metrosCubicOs"
-    costo: "",
-    direccion: "",
     planta: "",
     clienteId: "",
   });
@@ -137,7 +135,7 @@ export default function Servicios() {
     e.preventDefault();
     setMensaje(null);
 
-    if (!form.nombre || !form.servicio || !form.fecha || !form.costo || !form.tipoServicio || !form.planta) {
+    if (!form.nombre || !form.servicio || !form.fecha || !form.tipoServicio || !form.planta) {
       setMensaje("Por favor, complete todos los campos obligatorios.");
       return;
     }
@@ -147,8 +145,6 @@ export default function Servicios() {
       servicioId: Number(form.servicio), // el dato se envia como número
       cantidadServicio: Number(form.cifra), // el dato se envia como número
       unidadServicio: form.unidad, // Se añade la unidad seleccionada
-      cobro: Number(form.costo), // tipo numero
-      direccionCompra: form.direccion, // tipo string
       plantaId: Number(form.planta), // tipo numero
     };
 
@@ -173,8 +169,6 @@ export default function Servicios() {
         fecha: "",
         cifra: "",
         unidad: "cifra", // Restablecer a cifra por defecto
-        costo: "",
-        direccion: "",
         planta: "",
         clienteId: "",
       });
