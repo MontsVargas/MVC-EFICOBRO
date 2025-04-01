@@ -68,7 +68,7 @@ const obtenerTipoServicio = async (req: Request, res: Response) => {
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
-
+// Realizar una compra
 const realizarCompra = async (req: Request, res: Response) => {
     try {
         console.log("Datos recibidos:", req.body);
@@ -83,9 +83,9 @@ const realizarCompra = async (req: Request, res: Response) => {
         // Convertir valores numéricos correctamente
         const servicioIdNum = Number(servicioId);
         const cantidadServicioNum = Number(cantidadServicio);
-  
+        const plantaIdNum = Number(plantaId);
 
-        if (isNaN(servicioIdNum) || isNaN(cantidadServicioNum)) {
+        if (isNaN(servicioIdNum) || isNaN(cantidadServicioNum) || isNaN(plantaIdNum)) {
             return res.status(400).json({ mensaje: "Valores numéricos inválidos" });
         }
 
@@ -100,7 +100,7 @@ const realizarCompra = async (req: Request, res: Response) => {
 
         // Verificar que la planta exista
         const planta = await prisma.planta.findUnique({
-            where: { id: plantaId } // Se mantiene como string
+            where: { id: plantaIdNum },
         });
 
         if (!planta) {
@@ -110,13 +110,12 @@ const realizarCompra = async (req: Request, res: Response) => {
         // Crear la compra en la base de datos con el ID del cliente encontrado
         const compra = await prisma.compra.create({
             data: {
-                clienteId: cliente.id, // String
+                clienteId: cliente.id,
                 servicioId: servicioIdNum,
                 fecha: new Date(),
                 cantidadServicio: cantidadServicioNum,
-                plantaId, // String
-                cobro: 0, // Replace with the appropriate value for 'cobro'
-                direccionCompra: cliente.direccion, // Ahora la dirección se toma del cliente
+                plantaId: plantaIdNum,
+                cobro: 0, // Ajusta esto según sea necesario
             }
         });
 
