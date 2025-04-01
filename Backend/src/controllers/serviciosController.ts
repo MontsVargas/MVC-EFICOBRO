@@ -73,7 +73,7 @@ const realizarCompra = async (req: Request, res: Response) => {
     try {
         console.log("Datos recibidos:", req.body);
 
-        const { nombreCliente, servicioId, cantidadServicio, direccionCompra, plantaId } = req.body;
+        const { nombreCliente, servicioId, cantidadServicio, plantaId } = req.body;
 
         // Validar que los datos obligatorios estén presentes
         if (!nombreCliente || !servicioId || !cantidadServicio || !plantaId) {
@@ -115,8 +115,8 @@ const realizarCompra = async (req: Request, res: Response) => {
                 fecha: new Date(),
                 cantidadServicio: cantidadServicioNum,
                 plantaId, // String
-                direccionCompra, // Include the 'direccionCompra' field
                 cobro: 0, // Replace with the appropriate value for 'cobro'
+                direccionCompra: cliente.direccion, // Ahora la dirección se toma del cliente
             }
         });
 
