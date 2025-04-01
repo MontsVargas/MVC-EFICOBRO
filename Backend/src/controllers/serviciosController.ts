@@ -73,19 +73,19 @@ const realizarCompra = async (req: Request, res: Response) => {
     try {
         console.log("Datos recibidos:", req.body);
 
-        const { nombreCliente, servicioId, cantidadServicio, cobro, direccionCompra, plantaId } = req.body;
+        const { nombreCliente, servicioId, cantidadServicio, direccionCompra, plantaId } = req.body;
 
         // Validar que los datos obligatorios estén presentes
-        if (!nombreCliente || !servicioId || !cantidadServicio || !cobro || !direccionCompra || !plantaId) {
+        if (!nombreCliente || !servicioId || !cantidadServicio || !plantaId) {
             return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
         }
 
         // Convertir valores numéricos correctamente
         const servicioIdNum = Number(servicioId);
         const cantidadServicioNum = Number(cantidadServicio);
-        const cobroNum = Number(cobro);
+  
 
-        if (isNaN(servicioIdNum) || isNaN(cantidadServicioNum) || isNaN(cobroNum)) {
+        if (isNaN(servicioIdNum) || isNaN(cantidadServicioNum)) {
             return res.status(400).json({ mensaje: "Valores numéricos inválidos" });
         }
 
@@ -114,9 +114,9 @@ const realizarCompra = async (req: Request, res: Response) => {
                 servicioId: servicioIdNum,
                 fecha: new Date(),
                 cantidadServicio: cantidadServicioNum,
-                cobro: cobroNum,
-                direccionCompra,
                 plantaId, // String
+                direccionCompra, // Include the 'direccionCompra' field
+                cobro: 0, // Replace with the appropriate value for 'cobro'
             }
         });
 
