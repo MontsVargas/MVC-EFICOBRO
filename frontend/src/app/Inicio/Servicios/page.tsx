@@ -287,27 +287,25 @@ export default function Servicios() {
           </div>
           {/* Campos de llenado manual */}
           {[ 
-            { label: "Nombre del Cliente", name: "nombre", type: "text" },
-            { label: "Fecha de Contratación", name: "fecha", type: "date" },
-            { label: "Costo del Servicio", name: "costo", type: "number", step: "0.01" }
-          ].map(({ label, name, type, step }) => (
-            <div key={name}>
-              <label htmlFor={name} className="block text-lg font-medium mb-2 text-black">
-                {label}
-              </label>
-              <input
-                id={name}
-                name={name}
-                type={type}
-                step={step}
-                className="w-full p-3 border border-gray-400 rounded-md text-black"
-                placeholder="Ingrese información"
-                value={form[name as keyof typeof form]}
-                onChange={handleChange}
-                required={["nombre", "fecha", "costo"].includes(name)}
-              />
-            </div>
-          ))}
+             { label: "Nombre del Cliente", name: "nombre", type: "text" },
+             { label: "Fecha de Contratación", name: "fecha", type: "date" }
+            ].map(({ label, name, type }) => (
+           <div key={name}>
+         <label htmlFor={name} className="block text-lg font-medium mb-2 text-black">
+         {label}
+      </label>
+    <input
+      id={name}
+      name={name}
+      type={type}
+      className="w-full p-3 border border-gray-400 rounded-md text-black"
+      placeholder="Ingrese información"
+      value={form[name as keyof typeof form]}
+      onChange={handleChange}
+      required
+    />
+  </div>
+))}
           {/* Botón de enviar */}
           <div className="text-center mt-6">
             <button
