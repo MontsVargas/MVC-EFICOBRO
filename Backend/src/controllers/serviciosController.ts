@@ -76,7 +76,7 @@ const realizarCompra = async (req: Request, res: Response) => {
         const { nombreCliente, servicioId, cantidadServicio, direccionCompra, plantaId } = req.body;
 
         // Validar que los datos obligatorios estén presentes
-        if (!nombreCliente || !servicioId || !cantidadServicio || !direccionCompra || !plantaId) {
+        if (!nombreCliente || !servicioId || !cantidadServicio || !plantaId) {
             return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
         }
 
@@ -114,8 +114,8 @@ const realizarCompra = async (req: Request, res: Response) => {
                 servicioId: servicioIdNum,
                 fecha: new Date(),
                 cantidadServicio: cantidadServicioNum,
-                direccionCompra,
                 plantaId, // String
+                direccionCompra, // Include the 'direccionCompra' field
                 cobro: 0, // Replace with the appropriate value for 'cobro'
             }
         });
