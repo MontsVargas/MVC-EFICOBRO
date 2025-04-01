@@ -289,8 +289,7 @@ export default function Servicios() {
           {[ 
             { label: "Nombre del Cliente", name: "nombre", type: "text" },
             { label: "Fecha de Contratación", name: "fecha", type: "date" },
-            { label: "Costo del Servicio", name: "costo", type: "number", step: "0.01" },
-            { label: "Dirección", name: "direccion", type: "text" },
+            { label: "Costo del Servicio", name: "costo", type: "number", step: "0.01" }
           ].map(({ label, name, type, step }) => (
             <div key={name}>
               <label htmlFor={name} className="block text-lg font-medium mb-2 text-black">
