@@ -70,7 +70,7 @@ const obtenerTipoServicio = async (req: Request, res: Response) => {
 };
 // Realizar una compra
 const realizarCompra = async (req: Request, res: Response) => {
-    try {
+    try { 
         const { clienteId, servicioId, cantidadServicio, cobro, direccionCompra, plantaId } = req.body;
 
         // Validar que los datos obligatorios estén presentes
