@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useState, useEffect } from "react";
 
 type TipoServicio = {
@@ -17,7 +17,7 @@ type Planta = {
   nombre: string;
 };
 
-export default function Servicios() {
+export default function ServiciosPage() {
   const [form, setForm] = useState({
     nombre: "",
     servicio: "",
@@ -28,14 +28,12 @@ export default function Servicios() {
     planta: "",
     clienteId: "",
   });
-
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [serviciosFiltrados, setServiciosFiltrados] = useState<Servicio[]>([]);
   const [plantas, setPlantas] = useState<Planta[]>([]);
   const [tiposDeServicio, setTiposDeServicio] = useState<TipoServicio[]>([]);
 
-  // servicios, plantas y tipos de servicio
   useEffect(() => {
     async function fetchServicios() {
       try {
@@ -51,7 +49,7 @@ export default function Servicios() {
 
         const data = await response.json();
         setServicios(data.servicios);
-        setServiciosFiltrados(data.servicio || []); // Al principio mostramos todos los servicios
+        setServiciosFiltrados(data.servicio || []);
       } catch (error) {
         console.error("Error:", error);
         setMensaje("No se pudieron cargar los servicios.");
@@ -108,7 +106,6 @@ export default function Servicios() {
     fetchTiposDeServicio();
   }, []);
 
-  // Filtrar los servicios cuando el tipo de servicio cambie
   const handleTipoServicioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const tipoSeleccionado = e.target.value;
     setForm({ ...form, tipoServicio: tipoSeleccionado });
@@ -119,16 +116,12 @@ export default function Servicios() {
       );
       setServiciosFiltrados(serviciosFiltrados);
     } else {
-      setServiciosFiltrados(servicios); // Si no hay tipo seleccionado, mostramos todos los servicios
+      setServiciosFiltrados(servicios);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setForm({ ...form, unidad: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -141,11 +134,11 @@ export default function Servicios() {
     }
 
     const requestBody = {
-      nombreCliente: form.nombre, // Se envía el nombre del cliente
-      servicioId: Number(form.servicio), // el dato se envia como número
-      cantidadServicio: Number(form.cifra), // el dato se envia como número
-      unidadServicio: form.unidad, // Se añade la unidad seleccionada
-      plantaId: Number(form.planta), // tipo numero
+      nombreCliente: form.nombre,
+      servicioId: Number(form.servicio),
+      cantidadServicio: Number(form.cifra),
+      unidadServicio: form.unidad,
+      plantaId: Number(form.planta),
     };
 
     try {
@@ -168,7 +161,7 @@ export default function Servicios() {
         tipoServicio: "",
         fecha: "",
         cifra: "",
-        unidad: "cifra", // Restablecer a cifra por defecto
+        unidad: "cifra",
         planta: "",
         clienteId: "",
       });
@@ -246,60 +239,28 @@ export default function Servicios() {
               ))}
             </select>
           </div>
-          {/* Tipo de unidad (Cifra o Metros Cúbicos) */}
-          <div>
-            <label htmlFor="unidad" className="block text-lg font-medium mb-2 text-black">
-              Tipo de Unidad
-            </label>
-            <select
-              id="unidad"
-              name="unidad"
-              className="w-full p-3 border border-gray-400 rounded-md text-black"
-              value={form.unidad}
-              onChange={handleUnitChange}
-              required
-            >
-              <option value="cifra">Cifra</option>
-              <option value="metrosCubicos">Metros Cúbicos</option>
-            </select>
-          </div>
-          {/* Consumo */}
-          <div>
-            <label htmlFor="cifra" className="block text-lg font-medium mb-2 text-black">
-              Consumo
-            </label>
-            <input
-              id="cifra"
-              name="cifra"
-              type="text"
-              className="w-full p-3 border border-gray-400 rounded-md text-black"
-              placeholder={form.unidad === "cifra" ? "Ingrese la cifra" : "Ingrese los metros cúbicos"}
-              value={form.cifra}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          {/* Campos de llenado manual */}
+
+          {/* Campos manuales */}
           {[ 
-             { label: "Nombre del Cliente", name: "nombre", type: "text" },
-             { label: "Fecha de Contratación", name: "fecha", type: "date" }
-            ].map(({ label, name, type }) => (
-           <div key={name}>
-    <label htmlFor={name} className="block text-lg font-medium mb-2 text-black">
-      {label}
-    </label>
-    <input
-      id={name}
-      name={name}
-      type={type}
-      className="w-full p-3 border border-gray-400 rounded-md text-black"
-      placeholder="Ingrese información"
-      value={form[name as keyof typeof form]}
-      onChange={handleChange}
-      required
-    />
-  </div>
-))}
+            { label: "Nombre del Cliente", name: "nombre", type: "text" },
+            { label: "Fecha de Contratación", name: "fecha", type: "date" },
+          ].map(({ label, name, type }) => (
+            <div key={name}>
+              <label htmlFor={name} className="block text-lg font-medium mb-2 text-black">
+                {label}
+              </label>
+              <input
+                id={name}
+                name={name}
+                type={type}
+                className="w-full p-3 border border-gray-400 rounded-md text-black"
+                value={form[name as keyof typeof form]}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          ))}
+
           {/* Botón de enviar */}
           <div className="text-center mt-6">
             <button
