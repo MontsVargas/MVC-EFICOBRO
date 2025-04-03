@@ -24,8 +24,8 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
                         Tiposervicio: true // Incluye el tipo de servicio
                     }
                 },
-                planta: true
-            }
+                planta: true, // Incluye la planta
+                },
         });
 
         // Si no hay compras, responder con 404
@@ -40,7 +40,7 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
                 ...compra,
                 servicio: {
                     nombre: compra.servicio.descripcion, // Descripción del servicio
-                    tipoServicio: compra.servicio.Tiposervicio.nombre // Tipo de servicio
+                    tipoServicio: compra.servicio.Tiposervicio.nombre // Nombre del tipo de servicio
                 }
             }))
         });
