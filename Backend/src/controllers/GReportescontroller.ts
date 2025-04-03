@@ -312,63 +312,46 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
     const doc = new jsPDF();
     doc.setFontSize(14);
     doc.setFont("Helvetica", "bold");
-    doc.text("Reporte Mensual de Compras", 65, 20);
-    doc.setFontSize(10);
+    doc.setFillColor(173, 216, 230); // Azul claro
+    doc.rect(0, 0, 210, 30, "F");
+    doc.text("INSTITUTO DE AGUA DEL ESTADO", 60, 10);
+    doc.setFontSize(12);
     doc.setFont("Helvetica", "italic");
+    doc.text("Reporte Mensual", 80, 15);
+
     const monthName = startOfMonth.toLocaleString('default', { month: 'long' });
     doc.text(`Mes: ${monthName} ${startOfMonth.getFullYear()}`, 75, 25);
 
-    let startY = 30;
+    let startY = 40;
     let totalGeneral = 0;
-    const marginLeft = 10;
-    const boxWidth = 60; // Ancho de cada cuadro
-    const boxHeight = 50; // Ajustar la altura para que la información no se corte
-    const spaceBetween = 10; // Espacio entre cuadros
-    const rowHeight = boxHeight + spaceBetween; // Altura total por fila
 
     compras.forEach((compra, index) => {
-      if (startY > 240) {
+      if (startY > 270) {
         doc.addPage();
         startY = 20;
       }
 
-      const costoServicio = compra.servicio && compra.servicio.costo
-        ? parseFloat(compra.servicio.costo.toString())
-        : 0;
-      const metrosCubicos = compra.cantidadServicio
-        ? parseFloat(compra.cantidadServicio.toString())
-        : 0;
+      const costoServicio = compra.servicio?.costo ? parseFloat(compra.servicio.costo.toString()) : 0;
+      const metrosCubicos = compra.cantidadServicio ? parseFloat(compra.cantidadServicio.toString()) : 0;
       const totalCompra = costoServicio * metrosCubicos;
 
-      const row = Math.floor(index / 3); // Fila en la que estamos
-      const col = index % 3; // Columna en la que estamos
+      doc.setFontSize(10);
+      doc.setFont("Helvetica", "normal");
+      doc.text(`Compra #${index + 1}`, 10, startY);
+      doc.text(`Servicio: ${compra.servicio ? compra.servicio.descripcion : "N/A"}`, 10, startY + 5);
+      doc.text(`Planta: ${compra.planta ? compra.planta.nombre : "N/A"}`, 10, startY + 10);
+      doc.text(`Cantidad: ${metrosCubicos.toFixed(2)} m³`, 10, startY + 15);
+      doc.text(`Total: $${totalCompra.toFixed(2)}`, 10, startY + 20);
 
-      // Dibuja el cuadro para la información
-      const x = marginLeft + col * (boxWidth + spaceBetween); // Posición X
-      const y = startY + row * rowHeight; // Posición Y
-
-      doc.rect(x, y, boxWidth, boxHeight); // Cuadro de la compra
-      doc.rect(x, y + boxHeight - 10, boxWidth, 10); // Cuadro para el total
-
-      // Coloca la información dentro del cuadro
-      doc.text(`Compra #${index + 1}`, x + 5, y + 10);
-      doc.text(`Servicio: ${compra.servicio ? compra.servicio.descripcion : "N/A"}`, x + 5, y + 20);
-      doc.text(`Planta: ${compra.planta ? compra.planta.nombre : "N/A"}`, x + 5, y + 30);
-      doc.text(`Cantidad: ${metrosCubicos.toFixed(2)}`, x + 5, y + 40);
-      doc.text(`Total: $${totalCompra.toFixed(2)}`, x + 5, y + boxHeight - 5);
-
+      startY += 30;
       totalGeneral += totalCompra;
-
-      if (col === 2) {
-        // Si hemos colocado tres cuadros, pasamos a la siguiente fila
-        startY += rowHeight;
-      }
     });
 
-    // Total general de todas las compras
+    // Total general
     doc.setFontSize(12);
     doc.setFont("Helvetica", "bold");
-    doc.text(`Total: $${totalGeneral.toFixed(2)}`, 130, startY + 10);
+    doc.setTextColor(255, 0, 0); // Rojo para el texto
+    doc.text(`Total General: $${totalGeneral.toFixed(2)}`, 130, startY);
 
     const pdfBuffer = doc.output("arraybuffer");
     res.setHeader("Content-Type", "application/pdf");
@@ -380,6 +363,7 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
+
 export const generateYearlyReport = async (req: Request, res: Response): Promise<void> => {
   try {
     const anio = req.query.year ? parseInt(req.query.year as string, 10) : new Date().getFullYear();
@@ -406,12 +390,14 @@ export const generateYearlyReport = async (req: Request, res: Response): Promise
     });
 
     const doc = new jsPDF();
-    doc.setFontSize(16);
+    doc.setFontSize(14);
     doc.setFont("Helvetica", "bold");
-    doc.text("Instituto del Agua del Estado", 60, 20);
+    doc.setFillColor(173, 216, 230); // Azul claro
+    doc.rect(0, 0, 210, 30, "F");
+    doc.text("INSTITUTO DE AGUA DEL ESTADO", 60, 20);
     doc.setFontSize(12);
     doc.setFont("Helvetica", "italic");
-    doc.text(`Reporte Anual - ${anio}`, 75, 30);
+    doc.text(`Reporte Anual - ${anio}`, 80, 25);
 
     let startY = 40;
     let totalAnual = 0;
@@ -439,8 +425,9 @@ export const generateYearlyReport = async (req: Request, res: Response): Promise
     });
 
     // Total anual
-    doc.setFontSize(12);
-    doc.setFont("Helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setFont("Helvetica","bold");
+    doc.setTextColor(255, 0, 0); // Rojo para el texto
     doc.text(`Total Anual: $${totalAnual.toFixed(2)}`, 10, startY);
 
     const pdfBuffer = doc.output("arraybuffer");
