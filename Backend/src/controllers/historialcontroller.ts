@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+
 export const HistorialCompras = async (req: Request, res: Response): Promise<void> => {
     try {
         const { id } = req.params;
@@ -34,8 +35,16 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
             return;
         }
 
+        // Transformar la respuesta a la estructura solicitada
+        const historialFormateado = historialCompras.map(compra => ({
+            Fecha: compra.fecha, // Asumimos que 'fecha' es el campo de la fecha de la compra
+            Servicio: compra.servicio.descripcion, // Usamos 'descripcion' ya que 'nombre' no existe en el servicio
+            "Tipo de Servicio": compra.servicio.Tiposervicio.nombre, // Nombre del tipo de servicio
+            Planta: compra.planta.nombre // Asumimos que 'nombre' es el nombre de la planta donde se realizó la compra
+        }));
+
         // Responder con éxito
-        res.status(200).json({historialCompras});
+        res.status(200).json({ historialCompras: historialFormateado });
     } catch (error) {
         console.error("Error al obtener el historial:", error);
         res.status(500).json({ mensaje: "Error al obtener el historial de compras", error });
