@@ -51,7 +51,7 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
    // Dibujar el cuadro (x, y, ancho, alto)
    const cuadroX = 10; 
    const cuadroY = startY - 5; // Un poco más arriba para margen
-   const cuadroAncho = 60; // Ancho del cuadro
+   const cuadroAncho = 80; // Ancho del cuadro
    const cuadroAlto = 20; // Espacio suficiente para los datos
 
    doc.rect(cuadroX, cuadroY, cuadroAncho, cuadroAlto); // Dibujar cuadro
