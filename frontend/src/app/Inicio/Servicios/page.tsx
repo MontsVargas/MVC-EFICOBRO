@@ -9,7 +9,7 @@ type TipoServicio = {
 type Servicio = {
   id: number;
   descripcion: string;
-  TipoServicioId: number; 
+  TipoServicioId: number;
 };
 
 type Planta = {
@@ -24,10 +24,11 @@ export default function SeleccionServicio() {
   const [plantas, setPlantas] = useState<Planta[]>([]);
   const [tipoSeleccionado, setTipoSeleccionado] = useState<string>("");
   const [mensaje, setMensaje] = useState("");
+  const [unidadMedida, setUnidadMedida] = useState<string>("cifra");
   const [form, setForm] = useState({
     tipoServicio: "",
     servicio: "",
-    cifra: "",
+    cantidad: "",
     costo: "",
     direccion: "",
     planta: "",
@@ -95,15 +96,17 @@ export default function SeleccionServicio() {
     event.preventDefault();
 
     const requestBody = {
-      clienteId: 1,  // Este es un ejemplo, asegúrate de que el clienteId provenga de algún campo o esté bien asignado
-      servicioId: Number(form.servicio),  // Este es el id del servicio seleccionado
-      cantidadServicio: Number(form.cifra),  // Este es el número de servicios
-      cobro: Number(form.costo),  // El cobro total del servicio
-      direccionCompra: form.direccion,  // Dirección de compra
-      plantaId: Number(form.planta),  // El id de la planta seleccionada
+      clienteId: 1, // Cliente ID (ajústalo según tus necesidades)
+      servicioId: Number(form.servicio), // ID del servicio
+      cantidadServicio: Number(form.cantidad), // Cantidad de servicio
+      unidadMedida: unidadMedida, // 'cifra' o 'metro cubico'
+      cobro: Number(form.costo), // Costo de la compra
+      direccionCompra: form.direccion, // Dirección de la compra
+      plantaId: Number(form.planta), // Planta ID
     };
 
-    console.log(requestBody); // Asegúrate de que los datos sean correctos
+    // Log para depurar el cuerpo de la solicitud
+    console.log("Request Body:", requestBody);
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/compras`, {
@@ -114,11 +117,12 @@ export default function SeleccionServicio() {
         body: JSON.stringify(requestBody),
       });
 
-      if (response.ok) {
-        setMensaje("Compra realizada con éxito.");
-      } else {
+      if (!response.ok) {
         const errorData = await response.json();
+        console.error("Error de servidor:", errorData); // Log de la respuesta del servidor
         setMensaje(errorData.mensaje || "No se pudo completar la compra.");
+      } else {
+        setMensaje("Compra realizada con éxito.");
       }
     } catch (error) {
       console.error("Error al realizar la compra:", error);
@@ -127,116 +131,131 @@ export default function SeleccionServicio() {
   };
 
   return (
-    <main className="flex-grow p-6 bg-white">
+    <main className="flex-grow p-6 bg-[#f0f8fb]">
       <div className="max-w-4xl mx-auto p-6 bg-[#f0f8fb] border border-gray-300 shadow-lg rounded-lg">
-        <h2 className="text-center text-2xl font-semibold mb-6 text-[#195c97]">Seleccionar un Servicio</h2>
+        <h2 className="text-center text-3xl font-semibold mb-8 text-[#195c97]">Seleccionar un Servicio</h2>
 
-        {/* Mostrar mensaje de éxito o error */}
         {mensaje && (
-          <div
-            className={`text-center mb-4 ${mensaje.includes("éxito") ? "text-green-500" : "text-red-500"}`}
-          >
+          <div className={`text-center mb-4 ${mensaje.includes("éxito") ? "text-blue-500" : "text-black"}`}>
             {mensaje}
           </div>
         )}
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Tipo de servicio */}
           <div>
-            <label htmlFor="tipoServicio" className="block text-lg font-medium mb-2 text-black">
-              Tipo de Servicio
-            </label>
+            <label className="block text-lg font-medium mb-2 text-black">Nombre del cliente</label>
+            <input
+              type="text"
+              name="nombre"
+              placeholder="Ingrese el nombre"
+              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              value={form.nombre}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <label className="block text-lg font-medium mb-2 text-black">Tipo de Servicio</label>
             <select
-              id="tipoServicio"
-              name="tipoServicio"
-              className="w-full p-3 border border-gray-400 rounded-md text-black"
+              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               value={form.tipoServicio}
               onChange={handleTipoServicioChange}
-              required
             >
               <option value="">Seleccione un tipo de servicio</option>
               {tiposDeServicio.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
+                <option key={tipo.id} value={tipo.id.toString()}>
                   {tipo.nombre}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Selección de servicio */}
           <div>
-            <label htmlFor="servicio" className="block text-lg font-medium mb-2 text-black">
-              Servicio a Contratar
-            </label>
+            <label className="block text-lg font-medium mb-2 text-black">Servicio</label>
             <select
-              id="servicio"
-              name="servicio"
-              className="w-full p-3 border border-gray-400 rounded-md text-black"
+              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               value={form.servicio}
               onChange={handleChange}
-              required
+              name="servicio"
             >
               <option value="">Seleccione un servicio</option>
               {serviciosFiltrados.map((servicio) => (
-                <option key={servicio.id} value={servicio.id}>
+                <option key={servicio.id} value={servicio.id.toString()}>
                   {servicio.descripcion}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Selección de planta */}
           <div>
-            <label htmlFor="planta" className="block text-lg font-medium mb-2 text-black">
-              Planta
-            </label>
+            <label className="block text-lg font-medium mb-2 text-black">Unidad de Medida</label>
             <select
-              id="planta"
-              name="planta"
-              className="w-full p-3 border border-gray-400 rounded-md text-black"
+              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              value={unidadMedida}
+              onChange={(e) => setUnidadMedida(e.target.value)}
+            >
+              <option value="cifra">Cifra</option>
+              <option value="metro cubico">Metro Cúbico</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-lg font-medium mb-2 text-black">Planta</label>
+            <select
+              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               value={form.planta}
               onChange={handleChange}
-              required
+              name="planta"
             >
               <option value="">Seleccione una planta</option>
               {plantas.map((planta) => (
-                <option key={planta.id} value={planta.id}>
+                <option key={planta.id} value={planta.id.toString()}>
                   {planta.nombre}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Campos adicionales para la compra */}
-          {[ 
-            { label: "Nombre del Cliente", name: "nombre", type: "text" },
-            { label: "Cifra de Servicio", name: "cifra", type: "text" },
-            { label: "Costo del Servicio", name: "costo", type: "number", step: "0.01" },
-            { label: "Dirección de Compra", name: "direccion", type: "text" },
-          ].map(({ label, name, type, step }) => (
-            <div key={name}>
-              <label htmlFor={name} className="block text-lg font-medium mb-2 text-black">
-                {label}
-              </label>
-              <input
-                id={name}
-                name={name}
-                type={type}
-                step={step}
-                className="w-full p-3 border border-gray-400 rounded-md text-black"
-                placeholder="Ingrese información"
-                value={form[name as keyof typeof form]}
-                onChange={handleChange}
-                required={["nombre", "cifra", "costo"].includes(name)}
-              />
-            </div>
-          ))}
+          <div>
+            <label className="block text-lg font-medium mb-2 text-black">Cantidad</label>
+            <input
+              type="number"
+              name="cantidad"
+              placeholder={`Ingrese la cantidad en ${unidadMedida}`}
+              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              value={form.cantidad}
+              onChange={handleChange}
+            />
+          </div>
 
-          {/* Botón de enviar */}
+          <div>
+            <label className="block text-lg font-medium mb-2 text-black">Costo</label>
+            <input
+              type="number"
+              name="costo"
+              placeholder="Ingrese el costo"
+              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              value={form.costo}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div>
+            <label className="block text-lg font-medium mb-2 text-black">Dirección de Compra</label>
+            <input
+              type="text"
+              name="direccion"
+              placeholder="Ingrese la dirección"
+              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              value={form.direccion}
+              onChange={handleChange}
+            />
+          </div>
+
           <div className="text-center mt-6">
             <button
               type="submit"
-              className="bg-[#195c97] text-white py-2 px-6 rounded-md hover:bg-[#6aa3af] transition"
+              className="bg-gradient-to-r from-[#4a5ad2] to-[#205abe] text-white py-3 px-8 rounded-md shadow-md hover:from-[#6aa3af] hover:to-[#74c8e0] transition duration-300 transform hover:scale-105"
             >
               AGREGAR
             </button>
