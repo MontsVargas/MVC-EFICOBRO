@@ -274,6 +274,7 @@ export const generateWeeklyReport = async (req: Request, res: Response): Promise
     doc.rect(10, purchaseStartY + 220, 190, 20);
     doc.setFontSize(12);
     doc.setFont("Helvetica", "bold");
+    doc.setTextColor(255, 0, 0); // Rojo para el texto
     doc.text(`Total Semanal: $${totalSemanal.toFixed(2)}`, 100, purchaseStartY + 230, { align: "center" });
 
     // Generar y enviar el PDF
