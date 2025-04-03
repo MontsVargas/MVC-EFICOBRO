@@ -7,7 +7,6 @@ import { useParams } from 'next/navigation';
 type Historial = {
   id: number;
   fecha: string;
-  clienteNombre: string;
   servicioNombre: string;
   tipoServicioNombre: string;
   plantaNombre: string;
@@ -15,7 +14,7 @@ type Historial = {
 
 export default function HistorialCliente() {
   const { id } = useParams();
-  console.log("ID recibido en el frontend:", id);  // Verificar que estamos obteniendo el ID correcto
+  console.log("ID recibido en el frontend:", id);
 
   const [historial, setHistorial] = useState<Historial[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,13 +43,15 @@ export default function HistorialCliente() {
         }
 
         const data = await response.json();
+        console.log("Historial recibido en el frontend:", data.historialCompras); // 🔍 Debugging
+
         const compras = data.historialCompras.map((compra: any) => ({
           id: compra.id,
           fecha: compra.fecha,
-          clienteNombre: compra.cliente.nombre,
-          servicioNombre: compra.servicio.nombre,
-          tipoServicioNombre: compra.servicio.Tiposervicio.nombre,
-          plantaNombre: compra.planta.nombre,
+          clienteNombre: compra.cliente?.nombre ?? "Desconocido",
+          servicioNombre: compra.servicio?.nombre ?? "No disponible", // 🔥 Manejo de null
+          tipoServicioNombre: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
+          plantaNombre: compra.planta?.nombre ?? "No disponible",
         }));
 
         setHistorial(compras);
@@ -66,7 +67,7 @@ export default function HistorialCliente() {
 
   return (
     <motion.div
-      className="max-w-3xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md"
+      className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -93,7 +94,7 @@ export default function HistorialCliente() {
               {historial.map((item) => (
                 <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-100">
                   <td className="p-3 text-gray-700">{new Date(item.fecha).toLocaleDateString()}</td>
-                  <td className="p-3 text-gray-700">{item.servicioNombre}</td>
+                  <td className="p-3 text-gray-600 font-semibold">{item.servicioNombre}</td>
                   <td className="p-3 text-gray-700">{item.tipoServicioNombre}</td>
                   <td className="p-3 text-gray-700">{item.plantaNombre}</td>
                 </tr>
