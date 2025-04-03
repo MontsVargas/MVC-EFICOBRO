@@ -31,53 +31,61 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
       res.status(404).json({ message: "Cliente no encontrado" });
       return;
     }
-
+   // Datos del cliente e instituto 
     const doc = new jsPDF();
-    doc.setFontSize(14);
+    doc.setFillColor(173, 216, 230); // Azul muy bajito
+    doc.rect(0, 0, 210, 20, "F");
+    doc.setFontSize(16);
     doc.setFont("Helvetica", "bold");
-    doc.text("Instituto del Agua del Estado", 65, 20);
-    doc.setFontSize(10);
+    doc.text("INSTITUTO DEL AGUA DEL ESTADO", 55, 10);
+    doc.setFontSize(14);
     doc.setFont("Helvetica", "italic");
-    doc.text("Reporte de Cliente", 85, 25);
+    doc.text("Reporte del cliente", 85, 16);
 
     let startY = 30;
 
-    // Datos del cliente e instituto (sin cuadro, solo texto)
-    doc.setFontSize(12);
-    doc.setFont("Helvetica", "bold");
-    doc.text(`Cliente: ${cliente.nombre}`, 10, startY);
-    doc.text(`Dirección: ${cliente.direccion}`, 10, startY + 10);
-    doc.text(`Teléfono: ${cliente.telefono}`, 10, startY + 20);
-    doc.text(`Deuda: $${cliente.deuda}`, 10, startY + 30);
-    startY += 40;
+    // Configurar fuente y tamaño
+   doc.setFontSize(12);
+   doc.setFont("Helvetica", "bold");
 
-    // Mostrar las compras dentro de cuadros horizontales
-    let purchaseStartX = 10;
-    let purchaseStartY = startY;
+   // Dibujar el cuadro (x, y, ancho, alto)
+   const cuadroX = 10; 
+   const cuadroY = startY - 5; // Un poco más arriba para margen
+   const cuadroAncho = 60; // Ancho del cuadro
+   const cuadroAlto = 20; // Espacio suficiente para los datos
 
-    cliente.compras.forEach((compra, index) => {
-      const costoServicio = parseFloat(compra.servicio.costo.toString());
-      const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
-      const totalCompra = costoServicio * metrosCubicos;
+   doc.rect(cuadroX, cuadroY, cuadroAncho, cuadroAlto); // Dibujar cuadro
 
-      if (purchaseStartX > 160) {
-        purchaseStartX = 10;
-        purchaseStartY += 50;
-      }
+   // Agregar texto dentro del cuadro
+   doc.setDrawColor(0); // Color del borde (Negro)
+   doc.setFillColor(230, 230, 250); // Color de fondo (Lavanda)
+   doc.rect(cuadroX, cuadroY, cuadroAncho, cuadroAlto, "FD"); // "FD" = Fill + Draw
+   doc.text(`Cliente: ${cliente.nombre}`, 11,  startY + 1 );
+   doc.text(`Dirección: ${cliente.direccion}`, 11, startY + 6);
+   doc.text(`Teléfono: ${cliente.telefono}`, 11, startY + 10);
 
-      // Cuadro para cada servicio
-      doc.setLineWidth(0.5);
-      doc.rect(purchaseStartX, purchaseStartY, 45, 40);
-      doc.setFontSize(10);
-      doc.text(`Servicio: ${compra.servicio.descripcion}`, purchaseStartX + 5, purchaseStartY + 10);
-      doc.text(`Planta: ${compra.planta.nombre}`, purchaseStartX + 5, purchaseStartY + 20);
-      doc.text(`Cantidad: ${metrosCubicos.toFixed(2)}`, purchaseStartX + 5, purchaseStartY + 30);
-      doc.text(`Total: $${totalCompra.toFixed(2)}`, purchaseStartX + 5, purchaseStartY + 40);
+   startY += 40; // Mover la posición para el siguiente contenido
 
-      purchaseStartX += 50;
-    });
+   let purchaseStartY = startY; // Posición inicial Y
 
-    startY = purchaseStartY + 50; // Ajuste de la posición Y para la siguiente sección
+cliente.compras.forEach((compra) => {
+    const costoServicio = parseFloat(compra.servicio.costo.toString());
+    const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
+    const totalCompra = costoServicio * metrosCubicos;
+
+    // Agregar datos de la compra en formato listado
+    doc.setFontSize(10);
+    doc.text(`Servicio: ${compra.servicio.descripcion}`, 10, purchaseStartY);
+    doc.text(`Planta: ${compra.planta.nombre}`, 10, purchaseStartY + 10);
+    doc.text(`Cantidad: ${metrosCubicos.toFixed(2)}`, 10, purchaseStartY + 20);
+    doc.text(`Total: $${totalCompra.toFixed(2)}`, 10, purchaseStartY + 30);
+
+    // Espaciado entre cada compra
+    purchaseStartY += 40; 
+});
+
+// Ajuste de `startY` para la siguiente sección del PDF
+startY = purchaseStartY;
 
     // Total de compras
     let totalGastado = cliente.compras.reduce((acc, compra) => {
@@ -89,10 +97,11 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
 
     // Cuadro para el total
     doc.setLineWidth(1);
-    doc.rect(10, startY, 190, 30);
-    doc.setFontSize(12);
+    doc.rect(60, startY, 70, 20);
+    doc.setFontSize(16);
     doc.setFont("Helvetica", "bold");
-    doc.text(`Total gastado: $${totalGastado.toFixed(2)}`, 75, startY + 15);
+    doc.setTextColor(255, 0, 0); // Rojo para el texto
+    doc.text(`Total gastado: $${totalGastado.toFixed(2)}`, 95, startY + 13, { align: "center" });
 
     const pdfBuffer = doc.output("arraybuffer");
     res.setHeader("Content-Type", "application/pdf");
@@ -103,7 +112,6 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
-
 // Reporte General de Clientes
 export const generateGeneralReport = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -121,52 +129,58 @@ export const generateGeneralReport = async (req: Request, res: Response): Promis
     });
 
     const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.setFont("Helvetica", "bold");
-    doc.text("Instituto del Agua del Estado", 65, 20);
-    doc.setFontSize(10);
-    doc.setFont("Helvetica", "italic");
-    doc.text("Reporte General de Clientes", 75, 25);
+
+    // Configurar la fuente y tamaño para todo el documento
+    doc.setFont("Helvetica", "normal"); // Misma fuente en todo el PDF
+    doc.setFontSize(12); // Tamaño uniforme en todo el PDF
+
+    // Encabezado del reporte
+    doc.setFillColor(173, 216, 230); // Azul claro
+    doc.rect(0, 0, 210, 20, "F");
+    doc.text("INSTITUTO DEL AGUA DEL ESTADO", 55, 10);
+    doc.text("Reporte general de clientes", 70, 16);
 
     let startY = 30;
+    let totalGeneral = 0; // Variable para acumular el total de todas las compras
 
     clientes.forEach((cliente, index) => {
-      doc.setFontSize(12);
-      doc.setFont("Helvetica", "bold");
       doc.text(`Cliente #${index + 1}: ${cliente.nombre}`, 10, startY);
       doc.text(`Deuda: $${cliente.deuda}`, 10, startY + 10);
       startY += 20;
 
-      let purchaseStartX = 10;
-      let purchaseStartY = startY;
+      let totalCliente = 0; // Total individual por cliente
 
-      cliente.compras.forEach((compra, indexCompra) => {
+      cliente.compras.forEach((compra) => {
         const costoServicio = parseFloat(compra.servicio.costo.toString());
         const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
         const totalCompra = costoServicio * metrosCubicos;
 
-        if (purchaseStartX > 160) {
-          purchaseStartX = 10;
-          purchaseStartY += 50;
-        }
+        totalCliente += totalCompra; // Acumular total del cliente
+        totalGeneral += totalCompra; // Acumular total general
 
-        // Cuadro para cada compra
-        doc.setLineWidth(0.5);
-        doc.rect(purchaseStartX, purchaseStartY, 45, 40);
-        doc.setFontSize(10);
-        doc.text(`Servicio: ${compra.servicio.descripcion}`, purchaseStartX + 5, purchaseStartY + 10);
-        doc.text(`Planta: ${compra.planta.nombre}`, purchaseStartX + 5, purchaseStartY + 20);
-        doc.text(`Cantidad: ${metrosCubicos.toFixed(2)}`, purchaseStartX + 5, purchaseStartY + 30);
-        doc.text(`Total: $${totalCompra.toFixed(2)}`, purchaseStartX + 5, purchaseStartY + 40);
+        doc.text(`- Servicio: ${compra.servicio.descripcion}`, 10, startY);
+        doc.text(`  Planta: ${compra.planta.nombre}`, 10, startY + 10);
+        doc.text(`  Cantidad: ${metrosCubicos.toFixed(2)}`, 10, startY + 20);
+        doc.text(`  Total: $${totalCompra.toFixed(2)}`, 10, startY + 30);
 
-        purchaseStartX += 50;
+        startY += 40;
       });
 
-      startY = purchaseStartY + 50;
+      // Mostrar total de compras por cliente
+      doc.text(`Total Compras Cliente: $${totalCliente.toFixed(2)}`, 10, startY);
+      startY += 10;
+
       doc.line(10, startY, 200, startY);
       startY += 10;
     });
 
+    // Espacio antes del total general
+    startY += 10;
+
+    // Mostrar total general de todas las compras
+    doc.text(`TOTAL GENERAL DE COMPRAS: $${totalGeneral.toFixed(2)}`, 10, startY);
+
+    // Generar y enviar el PDF
     const pdfBuffer = doc.output("arraybuffer");
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="reporte_general.pdf"`);
@@ -178,14 +192,17 @@ export const generateGeneralReport = async (req: Request, res: Response): Promis
   }
 };
 
-// Reporte Semanal
+//  Reporte Semanal de Compras
 export const generateWeeklyReport = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Definir el rango de la semana actual (de domingo a sábado)
     const startOfWeek = new Date();
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Primer día de la semana (domingo)
+    
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Último día de la semana (sábado)
 
+    //  Obtener todas las compras dentro del rango semanal
     const compras = await prisma.compra.findMany({
       where: {
         fecha: {
@@ -199,65 +216,78 @@ export const generateWeeklyReport = async (req: Request, res: Response): Promise
       }
     });
 
+    //  Crear el documento PDF
     const doc = new jsPDF();
+    
+    //  Encabezado del Reporte
     doc.setFontSize(14);
     doc.setFont("Helvetica", "bold");
-    doc.text("Reporte Semanal de Compras", 65, 20);
+    doc.setFillColor(173, 216, 230); // Azul claro
+    doc.rect(0, 0, 210, 30, "F");
+    doc.text("INSTITUTO DE AGUA DEL ESTADO", 60, 10);
+    doc.setFontSize(12);
+    doc.setFont("Helvetica", "italic");
+    doc.text("Reporte Semanal", 80, 15);
+
     doc.setFontSize(10);
     doc.setFont("Helvetica", "italic");
-    doc.text(`Semana: ${startOfWeek.toLocaleDateString()} - ${endOfWeek.toLocaleDateString()}`, 75, 25);
+    doc.text(`Semana: ${startOfWeek.toLocaleDateString()} - ${endOfWeek.toLocaleDateString()}`, 75, 20);
 
+    // Posiciones iniciales
     let startY = 30;
     let purchaseStartX = 10;
     let purchaseStartY = startY;
 
+    // Iterar sobre las compras y mostrarlas en cuadros
     compras.forEach((compra, index) => {
       const costoServicio = parseFloat(compra.servicio.costo.toString());
       const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
       const totalCompra = costoServicio * metrosCubicos;
 
+      // Control de posición para evitar que se salgan de la página
       if (purchaseStartX > 160) {
         purchaseStartX = 10;
         purchaseStartY += 50;
       }
 
-      // Cuadro para cada compra
+      // Cuadro con información de cada compra
       doc.setLineWidth(0.5);
-      doc.rect(purchaseStartX, purchaseStartY, 45, 40);
+      doc.rect(purchaseStartX, purchaseStartY, 190, 50);
       doc.setFontSize(10);
       doc.text(`Servicio: ${compra.servicio.descripcion}`, purchaseStartX + 5, purchaseStartY + 10);
       doc.text(`Planta: ${compra.planta.nombre}`, purchaseStartX + 5, purchaseStartY + 20);
       doc.text(`Cantidad: ${metrosCubicos.toFixed(2)}`, purchaseStartX + 5, purchaseStartY + 30);
       doc.text(`Total: $${totalCompra.toFixed(2)}`, purchaseStartX + 5, purchaseStartY + 40);
 
-      purchaseStartX += 50;
+      purchaseStartX += 50; // Mover a la siguiente posición
     });
 
-    // Total semanal
+    //  Calcular el total semanal de compras
     let totalSemanal = compras.reduce((acc, compra) => {
       const costoServicio = parseFloat(compra.servicio.costo.toString());
       const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
-      const totalCompra = costoServicio * metrosCubicos;
-      return acc + totalCompra;
+      return acc + (costoServicio * metrosCubicos);
     }, 0);
 
     // Cuadro para el total semanal
     doc.setLineWidth(1);
-    doc.rect(10, purchaseStartY + 10, 190, 30);
+    doc.rect(10, purchaseStartY + 220, 190, 20);
     doc.setFontSize(12);
     doc.setFont("Helvetica", "bold");
-    doc.text(`Total Semanal: $${totalSemanal.toFixed(2)}`, 75, purchaseStartY + 25);
+    doc.text(`Total Semanal: $${totalSemanal.toFixed(2)}`, 100, purchaseStartY + 230, { align: "center" });
 
+    // Generar y enviar el PDF
     const pdfBuffer = doc.output("arraybuffer");
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="reporte_semanal.pdf"`);
     res.send(Buffer.from(pdfBuffer));
 
   } catch (error) {
-    console.error("Error al generar el reporte semanal:", error);
+    console.error(" Error al generar el reporte semanal:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
+
 // Reporte Mensual
 export const generateMonthlyReport = async (req: Request, res: Response): Promise<void> => {
   try {
