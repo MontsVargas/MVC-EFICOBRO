@@ -7,9 +7,9 @@ import { useParams } from 'next/navigation';
 type Historial = {
   id: number;
   fecha: string;
-  servicio: string;
-  Tiposervicio: string;
-  planta: string;
+  servicioNombre: string;
+  tipoServicioNombre: string;
+  plantaNombre: string;
 };
 
 export default function HistorialCliente() {
@@ -43,25 +43,20 @@ export default function HistorialCliente() {
         }
 
         const data = await response.json();
-        console.log("Historial recibido en el frontend:", data.historialCompras);
+        console.log("Historial recibido en el frontend:", data.historialCompras); // 🔍 Debugging
 
-        // Verifica si "historialCompras" existe y tiene datos
-        if (data.historialCompras && data.historialCompras.length > 0) {
-          const compras = data.historialCompras.map((compra: any) => ({
-            id: compra.id,
-            fecha: compra.fecha,
-            clienteNombre: compra.cliente?.nombre ?? "Desconocido",
-            servicioNombre: compra.servicio?.nombre ?? "No disponible",
-            Tiposervicio: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
-            planta: compra.planta?.nombre ?? "No disponible",
-          }));
+        const compras = data.historialCompras.map((compra: any) => ({
+          id: compra.id,
+          fecha: compra.fecha,
+          clienteNombre: compra.cliente?.nombre ?? "Desconocido",
+          servicioNombre: compra.servicio?.nombre ?? "No disponible", // 🔥 Manejo de null
+          tipoServicioNombre: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
+          plantaNombre: compra.planta?.nombre ?? "No disponible",
+        }));
 
-          setHistorial(compras);
-        } else {
-          setError("No hay historial disponible para este cliente.");
-        }
+        setHistorial(compras);
       } catch (error) {
-        setError("No se pudo cargar el historial. Intente más tarde.");
+        setError("No se pudo cargar el historial");
       } finally {
         setLoading(false);
       }
@@ -98,12 +93,10 @@ export default function HistorialCliente() {
             <tbody>
               {historial.map((item) => (
                 <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-100">
-                  <td className="p-3 text-gray-700">
-                    {new Date(item.fecha).toLocaleDateString() || "Fecha no válida"}
-                  </td>
-                  <td className="p-3 text-gray-600 font-semibold">{item.servicio}</td>
-                  <td className="p-3 text-gray-700">{item.Tiposervicio}</td>
-                  <td className="p-3 text-gray-700">{item.planta}</td>
+                  <td className="p-3 text-gray-700">{new Date(item.fecha).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-600 font-semibold">{item.servicioNombre}</td>
+                  <td className="p-3 text-gray-700">{item.tipoServicioNombre}</td>
+                  <td className="p-3 text-gray-700">{item.plantaNombre}</td>
                 </tr>
               ))}
             </tbody>
