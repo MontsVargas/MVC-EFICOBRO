@@ -68,6 +68,7 @@ const obtenerTipoServicio = async (req: Request, res: Response) => {
         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
     }
 };
+
  const realizarCompra = async (req: Request, res: Response) => {
      try {
          const { clienteId, servicioId, cantidadServicio, cobro, direccionCompra, plantaId } = req.body;
