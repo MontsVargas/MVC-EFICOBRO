@@ -7,9 +7,9 @@ import { useParams } from 'next/navigation';
 type Historial = {
   id: number;
   fecha: string;
-  servicioNombre: string;
-  tipoServicio: string;
-  plantaNombre: string;
+  servicio: string;
+  Tiposervicio: string;
+  planta: string;
 };
 
 export default function HistorialCliente() {
@@ -43,7 +43,7 @@ export default function HistorialCliente() {
         }
 
         const data = await response.json();
-        console.log("Historial recibido en el frontend:", data.historialCompras); // 🔍 Debugging
+        console.log("Historial recibido en el frontend:", data.historialCompras);
 
         // Verifica si "historialCompras" existe y tiene datos
         if (data.historialCompras && data.historialCompras.length > 0) {
@@ -52,8 +52,8 @@ export default function HistorialCliente() {
             fecha: compra.fecha,
             clienteNombre: compra.cliente?.nombre ?? "Desconocido",
             servicioNombre: compra.servicio?.nombre ?? "No disponible",
-            tipoServicio: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
-            plantaNombre: compra.planta?.nombre ?? "No disponible",
+            Tiposervicio: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
+            planta: compra.planta?.nombre ?? "No disponible",
           }));
 
           setHistorial(compras);
@@ -101,9 +101,9 @@ export default function HistorialCliente() {
                   <td className="p-3 text-gray-700">
                     {new Date(item.fecha).toLocaleDateString() || "Fecha no válida"}
                   </td>
-                  <td className="p-3 text-gray-600 font-semibold">{item.servicioNombre}</td>
-                  <td className="p-3 text-gray-700">{item.tipoServicio}</td>
-                  <td className="p-3 text-gray-700">{item.plantaNombre}</td>
+                  <td className="p-3 text-gray-600 font-semibold">{item.servicio}</td>
+                  <td className="p-3 text-gray-700">{item.Tiposervicio}</td>
+                  <td className="p-3 text-gray-700">{item.planta}</td>
                 </tr>
               ))}
             </tbody>
