@@ -63,10 +63,9 @@ export default function ClientesCarinan() {
     }
   }, [nombre, debounceCliente]);
 
-  // Función para resaltar el texto que coincide con el término de búsqueda
   const highlightText = (text: string) => {
     if (!nombre) return text;
-    const parts = text.split(new RegExp(`(${nombre})`, "gi")); // Se divide el texto en partes coincidentes
+    const parts = text.split(new RegExp(`(${nombre})`, "gi"));
     return parts.map((part, index) =>
       part.toLowerCase() === nombre.toLowerCase() ? (
         <span key={index} className="text-blue-500 font-semibold">{part}</span>
@@ -78,14 +77,16 @@ export default function ClientesCarinan() {
 
   return (
     <main className="flex-grow p-6 bg-gradient-to-r from-blue-50 to-blue-100">
-      <p className="text-center text-3xl font-semibold mb-8 text-blue-700">Clientes Carinan</p>
+      <p className="text-center text-3xl font-semibold mb-8 text-blue-700">Clientes Cariñan</p>
 
       <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-xl">
         <label className="block text-lg font-medium mb-2 text-gray-700">Buscar por nombre</label>
         <input
           type="text"
-          className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-          placeholder="Nombre del cliente"
+          className={`w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+            nombre ? "text-black font-semibold" : "text-gray-700"
+          }`}
+          placeholder="Escribe el nombre del cliente para buscar"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
         />
@@ -100,9 +101,9 @@ export default function ClientesCarinan() {
           {clientes.length === 0 ? (
             <p className="text-center text-gray-700">No se encontraron clientes.</p>
           ) : (
-            clientes.map((cliente) => (
+            clientes.map((cliente, index) => (
               <div
-                key={cliente.contrato_id}
+                key={cliente.contrato_id || `cliente-${index}`}
                 className="p-4 bg-white border border-blue-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
               >
                 <p className="font-semibold text-xl text-blue-700">

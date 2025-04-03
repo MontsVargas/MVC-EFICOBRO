@@ -7,22 +7,20 @@ type Cliente = {
   nombre: string;
   direccion: string;
   telefono: string;
-  deuda: number;
 };
 
 export default function ClientesCarinan() {
-  const [clientes, setClientes] = useState<Cliente[]>([]); // Para los clientes
-  const [loading, setLoading] = useState<boolean>(false); // Carga clientes
-  const [mensaje, setMensaje] = useState<string | null>(null); // Mensaje de error o éxito
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [mensaje, setMensaje] = useState<string | null>(null);
 
   useEffect(() => {
     fetchClientes();
-  }, []); // Ejecutamos fetchClientes solo al cargar el componente
+  }, []);
 
-  // Función para obtener los clientes
   const fetchClientes = async () => {
     setLoading(true);
-    setMensaje(null); // Limpiar mensaje antes de buscar
+    setMensaje(null);
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}clientes/clientes/carinan`, {
         method: "GET",
@@ -36,75 +34,58 @@ export default function ClientesCarinan() {
       }
 
       const data = await response.json();
-      setClientes(data.clientes); // Asignar los clientes encontrados
+      setClientes(data.clientes);
     } catch (error) {
       setMensaje("No se pudieron cargar los clientes.");
       console.error(error);
     } finally {
-      setLoading(false); // Dejar de mostrar el indicador de carga
+      setLoading(false);
     }
-  };
-
-  // Función para mostrar el mensaje
-  const renderMensaje = () => {
-    if (mensaje) {
-      return (
-        <div className="text-center text-blue-500 mt-4">{mensaje}</div>
-      );
-    }
-    return null;
-  };
-
-  // Función para mostrar los clientes en una tabla
-  const renderClientes = () => {
-    if (loading) {
-      return <p className="text-center text-blue-800">Cargando...</p>;
-    }
-
-    if (clientes.length === 0) {
-      return <p className="text-center text-black">No se encontraron clientes.</p>;
-    }
-
-    return (
-      <div className="overflow-x-auto mt-4">
-        <table className="min-w-full table-auto border-collapse">
-          <thead className="bg-blue-800 text-white">
-            <tr>
-              <th className="py-2 px-4 border">Nombre</th>
-              <th className="py-2 px-4 border">Dirección</th>
-              <th className="py-2 px-4 border">Teléfono</th>
-              <th className="py-2 px-4 border">Deuda</th>
-            </tr>
-          </thead>
-          <tbody>
-            {clientes.map((cliente, index) => (
-              <tr key={cliente.contrato_id || `cliente-${index}`} className="border-b">
-                <td className="py-2 px-4">{cliente.nombre}</td>
-                <td className="py-2 px-4">{cliente.direccion}</td>
-                <td className="py-2 px-4">{cliente.telefono}</td>
-                <td className="py-2 px-4">${cliente.deuda}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
   };
 
   return (
-    <main className="flex-grow p-6  bg-white text-blue-300">
-      <p className="text-center text-xl font-semibold mb-6 text-blue-900">Clientes Carinan</p>
+    <main className="flex-grow p-6 bg-gradient-to-br from-blue-100 to-blue-300 text-gray-900 min-h-screen">
+      <p className="text-center text-3xl font-bold mb-6 text-blue-900">Clientes Cariñan</p>
 
-      {renderMensaje()}
+      {mensaje && <div className="text-center text-red-600 font-semibold">{mensaje}</div>}
 
-      <div className="mt-6">
-        {renderClientes()}
+      <div className="overflow-x-auto mt-6 shadow-lg rounded-lg border border-blue-300 bg-white">
+        <table className="min-w-full table-auto border-collapse">
+          <thead className="bg-blue-800 text-white text-lg">
+            <tr>
+              <th className="py-3 px-4 border">Nombre</th>
+              <th className="py-3 px-4 border">Dirección</th>
+              <th className="py-3 px-4 border">Teléfono</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={4} className="text-center py-4 text-blue-800 font-semibold">Cargando...</td>
+              </tr>
+            ) : clientes.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="text-center py-4 text-gray-700">No se encontraron clientes.</td>
+              </tr>
+            ) : (
+              clientes.map((cliente, index) => (
+                <tr
+                  key={cliente.contrato_id || `cliente-${index}`}
+                  className="border-b hover:bg-blue-100 transition-all"
+                >
+                  <td className="py-3 px-4 font-semibold text-blue-700">{cliente.nombre}</td>
+                  <td className="py-3 px-4 text-gray-600">{cliente.direccion}</td>
+                  <td className="py-3 px-4 text-gray-600">{cliente.telefono}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* Botón */}
-      <div className="text-center mt-4">
+      <div className="text-center mt-6">
         <Link href={`/Inicio/Clientes-Cari/`}>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+          <button className="px-6 py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition-all shadow-md">
             Regresar
           </button>
         </Link>

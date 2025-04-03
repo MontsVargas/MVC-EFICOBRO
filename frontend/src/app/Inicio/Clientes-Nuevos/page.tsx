@@ -70,28 +70,28 @@ export default function ClientesNuevos() {
   };
 
   return (
-    <main className="flex-grow p-6 bg-white">
+    <main className="flex-grow p-6 bg-[#f0f8fb]"> {/* Fondo claro */}
       <motion.div
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -10, opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.3 }}
         className="max-w-4xl mx-auto p-6 bg-[#f0f8fb] border border-gray-300 shadow-lg rounded-lg"
       >
-        <h2 className="text-center text-2xl font-semibold mb-6 text-[#195c97]">
+        <h2 className="text-center text-3xl font-semibold mb-8 text-[#195c97]">
           Información del cliente nuevo
         </h2>
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit, onError)}>
           {Object.keys(clienteNuevoSchema.shape).map((key) => (
-            <div key={key}>
-              <label className="block text-lg font-medium mb-2 text-black">
+            <div key={key} className="space-y-2">
+              <label className="block text-lg font-medium text-gray-700">
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </label>
               <input
                 type="text"
                 {...register(key as keyof ClienteNuevo)}
-                className="w-full p-3 border border-gray-400 rounded-md text-black"
-                placeholder="Ingrese información"
+                className={`w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700`}
+                placeholder={`Ingrese ${key}`}
               />
             </div>
           ))}
@@ -99,9 +99,9 @@ export default function ClientesNuevos() {
           <div className="text-center mt-6">
             <button
               type="submit"
-              className="bg-[#195c97] text-white py-2 px-6 rounded-md hover:bg-[#6aa3af] transition"
+              className="bg-gradient-to-r from-[#4ab9d2] to-[#5cb8d1] text-white py-3 px-8 rounded-md shadow-md hover:from-[#6aa3af] hover:to-[#74c8e0] transition duration-300 transform hover:scale-105"
             >
-              AGREGAR
+              AGREGAR CLIENTE
             </button>
           </div>
         </form>
