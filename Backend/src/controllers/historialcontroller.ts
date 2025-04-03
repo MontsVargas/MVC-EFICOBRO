@@ -40,7 +40,7 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
                 ...compra,
                 servicio: {
                     nombre: compra.servicio.descripcion, // Descripción del servicio
-                    tipoServicio: compra.servicio.Tiposervicio.nombre // Tipo de servicio s
+                    tipoServicio: compra.servicio.Tiposervicio.nombre // Tipo de servicio
                 }
             }))
         });
@@ -49,3 +49,4 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
         res.status(500).json({ mensaje: "Error al obtener el historial de compras", error });
     }
 };
+
