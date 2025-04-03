@@ -8,7 +8,7 @@ type Historial = {
   id: number;
   fecha: string;
   servicioNombre: string;
-  tipoServicioNombre: string;
+  tipoServicio: string;
   plantaNombre: string;
 };
 
@@ -45,18 +45,23 @@ export default function HistorialCliente() {
         const data = await response.json();
         console.log("Historial recibido en el frontend:", data.historialCompras); // 🔍 Debugging
 
-        const compras = data.historialCompras.map((compra: any) => ({
-          id: compra.id,
-          fecha: compra.fecha,
-          clienteNombre: compra.cliente?.nombre ?? "Desconocido",
-          servicioNombre: compra.servicio?.nombre ?? "No disponible", // 🔥 Manejo de null
-          tipoServicioNombre: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
-          plantaNombre: compra.planta?.nombre ?? "No disponible",
-        }));
+        // Verifica si "historialCompras" existe y tiene datos
+        if (data.historialCompras && data.historialCompras.length > 0) {
+          const compras = data.historialCompras.map((compra: any) => ({
+            id: compra.id,
+            fecha: compra.fecha,
+            clienteNombre: compra.cliente?.nombre ?? "Desconocido",
+            servicioNombre: compra.servicio?.nombre ?? "No disponible",
+            tipoServicio: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
+            plantaNombre: compra.planta?.nombre ?? "No disponible",
+          }));
 
-        setHistorial(compras);
+          setHistorial(compras);
+        } else {
+          setError("No hay historial disponible para este cliente.");
+        }
       } catch (error) {
-        setError("No se pudo cargar el historial");
+        setError("No se pudo cargar el historial. Intente más tarde.");
       } finally {
         setLoading(false);
       }
@@ -93,9 +98,11 @@ export default function HistorialCliente() {
             <tbody>
               {historial.map((item) => (
                 <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-100">
-                  <td className="p-3 text-gray-700">{new Date(item.fecha).toLocaleDateString()}</td>
+                  <td className="p-3 text-gray-700">
+                    {new Date(item.fecha).toLocaleDateString() || "Fecha no válida"}
+                  </td>
                   <td className="p-3 text-gray-600 font-semibold">{item.servicioNombre}</td>
-                  <td className="p-3 text-gray-700">{item.tipoServicioNombre}</td>
+                  <td className="p-3 text-gray-700">{item.tipoServicio}</td>
                   <td className="p-3 text-gray-700">{item.plantaNombre}</td>
                 </tr>
               ))}

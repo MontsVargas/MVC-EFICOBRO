@@ -96,7 +96,7 @@ export default function SeleccionServicio() {
     event.preventDefault();
 
     const requestBody = {
-      clienteId: 1, // Cliente ID (ajústalo según tus necesidades)
+      clienteId: 1, // Aquí puedes cambiar el clienteId según el cliente actual
       servicioId: Number(form.servicio), // ID del servicio
       cantidadServicio: Number(form.cantidad), // Cantidad de servicio
       unidadMedida: unidadMedida, // 'cifra' o 'metro cubico'
@@ -122,7 +122,9 @@ export default function SeleccionServicio() {
         console.error("Error de servidor:", errorData); // Log de la respuesta del servidor
         setMensaje(errorData.mensaje || "No se pudo completar la compra.");
       } else {
+        const data = await response.json(); // Aquí puedes recibir la respuesta del backend, como el historial y el cliente actualizado
         setMensaje("Compra realizada con éxito.");
+        console.log("Compra y cliente actualizados:", data);
       }
     } catch (error) {
       console.error("Error al realizar la compra:", error);
