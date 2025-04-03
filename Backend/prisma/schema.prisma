@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+model Contrato {
+  id           Int       @id @default(autoincrement())
+  descuento    Decimal   @db.Decimal(10,2)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  cliente      Cliente?  @relation(fields: [cliente_id], references: [id])
+  cliente_id   Int?      // Relación opcional con Cliente
+}
+
+model Cliente {
+  id                Int       @id @default(autoincrement())
+  nombre            String    @db.VarChar(64)
+  direccion         String    @db.VarChar(128)
+  telefono          String    @db.VarChar(15)
+  nombreDependencia String?   @db.VarChar(64)
+  id_medidor        String    @db.VarChar(12)
+  deuda             Decimal   @db.Decimal(2,1)
+  contrato_id       Int?      // Relación opcional con Contrato
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  contratos         Contrato[]
+  convenios         Convenio[] // Relación con Convenio (uno a muchos)
+  compras           Compra[]   // Relación con Compra (uno a muchos)
+}
+
+model Convenio {
+  id            Int       @id @default(autoincrement())
+  descuento     Decimal   @db.Decimal(2,1)
+  fecha_limite  DateTime
+  pagado        Boolean
+  clienteId     Int       // Relación con Cliente
+  cliente       Cliente   @relation(fields: [clienteId], references: [id]) // Relación inversa
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Compra {
+  id                 Int        @id @default(autoincrement())
+  clienteId          Int        // Relación con Cliente
+  cliente            Cliente    @relation(fields: [clienteId], references: [id]) // Relación inversa
+  servicio           Servicio  @relation(fields: [servicioId], references: [id])
+  servicioId         Int
+  fecha              DateTime
+  cantidadServicio   Int
+  cobro              Decimal   @db.Decimal(10,2)
+  direccionCompra    String?   @db.VarChar(128)
+  planta             Planta    @relation(fields: [plantaId], references: [id])
+  plantaId           Int
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+model Usuario {
+  id               Int       @id @default(autoincrement())
+  nombre           String    @db.VarChar(64)
+  telefono         String    @db.VarChar(15)
+  correo           String    @db.VarChar(48)
+  contrasenia      String    @db.VarChar(64)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Tiposervicio {
+  id              Int       @id @default(autoincrement())
+  nombre          String    @db.VarChar(48)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  servicios      Servicio[]
+}
+
+model Servicio {
+  id              Int          @id @default(autoincrement())
+  Tiposervicio    Tiposervicio @relation(fields: [TipoServicioId], references: [id])
+  TipoServicioId  Int
+  descripcion     String       @db.VarChar(128)
+  costo           Decimal      @db.Decimal(2,1)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  compras         Compra[]
+}
+
+model Planta {
+  id          Int      @id @default(autoincrement())
+  nombre      String   @db.VarChar(64)
+  direccion   String   @db.VarChar(128)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  compras    Compra[]
+}
