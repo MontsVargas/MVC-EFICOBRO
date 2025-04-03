@@ -49,4 +49,3 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
         res.status(500).json({ mensaje: "Error al obtener el historial de compras", error });
     }
 };
-
