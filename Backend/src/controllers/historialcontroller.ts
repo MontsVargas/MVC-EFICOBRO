@@ -40,7 +40,7 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
                 ...compra,
                 servicio: {
                     nombre: compra.servicio.descripcion, // Descripción del servicio
-                    tipoServicio: compra.servicio.Tiposervicio.id // Tipo de servicio
+                    tipoServicio: compra.servicio.Tiposervicio// Tipo de servicio
                 }
             }))
         });
