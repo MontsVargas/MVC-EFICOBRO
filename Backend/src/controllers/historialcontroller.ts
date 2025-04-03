@@ -34,11 +34,14 @@ export const HistorialCompras = async (req: Request, res: Response): Promise<voi
             return;
         }
 
-        // Responder con éxito, incluyendo también el servicio
+        // Responder con éxito, incluyendo también el servicio y el tipo de servicio
         res.status(200).json({
             historialCompras: historialCompras.map(compra => ({
                 ...compra,
-                servicio: compra.servicio // Incluye los detalles del servicio
+                servicio: {
+                    nombre: compra.servicio.descripcion, // Descripción del servicio
+                    tipoServicio: compra.servicio.Tiposervicio.nombre // Tipo de servicio
+                }
             }))
         });
     } catch (error) {
