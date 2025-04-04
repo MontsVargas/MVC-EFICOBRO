@@ -3,6 +3,25 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+const obtenerClientes = async (req: Request, res: Response) => {
+    try {
+      const clientes = await prisma.cliente.findMany({
+        select: {
+          id: true,
+          nombre: true,
+        }
+      });
+  
+      if (clientes.length === 0) {
+        return res.status(404).json({ mensaje: "NO EXISTEN CLIENTES REGISTRADOS" });
+      }
+  
+      return res.status(200).json({ clientes });
+    } catch (error) {
+      console.error("Error en el servidor:", error);
+      return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
+    }
+  };
 // Obtener todos los servicios que ofrece Inagua
 const obtenerServicios = async (req: Request, res: Response) => {
     try {
@@ -121,4 +140,4 @@ const obtenerTipoServicio = async (req: Request, res: Response) => {
          return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
      }
  };
-export { obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra };
+export { obtenerClientes, obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra };

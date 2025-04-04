@@ -1,81 +1,58 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-type TipoServicio = {
-  id: number;
-  nombre: string;
-};
-
-type Servicio = {
-  id: number;
-  descripcion: string;
-  TipoServicioId: number;
-};
-
-type Planta = {
-  id: number;
-  nombre: string;
-};
+type TipoServicio = { id: number; nombre: string };
+type Servicio = { id: number; descripcion: string; TipoServicioId: number };
+type Planta = { id: number; nombre: string };
+type Cliente = { id: number; nombre: string };
 
 export default function SeleccionServicio() {
   const [tiposDeServicio, setTiposDeServicio] = useState<TipoServicio[]>([]);
   const [servicios, setServicios] = useState<Servicio[]>([]);
   const [serviciosFiltrados, setServiciosFiltrados] = useState<Servicio[]>([]);
   const [plantas, setPlantas] = useState<Planta[]>([]);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [tipoSeleccionado, setTipoSeleccionado] = useState<string>("");
-  const [mensaje, setMensaje] = useState("");
   const [unidadMedida, setUnidadMedida] = useState<string>("cifra");
+  const [mensaje, setMensaje] = useState("");
+
   const [form, setForm] = useState({
+    clienteId: "",
     tipoServicio: "",
     servicio: "",
     cantidad: "",
     costo: "",
     direccion: "",
     planta: "",
-    nombre: "",
   });
 
   useEffect(() => {
-    const fetchTiposDeServicio = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/tipo`);
-        const data = await response.json();
-        setTiposDeServicio(data.tiposervicio || []);
+        const [tipo, servicios, plantas, clientes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios/tipo`).then(res => res.json()),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios`).then(res => res.json()),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/plantas`).then(res => res.json()),
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/cliente`).then(res => res.json()),
+        ]);
+
+        setTiposDeServicio(tipo.tiposervicio || []);
+        setServicios(servicios.servicios || []);
+        setPlantas(plantas.plantas || []);
+        setClientes(clientes.clientes || []);
       } catch (error) {
-        console.error("Error al obtener los tipos de servicio:", error);
-        setMensaje("No se pudieron cargar los tipos de servicio.");
+        console.error("Error cargando datos:", error);
+        setMensaje("Error al cargar los datos.");
       }
     };
 
-    const fetchServicios = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/servicios`);
-        const data = await response.json();
-        setServicios(data.servicios || []);
-      } catch (error) {
-        console.error("Error al obtener los servicios:", error);
-      }
-    };
-
-    const fetchPlantas = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/plantas`);
-        const data = await response.json();
-        setPlantas(data.plantas || []);
-      } catch (error) {
-        console.error("Error al obtener las plantas:", error);
-      }
-    };
-
-    fetchTiposDeServicio();
-    fetchServicios();
-    fetchPlantas();
+    fetchData();
   }, []);
 
   useEffect(() => {
     if (tipoSeleccionado) {
       const filtrados = servicios.filter(
-        (servicio) => servicio.TipoServicioId === parseInt(tipoSeleccionado)
+        (s) => s.TipoServicioId === parseInt(tipoSeleccionado)
       );
       setServiciosFiltrados(filtrados);
     } else {
@@ -83,89 +60,88 @@ export default function SeleccionServicio() {
     }
   }, [tipoSeleccionado, servicios]);
 
-  const handleTipoServicioChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setTipoSeleccionado(event.target.value);
-    setForm({ ...form, tipoServicio: event.target.value, servicio: "" });
+  const handleTipoServicioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTipoSeleccionado(e.target.value);
+    setForm({ ...form, tipoServicio: e.target.value, servicio: "" });
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [event.target.name]: event.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     const requestBody = {
-      clienteId: 1, // Aquí puedes cambiar el clienteId según el cliente actual
-      servicioId: Number(form.servicio), // ID del servicio
-      cantidadServicio: Number(form.cantidad), // Cantidad de servicio
-      unidadMedida: unidadMedida, // 'cifra' o 'metro cubico'
-      cobro: Number(form.costo), // Costo de la compra
-      direccionCompra: form.direccion, // Dirección de la compra
-      plantaId: Number(form.planta), // Planta ID
+      clienteId: Number(form.clienteId),
+      servicioId: Number(form.servicio),
+      cantidadServicio: Number(form.cantidad),
+      unidadMedida,
+      cobro: Number(form.costo),
+      direccionCompra: form.direccion,
+      plantaId: Number(form.planta),
     };
 
-    // Log para depurar el cuerpo de la solicitud
-    console.log("Request Body:", requestBody);
-
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/compras`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}servicios/compras`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error de servidor:", errorData); // Log de la respuesta del servidor
-        setMensaje(errorData.mensaje || "No se pudo completar la compra.");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMensaje(data.mensaje || "No se pudo realizar la compra.");
       } else {
-        const data = await response.json(); // Aquí puedes recibir la respuesta del backend, como el historial y el cliente actualizado
         setMensaje("Compra realizada con éxito.");
-        console.log("Compra y cliente actualizados:", data);
+        console.log("Compra registrada:", data);
       }
-    } catch (error) {
-      console.error("Error al realizar la compra:", error);
-      setMensaje("Error en la compra.");
+    } catch (err) {
+      console.error("Error en la compra:", err);
+      setMensaje("Error al realizar la compra.");
     }
   };
 
   return (
     <main className="flex-grow p-6 bg-[#f0f8fb]">
-      <div className="max-w-4xl mx-auto p-6 bg-[#f0f8fb] border border-gray-300 shadow-lg rounded-lg">
-        <h2 className="text-center text-3xl font-semibold mb-8 text-[#195c97]">Seleccionar un Servicio</h2>
+      <div className="max-w-4xl mx-auto p-6 bg-white border border-gray-300 shadow-lg rounded-lg">
+        <h2 className="text-3xl text-center font-bold mb-6 text-[#195c97]">Registrar Compra</h2>
 
         {mensaje && (
-          <div className={`text-center mb-4 ${mensaje.includes("éxito") ? "text-blue-500" : "text-black"}`}>
+          <div className={`text-center mb-4 ${mensaje.includes("éxito") ? "text-blue-600" : "text-red-600"}`}>
             {mensaje}
           </div>
         )}
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-lg font-medium mb-2 text-black">Nombre del cliente</label>
-            <input
-              type="text"
-              name="nombre"
-              placeholder="Ingrese el nombre"
-              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-              value={form.nombre}
+            <label className="block text-black font-medium mb-2">Cliente</label>
+            <select
+              name="clienteId"
+              className="w-full p-4 border border-blue-400 rounded-lg text-black"
+              value={form.clienteId}
               onChange={handleChange}
-            />
+            >
+              <option value="">Seleccione un cliente</option>
+              {clientes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
-            <label className="block text-lg font-medium mb-2 text-black">Tipo de Servicio</label>
+            <label className="block text-black font-medium mb-2">Tipo de Servicio</label>
             <select
-              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               value={form.tipoServicio}
               onChange={handleTipoServicioChange}
+              className="w-full p-4 border border-blue-400 rounded-lg text-black"
             >
               <option value="">Seleccione un tipo de servicio</option>
               {tiposDeServicio.map((tipo) => (
-                <option key={tipo.id} value={tipo.id.toString()}>
+                <option key={tipo.id} value={tipo.id}>
                   {tipo.nombre}
                 </option>
               ))}
@@ -173,28 +149,28 @@ export default function SeleccionServicio() {
           </div>
 
           <div>
-            <label className="block text-lg font-medium mb-2 text-black">Servicio</label>
+            <label className="block text-black font-medium mb-2">Servicio</label>
             <select
-              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              name="servicio"
               value={form.servicio}
               onChange={handleChange}
-              name="servicio"
+              className="w-full p-4 border border-blue-400 rounded-lg text-black"
             >
               <option value="">Seleccione un servicio</option>
-              {serviciosFiltrados.map((servicio) => (
-                <option key={servicio.id} value={servicio.id.toString()}>
-                  {servicio.descripcion}
+              {serviciosFiltrados.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.descripcion}
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-lg font-medium mb-2 text-black">Unidad de Medida</label>
+            <label className="block text-black font-medium mb-2">Unidad de Medida</label>
             <select
-              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               value={unidadMedida}
               onChange={(e) => setUnidadMedida(e.target.value)}
+              className="w-full p-4 border border-blue-400 rounded-lg text-black"
             >
               <option value="cifra">Cifra</option>
               <option value="metro cubico">Metro Cúbico</option>
@@ -202,62 +178,62 @@ export default function SeleccionServicio() {
           </div>
 
           <div>
-            <label className="block text-lg font-medium mb-2 text-black">Planta</label>
+            <label className="block text-black font-medium mb-2">Cantidad</label>
+            <input
+              type="number"
+              name="cantidad"
+              value={form.cantidad}
+              onChange={handleChange}
+              placeholder="Cantidad"
+              className="w-full p-4 border border-blue-400 rounded-lg text-black"
+            />
+          </div>
+
+          <div>
+            <label className="block text-black font-medium mb-2">Costo</label>
+            <input
+              type="number"
+              name="costo"
+              value={form.costo}
+              onChange={handleChange}
+              placeholder="Costo"
+              className="w-full p-4 border border-blue-400 rounded-lg text-black"
+            />
+          </div>
+
+          <div>
+            <label className="block text-black font-medium mb-2">Dirección de Compra</label>
+            <input
+              type="text"
+              name="direccion"
+              value={form.direccion}
+              onChange={handleChange}
+              placeholder="Dirección"
+              className="w-full p-4 border border-blue-400 rounded-lg text-black"
+            />
+          </div>
+
+          <div>
+            <label className="block text-black font-medium mb-2">Planta</label>
             <select
-              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+              name="planta"
               value={form.planta}
               onChange={handleChange}
-              name="planta"
+              className="w-full p-4 border border-blue-400 rounded-lg text-black"
             >
               <option value="">Seleccione una planta</option>
-              {plantas.map((planta) => (
-                <option key={planta.id} value={planta.id.toString()}>
-                  {planta.nombre}
+              {plantas.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nombre}
                 </option>
               ))}
             </select>
           </div>
 
-          <div>
-            <label className="block text-lg font-medium mb-2 text-black">Cantidad</label>
-            <input
-              type="number"
-              name="cantidad"
-              placeholder={`Ingrese la cantidad en ${unidadMedida}`}
-              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-              value={form.cantidad}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div>
-            <label className="block text-lg font-medium mb-2 text-black">Costo</label>
-            <input
-              type="number"
-              name="costo"
-              placeholder="Ingrese el costo"
-              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-              value={form.costo}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div>
-            <label className="block text-lg font-medium mb-2 text-black">Dirección de Compra</label>
-            <input
-              type="text"
-              name="direccion"
-              placeholder="Ingrese la dirección"
-              className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
-              value={form.direccion}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="text-center mt-6">
+          <div className="text-center">
             <button
               type="submit"
-              className="bg-gradient-to-r from-[#4a5ad2] to-[#205abe] text-white py-3 px-8 rounded-md shadow-md hover:from-[#6aa3af] hover:to-[#74c8e0] transition duration-300 transform hover:scale-105"
+              className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-3 px-8 rounded-md shadow-md hover:scale-105 transition duration-300"
             >
               AGREGAR
             </button>

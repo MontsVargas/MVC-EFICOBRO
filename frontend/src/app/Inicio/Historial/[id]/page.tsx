@@ -43,13 +43,13 @@ export default function HistorialCliente() {
         }
 
         const data = await response.json();
-        console.log("Historial recibido en el frontend:", data.historialCompras); // 🔍 Debugging
+        console.log("Historial recibido en el frontend:", data.historialCompras); 
 
         const compras = data.historialCompras.map((compra: any) => ({
           id: compra.id,
           fecha: compra.fecha,
           clienteNombre: compra.cliente?.nombre ?? "Desconocido",
-          servicioNombre: compra.servicio?.nombre ?? "No disponible", // 🔥 Manejo de null
+          servicioNombre: compra.servicio?.nombre ?? "No disponible", // 
           tipoServicioNombre: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
           plantaNombre: compra.planta?.nombre ?? "No disponible",
         }));

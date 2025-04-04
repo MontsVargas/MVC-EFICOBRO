@@ -1,7 +1,12 @@
 import { Router, Request, Response } from "express";
-import { obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra} from "../controllers/serviciosController"; 
+import { obtenerClientes, obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra} from "../controllers/serviciosController"; 
 
 const rutas = Router();
+
+rutas.get("/cliente", (req: Request, res: Response) => {
+    obtenerClientes(req, res);
+  });
+  
 
 // Rutas para servicios
 rutas.get("/servicios", (req: Request, res: Response) => {
