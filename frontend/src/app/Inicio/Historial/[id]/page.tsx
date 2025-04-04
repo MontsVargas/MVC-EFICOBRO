@@ -48,9 +48,8 @@ export default function HistorialCliente() {
         const compras = data.historialCompras.map((compra: any) => ({
           id: compra.id,
           fecha: compra.fecha,
-          clienteNombre: compra.cliente?.nombre ?? "Desconocido",
-          servicioNombre: compra.servicio?.nombre ?? "No disponible", // 
-          tipoServicioNombre: compra.servicio?.Tiposervicio?.nombre ?? "No disponible",
+          servicioNombre: compra.servicio?.nombre ?? "No disponible", 
+          tipoServicioNombre: compra.servicio?.tipoServicio ?? "No disponible", // Cambié aquí para acceder al tipo de servicio
           plantaNombre: compra.planta?.nombre ?? "No disponible",
         }));
 
