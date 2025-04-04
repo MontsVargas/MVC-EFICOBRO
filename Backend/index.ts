@@ -8,7 +8,8 @@ import rutasCliente from "./src/routes/rutasdeCliente";
 import rutasServicios from "./src/routes/rutasdeServicio";
 import rutasCariñan from "./src/routes/rutasCarinan";
 import rutasPdf from "./src/routes/rutasdeGReporte";
-import rutasdeHistorial from "./src/routes/rutasdeHistorial" 
+import rutasdeHistorial from "./src/routes/rutasdeHistorial" ;
+import rutasRegistro from "./src/routes/rutasRegistro";
 const app = express();
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.use('/servicios', rutasServicios); // Agregamos la ruta de servicios
 app.use('/clientes', rutasCariñan); // Agregamos la ruta de cariñan
 app.use('/pdf', rutasPdf); // Agregamos la ruta de pdf
 app.use('/historial', rutasdeHistorial); // Agregamos la ruta de historial
+app.use('/registro', rutasRegistro); // Agregamos la ruta de registro
 
 
 
