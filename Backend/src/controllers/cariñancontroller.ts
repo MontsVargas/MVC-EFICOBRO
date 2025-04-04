@@ -27,7 +27,7 @@ export const buscarClientesCarinan = async (req: Request, res: Response) => {
                 nombre: true,
                 direccion: true,
                 telefono: true,
-                deuda: true,
+             
             },
         });
 
@@ -64,7 +64,7 @@ export const buscarClientesCarinanPorNombre = async (req: Request, res: Response
                 nombre: true,
                 direccion: true,
                 telefono: true,
-                deuda: true,
+              
             },
         });
 

@@ -8,7 +8,7 @@ type Cliente = {
   nombre: string;
   direccion: string;
   telefono: string;
-  deuda: number;
+
 };
 
 export default function ClientesCarinan() {
@@ -111,7 +111,7 @@ export default function ClientesCarinan() {
                 </p>
                 <p className="text-gray-600">{cliente.direccion}</p>
                 <p className="text-gray-600">{cliente.telefono}</p>
-                <p className="font-semibold text-blue-600">Deuda: ${cliente.deuda}</p>
+     
               </div>
             ))
           )}
