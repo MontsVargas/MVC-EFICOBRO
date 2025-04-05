@@ -192,7 +192,6 @@ export const generateGeneralReport = async (req: Request, res: Response): Promis
   }
 };
 
-//  Reporte Semanal de Compras
 export const generateWeeklyReport = async (req: Request, res: Response): Promise<void> => {
   try {
     // Definir el rango de la semana actual (de domingo a sábado)
@@ -202,7 +201,7 @@ export const generateWeeklyReport = async (req: Request, res: Response): Promise
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6); // Último día de la semana (sábado)
 
-    //  Obtener todas las compras dentro del rango semanal
+    // Obtener todas las compras dentro del rango semanal
     const compras = await prisma.compra.findMany({
       where: {
         fecha: {
@@ -216,10 +215,10 @@ export const generateWeeklyReport = async (req: Request, res: Response): Promise
       }
     });
 
-    //  Crear el documento PDF
+    // Crear el documento PDF
     const doc = new jsPDF();
     
-    //  Encabezado del Reporte
+    // Encabezado del Reporte
     doc.setFontSize(14);
     doc.setFont("Helvetica", "bold");
     doc.setFillColor(173, 216, 230); // Azul claro
@@ -233,49 +232,45 @@ export const generateWeeklyReport = async (req: Request, res: Response): Promise
     doc.setFont("Helvetica", "italic");
     doc.text(`Semana: ${startOfWeek.toLocaleDateString()} - ${endOfWeek.toLocaleDateString()}`, 75, 20);
 
-    // Posiciones iniciales
+    // Posiciones iniciales para el contenido
     let startY = 30;
-    let purchaseStartX = 10;
-    let purchaseStartY = startY;
 
-    // Iterar sobre las compras y mostrarlas en cuadros
+    // Iterar sobre las compras y mostrarlas en el reporte de manera estilizada (sin cuadros)
     compras.forEach((compra, index) => {
       const costoServicio = parseFloat(compra.servicio.costo.toString());
       const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
       const totalCompra = costoServicio * metrosCubicos;
 
-      // Control de posición para evitar que se salgan de la página
-      if (purchaseStartX > 160) {
-        purchaseStartX = 10;
-        purchaseStartY += 50;
+      // Ajuste dinámico para evitar que se salga del margen de la página
+      if (startY > 250) {
+        doc.addPage();
+        startY = 30;
       }
 
-      // Cuadro con información de cada compra
-      doc.setLineWidth(0.5);
-      doc.rect(purchaseStartX, purchaseStartY, 190, 50);
+      // Información de cada compra
       doc.setFontSize(10);
-      doc.text(`Servicio: ${compra.servicio.descripcion}`, purchaseStartX + 5, purchaseStartY + 10);
-      doc.text(`Planta: ${compra.planta.nombre}`, purchaseStartX + 5, purchaseStartY + 20);
-      doc.text(`Cantidad: ${metrosCubicos.toFixed(2)}`, purchaseStartX + 5, purchaseStartY + 30);
-      doc.text(`Total: $${totalCompra.toFixed(2)}`, purchaseStartX + 5, purchaseStartY + 40);
-
-      purchaseStartX += 50; // Mover a la siguiente posición
+      doc.setFont("Helvetica", "normal");
+      
+      doc.text(`Servicio: ${compra.servicio.descripcion}`, 10, startY + 10);
+      doc.text(`Planta: ${compra.planta.nombre}`, 10, startY + 20);
+      doc.text(`Cantidad: ${metrosCubicos.toFixed(2)} m³`, 10, startY + 30);
+      doc.text(`Total: $${totalCompra.toFixed(2)}`, 10, startY + 40);
+      
+      startY += 50; // Ajuste para la siguiente compra
     });
 
-    //  Calcular el total semanal de compras
+    // Calcular el total semanal de compras
     let totalSemanal = compras.reduce((acc, compra) => {
       const costoServicio = parseFloat(compra.servicio.costo.toString());
       const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
       return acc + (costoServicio * metrosCubicos);
     }, 0);
 
-    // Cuadro para el total semanal
-    doc.setLineWidth(1);
-    doc.rect(10, purchaseStartY + 220, 190, 20);
+    // Información del total semanal (centrado y con estilo)
     doc.setFontSize(12);
     doc.setFont("Helvetica", "bold");
     doc.setTextColor(255, 0, 0); // Rojo para el texto
-    doc.text(`Total Semanal: $${totalSemanal.toFixed(2)}`, 100, purchaseStartY + 230, { align: "center" });
+    doc.text(`Total Semanal: $${totalSemanal.toFixed(2)}`, 105, startY + 10, { align: "center" });
 
     // Generar y enviar el PDF
     const pdfBuffer = doc.output("arraybuffer");
@@ -284,7 +279,7 @@ export const generateWeeklyReport = async (req: Request, res: Response): Promise
     res.send(Buffer.from(pdfBuffer));
 
   } catch (error) {
-    console.error(" Error al generar el reporte semanal:", error);
+    console.error("Error al generar el reporte semanal:", error);
     res.status(500).json({ message: "Error interno del servidor" });
   }
 };
