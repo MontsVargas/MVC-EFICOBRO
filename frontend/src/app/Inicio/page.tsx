@@ -3,16 +3,25 @@
 import { motion } from "framer-motion";
 
 export default function Inicio() {
-  const texto = "BIENVENIDO".split(""); // Divide la palabra en un arreglo de letras
+  const texto = "BIENVENIDO".split(""); 
 
   return (
-    <main className="flex-grow p-6 bg-white flex justify-center items-center min-h-screen">
+    <main className="relative flex-grow p-6 bg-white flex justify-center items-center min-h-screen overflow-hidden">
+      {/* Imagen de fondo */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/Eficobro.png" 
+          alt="Fondo"
+          className="w-full h-full object-cover opacity-30"
+        />
+      </div>
+
       <motion.div
-        className="text-center text-4xl font-bold text-blue-800 flex space-x-1"
+        className="text-center text-4xl font-bold text-blue-800 flex space-x-1 z-10"
         initial="hidden"
         animate="visible"
         variants={{
-          visible: { transition: { staggerChildren: 0.2 } }, // Retraso entre letras
+          visible: { transition: { staggerChildren: 0.2 } },
         }}
       >
         {texto.map((letra, index) => (
@@ -32,4 +41,3 @@ export default function Inicio() {
     </main>
   );
 }
-

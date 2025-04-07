@@ -49,7 +49,7 @@ export default function HistorialCliente() {
           id: compra.id,
           fecha: compra.fecha,
           servicioNombre: compra.servicio?.nombre ?? "No disponible", 
-          tipoServicioNombre: compra.servicio?.tipoServicio ?? "No disponible", // Cambié aquí para acceder al tipo de servicio
+          tipoServicioNombre: compra.servicio?.tipoServicio ?? "No disponible",
           plantaNombre: compra.planta?.nombre ?? "No disponible",
         }));
 
@@ -66,7 +66,8 @@ export default function HistorialCliente() {
 
   return (
     <motion.div
-      className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md"
+      className="max-w-4xl mx-auto p-6 rounded-lg shadow-md"
+      style={{ backgroundColor: "#e6f4f9" }}
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -77,7 +78,7 @@ export default function HistorialCliente() {
       {loading ? (
         <p className="text-gray-500">Cargando...</p>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <p className="text-blue-500">{error}</p>
       ) : historial.length > 0 ? (
         <div className="overflow-hidden rounded-lg shadow-md">
           <table className="w-full bg-white border border-gray-200 rounded-lg">
