@@ -29,15 +29,15 @@ export default function HistorialCliente() {
 
     async function fetchHistorial() {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}historial/historial/${id}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-          }
-        );
-
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}historial/historial/${id}`,
+            {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+            }
+          );
+          
         if (!response.ok) {
           throw new Error("Error al obtener el historial");
         }
@@ -49,7 +49,7 @@ export default function HistorialCliente() {
           id: compra.id,
           fecha: compra.fecha,
           servicioNombre: compra.servicio?.nombre ?? "No disponible", 
-          tipoServicioNombre: compra.servicio?.tipoServicio ?? "No disponible",
+          tipoServicioNombre: compra.servicio?.tipoServicio ?? "No disponible", // Cambié aquí para acceder al tipo de servicio
           plantaNombre: compra.planta?.nombre ?? "No disponible",
         }));
 
@@ -66,8 +66,7 @@ export default function HistorialCliente() {
 
   return (
     <motion.div
-      className="max-w-4xl mx-auto p-6 rounded-lg shadow-md"
-      style={{ backgroundColor: "#e6f4f9" }}
+      className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -107,4 +106,4 @@ export default function HistorialCliente() {
       )}
     </motion.div>
   );
-}
+} 
