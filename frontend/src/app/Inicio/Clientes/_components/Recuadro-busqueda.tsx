@@ -12,6 +12,10 @@ type Cliente = {
   id: number;
 };
 
+type BuscarClientesResponse = {
+  clientes: Cliente[];
+};
+
 export default function Formulario() {
   const [nombre, setNombre] = useState("");
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -37,9 +41,10 @@ export default function Formulario() {
         return;
       }
 
-      const data = await response.json();
+      const data: BuscarClientesResponse = await response.json();
       setClientes(data.clientes || []);
-    } catch {
+    } catch (error) {
+      console.error("Error al buscar clientes:", error);
       alert("Error al buscar clientes");
     }
   }
@@ -69,7 +74,6 @@ export default function Formulario() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      
       {/* Formulario de búsqueda */}
       <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
         <motion.input
@@ -107,21 +111,27 @@ export default function Formulario() {
               </tr>
             </thead>
             <tbody>
-              {clientes.map((cliente, index) => (
+              {clientes.map((cliente) => (
                 <motion.tr
-                  key={index}
+                  key={cliente.id}
                   className="border-b border-gray-200 hover:bg-gray-100"
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <td className="p-3 text-blue-900 font-medium">{cliente.nombre}</td>
+                  <td className="p-3 text-blue-900 font-medium">
+                    {cliente.nombre}
+                  </td>
                   <td className="p-3 text-gray-700">{cliente.direccion}</td>
-                  <td className={`p-3 font-semibold ${cliente.contrato_id ? "text-blue-600" : "text-blue-600"}`}>
-                    {cliente.contrato_id ? `Contrato #${cliente.contrato_id}` : "Sin Contrato"}
+                  <td className="p-3 font-semibold text-blue-600">
+                    {cliente.contrato_id
+                      ? `Contrato #${cliente.contrato_id}`
+                      : "Sin Contrato"}
                   </td>
                   <td className="p-3 text-blue-600 underline">
-                    <Link href={`/Inicio/Historial/${cliente.id}`}>Ver Historial</Link>
+                    <Link href={`/Inicio/Historial/${cliente.id}`}>
+                      Ver Historial
+                    </Link>
                   </td>
                 </motion.tr>
               ))}
@@ -138,5 +148,6 @@ export default function Formulario() {
           No se encontraron clientes.
         </motion.p>
       )}
+    </motion.div>
   );
 }
