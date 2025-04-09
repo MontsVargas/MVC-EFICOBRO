@@ -138,6 +138,5 @@ export default function Formulario() {
           No se encontraron clientes.
         </motion.p>
       )}
-    </motion.div>
   );
 }
