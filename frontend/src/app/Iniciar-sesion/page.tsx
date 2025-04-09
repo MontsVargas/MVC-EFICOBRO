@@ -96,15 +96,7 @@ export default function IniciarSesion() {
                         Acceder
                     </button>
                 </form>
-                {/* Agregamos el texto de redirección al registro */}
-                <div className="mt-4 text-center">
-                    <span className="text-sm text-gray-700">
-                        ¿No tienes cuenta?{" "}
-                        <Link href="/Registro" className="text-blue-600 hover:underline">
-                            Regístrate aquí
-                        </Link>
-                    </span>
-                </div>
+        
             </motion.div>
         </div>
     );
