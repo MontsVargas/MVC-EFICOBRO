@@ -16,12 +16,15 @@ export default function ActualizarCompra({ id }: { id: string }) {
   const [compra, setCompra] = useState<Compra | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Convertir el id a número
+  const idNumber = parseInt(id, 10);
+
   useEffect(() => {
-    if (id) {
+    if (idNumber) {
       const fetchCompra = async () => {
         try {
-          console.log(`Fetching data for compra ID: ${id}`);
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}actualizar/obtener/${id}`);
+          console.log(`Fetching data for compra ID: ${idNumber}`);
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}actualizar/obtener/${idNumber}`);
           if (!response.ok) {
             throw new Error(`Error al cargar los datos de la compra: ${response.statusText}`);
           }
@@ -36,14 +39,14 @@ export default function ActualizarCompra({ id }: { id: string }) {
 
       fetchCompra();
     }
-  }, [id]);
+  }, [idNumber]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (compra) {
       try {
         console.log("Enviando datos de actualización:", compra);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}actualizar/compras/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}actualizar/compras/${idNumber}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -71,7 +74,10 @@ export default function ActualizarCompra({ id }: { id: string }) {
     const { name, value } = e.target;
     if (compra) {
       console.log(`Cambiando ${name} a ${value}`);
-      setCompra({ ...compra, [name]: value });
+      setCompra({
+        ...compra,
+        [name]: name === "cantidadServicio" ? parseInt(value) : value, // Convierte a número si es cantidadServicio
+      });
     }
   };
 

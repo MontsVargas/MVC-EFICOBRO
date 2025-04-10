@@ -10,6 +10,8 @@ import rutasCariñan from "./src/routes/rutasCarinan";
 import rutasPdf from "./src/routes/rutasdeGReporte";
 import rutasdeHistorial from "./src/routes/rutasdeHistorial" 
 import rutasActualizar from "./src/routes/rutasActualizar"
+import rutasBusqueda from "./src/routes/rutasBusqueda"
+
 const app = express();
 
 dotenv.config();
@@ -32,7 +34,7 @@ app.use('/clientes', rutasCariñan); // Agregamos la ruta de cariñan
 app.use('/pdf', rutasPdf); // Agregamos la ruta de pdf
 app.use('/historial', rutasdeHistorial); // Agregamos la ruta de historial
 app.use('/actualizar', rutasActualizar);
-
+app.use ('/buscar', rutasBusqueda);
 
 const PORT: number = Number(process.env.PORT) || 3000
 
