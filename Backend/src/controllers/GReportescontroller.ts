@@ -312,7 +312,7 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
     // Tabla
     let startY = 40;
     const tableWidth = 190;
-    const columnWidths = [50, 60, 40, 40]; // Columnas: Descripción, Planta, Cantidad, Total
+    const columnWidths = [70, 60, 35, 40]; // Columnas: Descripción, Planta, Cantidad, Total
     const headers = ["Descripción", "Planta", "Cantidad", "Total"];
 
     // Encabezado de tabla
@@ -349,15 +349,15 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
       const totalCompra = costoServicio * metrosCubicos;
 
       // Colores de las filas alternadas
-      const fillColor = index % 2 === 0 ? [255, 255, 255] : [240, 240, 240];
-      doc.setFillColor(fillColor[0], fillColor[1], fillColor[2]);
+      const fillColor: [number, number, number] = index % 2 === 0 ? [255, 255, 255] : [240, 240, 240];
+      doc.setFillColor(...fillColor);
       doc.rect(10, startY, tableWidth, 10, "F");
 
       doc.setFontSize(10);
       doc.setFont("Helvetica", "normal");
       doc.setTextColor(0, 0, 0); // Texto negro
-      doc.text(compra.servicio ? compra.servicio.descripcion : "N/A", 15, startY + 6);
-      doc.text(compra.planta ? compra.planta.nombre : "N/A", 75, startY + 6);
+      doc.text(compra.servicio ? compra.servicio.descripcion : "N/A", 10, startY + 4);
+      doc.text(compra.planta ? compra.planta.nombre : "N/A", 100, startY + 8);
       doc.text(`${Math.floor(metrosCubicos)} m³`, 135, startY + 6);
 
       const totalFormatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(totalCompra);
@@ -367,6 +367,9 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
       startY += 10;
       totalGeneral += totalCompra;
     });
+
+    // Deja espacio adicional antes del total general
+    startY += 10; // Espacio entre la tabla y el total general
 
     // Total general
     const totalGeneralFormatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(totalGeneral);
@@ -396,76 +399,125 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
   }
 };
 
-
-export const generateYearlyReport = async (req: Request, res: Response): Promise<void> => {
+export const generateAnnualReport = async (req: Request, res: Response): Promise<void> => {
   try {
-    const anio = req.query.year ? parseInt(req.query.year as string, 10) : new Date().getFullYear();
+    const yearParam = parseInt(req.query.anio as string);
 
-    if (isNaN(anio)) {
-      res.status(400).json({ message: "Año inválido" });
-      return;
-    }
+    const today = new Date();
+    const year = !isNaN(yearParam) ? yearParam : today.getFullYear();
 
-    const startOfYear = new Date(anio, 0, 1); // Primer día del año
-    const endOfYear = new Date(anio, 11, 31, 23, 59, 59, 999); // Último día del año
+    const startOfYear = new Date(year, 0, 1);
+    const endOfYear = new Date(year, 11, 31, 23, 59, 59);
 
     const compras = await prisma.compra.findMany({
       where: {
         fecha: {
           gte: startOfYear,
-          lte: endOfYear,
-        },
+          lte: endOfYear
+        }
       },
       include: {
-        servicio: true,
-        planta: true,
-      },
+        servicio: { include: { Tiposervicio: true } },
+        planta: true
+      }
     });
 
     const doc = new jsPDF();
     doc.setFontSize(14);
     doc.setFont("Helvetica", "bold");
+
+    // Encabezado
     doc.setFillColor(173, 216, 230); // Azul claro
     doc.rect(0, 0, 210, 30, "F");
-    doc.text("INSTITUTO DE AGUA DEL ESTADO", 60, 20);
+    doc.text("INSTITUTO DE AGUA DEL ESTADO", 60, 10);
     doc.setFontSize(12);
     doc.setFont("Helvetica", "italic");
-    doc.text(`Reporte Anual - ${anio}`, 80, 25);
+    doc.text("Reporte Anual", 80, 15);
 
+    doc.text(`Año: ${year}`, 85, 25);
+
+    // Tabla
     let startY = 40;
-    let totalAnual = 0;
+    const tableWidth = 190;
+    const columnWidths = [50, 60, 45, 30]; // Columnas: Descripción, Planta, Cantidad, Total
+    const headers = ["Descripción", "Planta", "Cantidad", "Total"];
 
+    // Encabezado de tabla
+    doc.setFontSize(10);
+    doc.setFont("Helvetica", "bold");
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(0, 0, 139); // Azul oscuro
+    doc.rect(10, startY, tableWidth, 10, "F");
+    headers.forEach((header, index) => {
+      doc.text(header, 10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0) + 5, startY + 7);
+    });
+
+    startY += 10;
+    let totalGeneral = 0;
+
+    // Contenido de la tabla
     compras.forEach((compra, index) => {
-      const costoServicio = compra.servicio ? parseFloat(compra.servicio.costo.toString()) : 0;
+      if (startY > 270) {
+        doc.addPage();
+        startY = 20;
+        doc.setFontSize(10);
+        doc.setFont("Helvetica", "bold");
+        doc.setTextColor(255, 255, 255);
+        doc.setFillColor(0, 0, 139); // Azul oscuro
+        doc.rect(10, startY, tableWidth, 10, "F");
+        headers.forEach((header, index) => {
+          doc.text(header, 10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0) + 5, startY + 7);
+        });
+        startY += 10;
+      }
+
+      const costoServicio = compra.servicio?.costo ? parseFloat(compra.servicio.costo.toString()) : 0;
       const metrosCubicos = compra.cantidadServicio ? parseFloat(compra.cantidadServicio.toString()) : 0;
       const totalCompra = costoServicio * metrosCubicos;
 
-      totalAnual += totalCompra;
+      // Colores de las filas alternadas
+      const fillColor: [number, number, number] = index % 2 === 0 ? [255, 255, 255] : [240, 240, 240];
+      doc.setFillColor(...fillColor);
+      doc.rect(10, startY, tableWidth, 10, "F");
 
       doc.setFontSize(10);
-      doc.text(`Compra #${index + 1}`, 10, startY);
-      doc.text(`Servicio: ${compra.servicio?.descripcion || "N/A"}`, 10, startY + 10);
-      doc.text(`Planta: ${compra.planta?.nombre || "N/A"}`, 10, startY + 20);
-      doc.text(`Cantidad: ${metrosCubicos.toFixed(2)}`, 10, startY + 30);
-      doc.text(`Total Compra: $${totalCompra.toFixed(2)}`, 10, startY + 40);
+      doc.setFont("Helvetica", "normal");
+      doc.setTextColor(0, 0, 0); // Texto negro
+      doc.text(compra.servicio ? compra.servicio.descripcion : "N/A", 10, startY + 6);
+      doc.text(compra.planta ? compra.planta.nombre : "N/A", 85, startY + 6);
+      doc.text(`${Math.floor(metrosCubicos)} m³`, 120, startY + 6);
 
-      startY += 50;
+      const totalFormatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(totalCompra);
+      doc.setTextColor(255, 0, 0); // Rojo para el total
+      doc.text(totalFormatted, 160, startY + 6);
 
-      if (startY > 240) {
-        doc.addPage();
-        startY = 20;
-      }
+      startY += 10;
+      totalGeneral += totalCompra;
     });
 
-    // Total anual
-    doc.setFontSize(16);
-    doc.setFont("Helvetica","bold");
-    doc.setTextColor(255, 0, 0); // Rojo para el texto
-    doc.text(`Total Anual: $${totalAnual.toFixed(2)}`, 10, startY);
+    // Deja espacio adicional antes del total general
+    startY += 10; // Espacio entre la tabla y el total general
+
+    // Total general
+    const totalGeneralFormatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(totalGeneral);
+    doc.setFontSize(12);
+    doc.setFont("Helvetica", "bold");
+    doc.setTextColor(255, 0, 0); // Rojo para el total
+    doc.text(`Total General: ${totalGeneralFormatted}`, 130, startY);
+
+    // Pie de página con fecha
+    const fechaGeneracion = new Date().toLocaleDateString("es-MX", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Reporte generado el ${fechaGeneracion}`, 10, 290);
 
     const pdfBuffer = doc.output("arraybuffer");
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="reporte_anual_${anio}.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="reporte_anual_${year}.pdf"`);
     res.send(Buffer.from(pdfBuffer));
 
   } catch (error) {
