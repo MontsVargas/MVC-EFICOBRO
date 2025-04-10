@@ -4,10 +4,20 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Reporte por Cliente
+
+// Función para obtener el nombre del mes en español
+const nombreMes = (mesNumero: number): string => {
+  const meses = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+  return meses[mesNumero - 1] || "";
+};
+
 export const generatePDFByClientName = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { nombre } = req.query;
+    const { nombre, mes, anio } = req.query;
+
     if (!nombre) {
       res.status(400).json({ message: "Nombre del cliente requerido" });
       return;
@@ -31,81 +41,126 @@ export const generatePDFByClientName = async (req: Request, res: Response): Prom
       res.status(404).json({ message: "Cliente no encontrado" });
       return;
     }
-   // Datos del cliente e instituto 
+
+    let comprasFiltradas = cliente.compras;
+
+    const mesNumero = mes ? parseInt(mes as string) : null;
+    const anioNumero = anio ? parseInt(anio as string) : null;
+
+    if (mesNumero && (mesNumero < 1 || mesNumero > 12)) {
+      res.status(400).json({ message: "Mes inválido. Debe estar entre 1 y 12." });
+      return;
+    }
+
+    // Filtrar por mes y año si se proporcionan
+    if (mesNumero || anioNumero) {
+      comprasFiltradas = cliente.compras.filter((compra) => {
+        const fecha = new Date(compra.fecha as Date);
+        const coincideMes = mesNumero ? (fecha.getMonth() + 1 === mesNumero) : true;
+        const coincideAnio = anioNumero ? (fecha.getFullYear() === anioNumero) : true;
+        return coincideMes && coincideAnio;
+      });
+    }
+
+    // Crear el PDF
     const doc = new jsPDF();
-    doc.setFillColor(173, 216, 230); // Azul muy bajito
+    doc.setFillColor(173, 216, 230);
     doc.rect(0, 0, 210, 20, "F");
     doc.setFontSize(16);
     doc.setFont("Helvetica", "bold");
     doc.text("INSTITUTO DEL AGUA DEL ESTADO", 55, 10);
+
+    // Subtítulo dinámico
     doc.setFontSize(14);
     doc.setFont("Helvetica", "italic");
-    doc.text("Reporte del cliente", 85, 16);
+    let subtitulo = "Reporte del cliente";
+    if (mesNumero || anioNumero) {
+      const mesNombre = mesNumero ? nombreMes(mesNumero) : "";
+      const añoTexto = anioNumero ? anioNumero.toString() : "";
+      subtitulo += ` (${[mesNombre, añoTexto].filter(Boolean).join(" ")})`;
+    }
+    doc.text(subtitulo, 85, 16);
 
     let startY = 30;
 
-    // Configurar fuente y tamaño
-   doc.setFontSize(12);
-   doc.setFont("Helvetica", "bold");
+    // Cuadro de información del cliente
+    doc.setFontSize(12);
+    doc.setFont("Helvetica", "bold");
 
-   // Dibujar el cuadro (x, y, ancho, alto)
-   const cuadroX = 10; 
-   const cuadroY = startY - 5; // Un poco más arriba para margen
-   const cuadroAncho = 80; // Ancho del cuadro
-   const cuadroAlto = 20; // Espacio suficiente para los datos
+    const cuadroX = 10;
+    const cuadroY = startY - 5;
+    const cuadroAncho = 80;
+    const cuadroAlto = 20;
 
-   doc.rect(cuadroX, cuadroY, cuadroAncho, cuadroAlto); // Dibujar cuadro
+    doc.rect(cuadroX, cuadroY, cuadroAncho, cuadroAlto);
+    doc.setDrawColor(0);
+    doc.setFillColor(230, 230, 250);
+    doc.rect(cuadroX, cuadroY, cuadroAncho, cuadroAlto, "FD");
+    doc.text(`Cliente: ${cliente.nombre}`, 11, startY + 1);
+    doc.text(`Dirección: ${cliente.direccion}`, 11, startY + 6);
+    doc.text(`Teléfono: ${cliente.telefono}`, 11, startY + 10);
 
-   // Agregar texto dentro del cuadro
-   doc.setDrawColor(0); // Color del borde (Negro)
-   doc.setFillColor(230, 230, 250); // Color de fondo (Lavanda)
-   doc.rect(cuadroX, cuadroY, cuadroAncho, cuadroAlto, "FD"); // "FD" = Fill + Draw
-   doc.text(`Cliente: ${cliente.nombre}`, 11,  startY + 1 );
-   doc.text(`Dirección: ${cliente.direccion}`, 11, startY + 6);
-   doc.text(`Teléfono: ${cliente.telefono}`, 11, startY + 10);
+    startY += 40;
+    let purchaseStartY = startY;
 
-   startY += 40; // Mover la posición para el siguiente contenido
+    if (comprasFiltradas.length === 0) {
+      doc.setFontSize(10);
+      doc.text("No hay compras registradas para este mes/año.", 10, purchaseStartY);
+      purchaseStartY += 10;
+    } else {
+      comprasFiltradas.forEach((compra) => {
+        const costoServicio = parseFloat(compra.servicio.costo.toString());
+        const cantidadServicio = Math.round(parseFloat(compra.cantidadServicio.toString()));
+        const totalCompra = costoServicio * cantidadServicio;
 
-   let purchaseStartY = startY; // Posición inicial Y
+        const fecha = new Date(compra.fecha as Date);
+        const fechaFormateada = fecha.toLocaleDateString("es-MX");
 
-cliente.compras.forEach((compra) => {
-    const costoServicio = parseFloat(compra.servicio.costo.toString());
-    const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
-    const totalCompra = costoServicio * metrosCubicos;
+        doc.setFontSize(10);
+        doc.text(`Fecha: ${fechaFormateada}`, 10, purchaseStartY);
+        doc.text(`Servicio: ${compra.servicio.descripcion}`, 10, purchaseStartY + 10);
+        doc.text(`Planta: ${compra.planta.nombre}`, 10, purchaseStartY + 20);
+        doc.text(`Cantidad: ${cantidadServicio}`, 10, purchaseStartY + 30);
+        doc.text(`Total: ${totalCompra.toLocaleString("es-MX", { style: "currency", currency: "MXN" })}`, 10, purchaseStartY + 40);
 
-    // Agregar datos de la compra en formato listado
-    doc.setFontSize(10);
-    doc.text(`Servicio: ${compra.servicio.descripcion}`, 10, purchaseStartY);
-    doc.text(`Planta: ${compra.planta.nombre}`, 10, purchaseStartY + 10);
-    doc.text(`Cantidad: ${metrosCubicos.toFixed(2)}`, 10, purchaseStartY + 20);
-    doc.text(`Total: $${totalCompra.toFixed(2)}`, 10, purchaseStartY + 30);
+        purchaseStartY += 50;
+      });
+    }
 
-    // Espaciado entre cada compra
-    purchaseStartY += 40; 
-});
-
-// Ajuste de `startY` para la siguiente sección del PDF
-startY = purchaseStartY;
-
-    // Total de compras
-    let totalGastado = cliente.compras.reduce((acc, compra) => {
+    // Total gastado
+    const totalGastado = comprasFiltradas.reduce((acc, compra) => {
       const costoServicio = parseFloat(compra.servicio.costo.toString());
-      const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
-      const totalCompra = costoServicio * metrosCubicos;
-      return acc + totalCompra;
+      const cantidadServicio = Math.round(parseFloat(compra.cantidadServicio.toString()));
+      return acc + (costoServicio * cantidadServicio);
     }, 0);
 
-    // Cuadro para el total
     doc.setLineWidth(1);
-    doc.rect(60, startY, 70, 20);
+    doc.rect(60, purchaseStartY, 90, 20);
     doc.setFontSize(16);
     doc.setFont("Helvetica", "bold");
-    doc.setTextColor(255, 0, 0); // Rojo para el texto
-    doc.text(`Total gastado: $${totalGastado.toFixed(2)}`, 95, startY + 13, { align: "center" });
+    doc.setTextColor(255, 0, 0);
+    doc.text(
+      `Total gastado: ${totalGastado.toLocaleString("es-MX", { style: "currency", currency: "MXN" })}`,
+      105,
+      purchaseStartY + 13,
+      { align: "center" }
+    );
 
     const pdfBuffer = doc.output("arraybuffer");
+
+    // Nombre del archivo dinámico
+    const nombreArchivo = [
+      `estado_cuenta_cliente_${cliente.nombre}`,
+      mesNumero ? nombreMes(mesNumero) : "",
+      anioNumero ? anioNumero.toString() : ""
+    ]
+      .filter(Boolean)
+      .join("_")
+      .replace(/\s+/g, "_")
+      .toLowerCase();
+
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="estado_cuenta_cliente_${cliente.nombre}.pdf"`);
+    res.setHeader("Content-Disposition", `attachment; filename="${nombreArchivo}.pdf"`);
     res.send(Buffer.from(pdfBuffer));
   } catch (error) {
     console.error("Error al generar el PDF:", error);
@@ -192,105 +247,20 @@ export const generateGeneralReport = async (req: Request, res: Response): Promis
   }
 };
 
-export const generateWeeklyReport = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // Definir el rango de la semana actual (de domingo a sábado)
-    const startOfWeek = new Date();
-    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay()); // Primer día de la semana (domingo)
-    
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Último día de la semana (sábado)
-
-    // Obtener todas las compras dentro del rango semanal
-    const compras = await prisma.compra.findMany({
-      where: {
-        fecha: {
-          gte: startOfWeek,
-          lte: endOfWeek
-        }
-      },
-      include: {
-        servicio: { include: { Tiposervicio: true } },
-        planta: true
-      }
-    });
-
-    // Crear el documento PDF
-    const doc = new jsPDF();
-    
-    // Encabezado del Reporte
-    doc.setFontSize(14);
-    doc.setFont("Helvetica", "bold");
-    doc.setFillColor(173, 216, 230); // Azul claro
-    doc.rect(0, 0, 210, 30, "F");
-    doc.text("INSTITUTO DE AGUA DEL ESTADO", 60, 10);
-    doc.setFontSize(12);
-    doc.setFont("Helvetica", "italic");
-    doc.text("Reporte Semanal", 80, 15);
-
-    doc.setFontSize(10);
-    doc.setFont("Helvetica", "italic");
-    doc.text(`Semana: ${startOfWeek.toLocaleDateString()} - ${endOfWeek.toLocaleDateString()}`, 75, 20);
-
-    // Posiciones iniciales para el contenido
-    let startY = 30;
-
-    // Iterar sobre las compras y mostrarlas en el reporte de manera estilizada (sin cuadros)
-    compras.forEach((compra, index) => {
-      const costoServicio = parseFloat(compra.servicio.costo.toString());
-      const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
-      const totalCompra = costoServicio * metrosCubicos;
-
-      // Ajuste dinámico para evitar que se salga del margen de la página
-      if (startY > 250) {
-        doc.addPage();
-        startY = 30;
-      }
-
-      // Información de cada compra
-      doc.setFontSize(10);
-      doc.setFont("Helvetica", "normal");
-      
-      doc.text(`Servicio: ${compra.servicio.descripcion}`, 10, startY + 10);
-      doc.text(`Planta: ${compra.planta.nombre}`, 10, startY + 20);
-      doc.text(`Cantidad: ${metrosCubicos.toFixed(2)} m³`, 10, startY + 30);
-      doc.text(`Total: $${totalCompra.toFixed(2)}`, 10, startY + 40);
-      
-      startY += 50; // Ajuste para la siguiente compra
-    });
-
-    // Calcular el total semanal de compras
-    let totalSemanal = compras.reduce((acc, compra) => {
-      const costoServicio = parseFloat(compra.servicio.costo.toString());
-      const metrosCubicos = parseFloat(compra.cantidadServicio.toString());
-      return acc + (costoServicio * metrosCubicos);
-    }, 0);
-
-    // Información del total semanal (centrado y con estilo)
-    doc.setFontSize(12);
-    doc.setFont("Helvetica", "bold");
-    doc.setTextColor(255, 0, 0); // Rojo para el texto
-    doc.text(`Total Semanal: $${totalSemanal.toFixed(2)}`, 105, startY + 10, { align: "center" });
-
-    // Generar y enviar el PDF
-    const pdfBuffer = doc.output("arraybuffer");
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="reporte_semanal.pdf"`);
-    res.send(Buffer.from(pdfBuffer));
-
-  } catch (error) {
-    console.error("Error al generar el reporte semanal:", error);
-    res.status(500).json({ message: "Error interno del servidor" });
-  }
-};
-
 // Reporte Mensual
+// Reporte Mensual con parámetros y formato en pesos mexicanos
 export const generateMonthlyReport = async (req: Request, res: Response): Promise<void> => {
   try {
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    const endOfMonth = new Date(startOfMonth);
-    endOfMonth.setMonth(startOfMonth.getMonth() + 1);
+    // Obtener mes y año desde query params, o usar el actual
+    const monthParam = parseInt(req.query.mes as string);
+    const yearParam = parseInt(req.query.anio as string);
+
+    const today = new Date();
+    const year = !isNaN(yearParam) ? yearParam : today.getFullYear();
+    const month = !isNaN(monthParam) ? monthParam - 1 : today.getMonth(); // JS usa meses 0-11
+
+    const startOfMonth = new Date(year, month, 1);
+    const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59); // último día del mes a las 23:59:59
 
     const compras = await prisma.compra.findMany({
       where: {
@@ -316,7 +286,7 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
     doc.text("Reporte Mensual", 80, 15);
 
     const monthName = startOfMonth.toLocaleString('default', { month: 'long' });
-    doc.text(`Mes: ${monthName} ${startOfMonth.getFullYear()}`, 75, 25);
+    doc.text(`Mes: ${monthName} ${year}`, 75, 25);
 
     let startY = 40;
     let totalGeneral = 0;
@@ -331,27 +301,30 @@ export const generateMonthlyReport = async (req: Request, res: Response): Promis
       const metrosCubicos = compra.cantidadServicio ? parseFloat(compra.cantidadServicio.toString()) : 0;
       const totalCompra = costoServicio * metrosCubicos;
 
+      const totalFormatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(totalCompra);
+
       doc.setFontSize(10);
       doc.setFont("Helvetica", "normal");
       doc.text(`Compra #${index + 1}`, 10, startY);
       doc.text(`Servicio: ${compra.servicio ? compra.servicio.descripcion : "N/A"}`, 10, startY + 5);
       doc.text(`Planta: ${compra.planta ? compra.planta.nombre : "N/A"}`, 10, startY + 10);
-      doc.text(`Cantidad: ${metrosCubicos.toFixed(2)} m³`, 10, startY + 15);
-      doc.text(`Total: $${totalCompra.toFixed(2)}`, 10, startY + 20);
+      doc.text(`Cantidad: ${Math.floor(metrosCubicos)} m³`, 10, startY + 15);
+      doc.text(`Total: ${totalFormatted}`, 10, startY + 20);
 
       startY += 30;
       totalGeneral += totalCompra;
     });
 
     // Total general
+    const totalGeneralFormatted = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(totalGeneral);
     doc.setFontSize(12);
     doc.setFont("Helvetica", "bold");
     doc.setTextColor(255, 0, 0); // Rojo para el texto
-    doc.text(`Total General: $${totalGeneral.toFixed(2)}`, 130, startY);
+    doc.text(`Total General: ${totalGeneralFormatted}`, 130, startY);
 
     const pdfBuffer = doc.output("arraybuffer");
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'attachment; filename="reporte_mensual.pdf"');
+    res.setHeader("Content-Disposition", `attachment; filename="reporte_mensual_${month + 1}_${year}.pdf"`);
     res.send(Buffer.from(pdfBuffer));
 
   } catch (error) {
