@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 type Cliente = {
+  id: number;
   nombre: string;
   direccion: string;
   contrato_id?: number;
+  contratoStatus?: string; // Para almacenar el estado del contrato
 };
 
 export default function Todos() {
@@ -37,6 +39,42 @@ export default function Todos() {
     obtenerClientes();
   }, []);
 
+  // Función para verificar el contrato del cliente
+  const verificarContrato = async (idCliente: number) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}contratos/${idCliente}/contrato`
+      );
+      const data = await response.json();
+
+      if (data.tieneContrato) {
+        return "Con Contrato";
+      } else {
+        return "Sin Contrato";
+      }
+    } catch (error) {
+      console.error(error);
+      return "Error al verificar contrato";
+    }
+  };
+
+  // Actualizar el estado con la verificación de los contratos
+  useEffect(() => {
+    async function obtenerContratos() {
+      const updatedClientes = await Promise.all(
+        clientes.map(async (cliente) => {
+          const contratoStatus = await verificarContrato(cliente.id);
+          return { ...cliente, contratoStatus };
+        })
+      );
+      setClientes(updatedClientes);
+    }
+
+    if (clientes.length > 0) {
+      obtenerContratos();
+    }
+  }, [clientes]);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50 p-6">
       {/* Título con animación y nueva tipografía */}
@@ -46,7 +84,7 @@ export default function Todos() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-         Lista de Clientes
+        Lista de Clientes
       </motion.h1>
 
       {/* Mensaje de error si ocurre un problema */}
@@ -68,7 +106,7 @@ export default function Todos() {
             <tr>
               <th className="p-4 text-left">Nombre</th>
               <th className="p-4 text-left">Dirección</th>
-              <th className="p-4 text-left">Contrato ID</th>
+              <th className="p-4 text-left">Contrato</th>
             </tr>
           </thead>
           <tbody>
@@ -82,9 +120,7 @@ export default function Todos() {
               >
                 <td className="p-4 text-blue-900">{cliente.nombre}</td>
                 <td className="p-4 text-blue-900">{cliente.direccion}</td>
-                <td className="p-4 text-blue-900">
-                  {cliente.contrato_id ? cliente.contrato_id : "Sin Contrato"}
-                </td>
+                <td className="p-4 text-blue-900">{cliente.contratoStatus || "Verificando..."}</td>
               </motion.tr>
             ))}
           </tbody>

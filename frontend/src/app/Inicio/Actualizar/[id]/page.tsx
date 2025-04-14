@@ -161,7 +161,7 @@ export default function ActualizarCompra() {
             id="cantidadServicio"
             value={compra.cantidadServicio || ""}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-3 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
         </div>
@@ -174,7 +174,7 @@ export default function ActualizarCompra() {
             id="direccionCompra"
             value={compra.direccionCompra || ""}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-3 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
         </div>
@@ -186,7 +186,7 @@ export default function ActualizarCompra() {
             id="tipoServicioId"
             value={compra.tipoServicioId || ""}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-3 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           >
             <option value="">Selecciona un tipo de servicio</option>
@@ -209,13 +209,13 @@ export default function ActualizarCompra() {
             id="servicioId"
             value={compra.servicioId || ""}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-3 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           >
             <option value="">Selecciona un servicio</option>
             {Array.isArray(filteredServicios) && filteredServicios.length ? (
               filteredServicios.map((servicio) => (
-                <option className="text-black" key={servicio.id} value={servicio.id}>
+                <option key={servicio.id} value={servicio.id}>
                   {servicio.nombre}
                 </option>
               ))
@@ -232,7 +232,7 @@ export default function ActualizarCompra() {
             id="plantaId"
             value={compra.plantaId || ""}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full p-3 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           >
             <option value="">Selecciona una planta</option>

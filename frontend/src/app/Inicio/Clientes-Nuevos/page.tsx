@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import clienteNuevoSchema from "@/schemas/info-cliente-nuevo-schema";
-import { useState } from "react";
+
 
 interface ClienteNuevo {
   nombre: string;
@@ -17,7 +17,6 @@ interface ClienteNuevo {
 
 export default function ClientesNuevos() {
   const router = useRouter();
-  const [contratoInfo, setContratoInfo] = useState<string | null>(null); // Estado para contrato
   const { register, handleSubmit } = useForm<ClienteNuevo>({
     resolver: zodResolver(clienteNuevoSchema),
   });
@@ -49,26 +48,6 @@ export default function ClientesNuevos() {
     });
     alert(errorMessages.trim());
   };
-
-  // Función para verificar el contrato del cliente
-  const verificarContrato = async (idCliente: string) => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}contratos/${idCliente}/contrato`
-      );
-      const data = await response.json();
-
-      if (data.tieneContrato) {
-        setContratoInfo(`El cliente tiene un contrato con ID: ${data.mensaje}`);
-      } else {
-        setContratoInfo("El cliente no tiene contrato.");
-      }
-    } catch (error) {
-      setContratoInfo("Hubo un error al verificar el contrato.");
-      console.error(error);
-    }
-  };
-
   return (
     <main className="flex-grow p-6 bg-[#f0f8fb]"> {/* Fondo claro */}
       <motion.div

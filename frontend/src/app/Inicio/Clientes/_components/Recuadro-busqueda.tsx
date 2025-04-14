@@ -1,15 +1,16 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useCallback, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import debounce from "just-debounce-it";
 import Link from "next/link";
 
 type Cliente = {
+  id: number;
   nombre: string;
   direccion: string;
   contrato_id?: number;
-  id: number;
+  contratoStatus?: string; // Campo para almacenar el estado del contrato
 };
 
 type BuscarClientesResponse = {
@@ -19,7 +20,28 @@ type BuscarClientesResponse = {
 export default function Formulario() {
   const [nombre, setNombre] = useState("");
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
+  // Función para verificar el contrato del cliente
+  const verificarContrato = async (idCliente: number) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}contratos/${idCliente}/contrato`
+      );
+      const data = await response.json();
+
+      if (data.tieneContrato) {
+        return "Con Contrato";
+      } else {
+        return "Sin Contrato";
+      }
+    } catch (error) {
+      console.error("Error al verificar el contrato:", error);
+      return "Error al verificar contrato";
+    }
+  };
+
+  // Función para buscar clientes con debounce
   async function buscarCliente(cliente: string) {
     try {
       if (cliente === "") {
@@ -37,7 +59,7 @@ export default function Formulario() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        alert(errorData.message || "Error desconocido");
+        setError(errorData.message || "Error desconocido");
         return;
       }
 
@@ -45,10 +67,11 @@ export default function Formulario() {
       setClientes(data.clientes || []);
     } catch (error) {
       console.error("Error al buscar clientes:", error);
-      alert("Error al buscar clientes");
+      setError("Error al buscar clientes");
     }
   }
 
+  // Función para manejar el cambio en el input
   const debounceCliente = useCallback(
     debounce(async (nombre: string) => {
       await buscarCliente(nombre);
@@ -66,6 +89,23 @@ export default function Formulario() {
     setNombre(nuevoNombre);
     debounceCliente(nuevoNombre);
   };
+
+  // Actualizar los contratos de los clientes una vez que la lista haya sido obtenida
+  useEffect(() => {
+    async function obtenerContratos() {
+      const updatedClientes = await Promise.all(
+        clientes.map(async (cliente) => {
+          const contratoStatus = await verificarContrato(cliente.id);
+          return { ...cliente, contratoStatus };
+        })
+      );
+      setClientes(updatedClientes);
+    }
+
+    if (clientes.length > 0) {
+      obtenerContratos();
+    }
+  }, [clientes]);
 
   return (
     <motion.div
@@ -92,6 +132,18 @@ export default function Formulario() {
           Buscar
         </motion.button>
       </form>
+
+      {/* Mensaje de error si ocurre un problema */}
+      {error && (
+        <motion.div
+          className="bg-red-100 border border-red-500 text-red-700 px-4 py-3 rounded-lg mb-4 w-full max-w-lg text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {error}
+        </motion.div>
+      )}
 
       {/* Tabla de clientes con animación */}
       {clientes.length > 0 ? (
@@ -124,9 +176,7 @@ export default function Formulario() {
                   </td>
                   <td className="p-3 text-gray-700">{cliente.direccion}</td>
                   <td className="p-3 font-semibold text-blue-600">
-                    {cliente.contrato_id
-                      ? `Contrato #${cliente.contrato_id}`
-                      : "Sin Contrato"}
+                    {cliente.contratoStatus || "Verificando..."}
                   </td>
                   <td className="p-3 text-blue-600 underline">
                     <Link href={`/Inicio/Historial/${cliente.id}`}>
