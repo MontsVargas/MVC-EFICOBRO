@@ -1,8 +1,11 @@
+
 "use client";
 
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import debounce from "just-debounce-it";
+
+type ClienteSugerido = { id: number; nombre: string };
 
 export default function Cuentas() {
   const [nombreInput, setNombreInput] = useState("");
@@ -13,10 +16,9 @@ export default function Cuentas() {
   const [añoMensual, setAñoMensual] = useState(new Date().getFullYear().toString());
   const [añoAnual, setAñoAnual] = useState(new Date().getFullYear().toString());
   const [error, setError] = useState<string | null>(null);
-  const [clientesSugeridos, setClientesSugeridos] = useState<string[]>([]); // Para mostrar sugerencias
-  const [clienteDetalle, setClienteDetalle] = useState<any>(null); // Para almacenar el cliente seleccionado
+  const [clientesSugeridos, setClientesSugeridos] = useState<ClienteSugerido[]>([]);
+  const [clienteDetalle, setClienteDetalle] = useState<any>(null);
 
-  // Función para buscar clientes
   const buscarCliente = async (nombre: string) => {
     if (!nombre.trim()) {
       setClientesSugeridos([]);
@@ -27,13 +29,12 @@ export default function Cuentas() {
         `${process.env.NEXT_PUBLIC_API_URL}buscar/buscar?nombre=${encodeURIComponent(nombre)}`
       );
       const data = await res.json();
-      setClientesSugeridos(data.nombres || []); 
+      setClientesSugeridos(data.clientes || []);
     } catch (error) {
       setClientesSugeridos([]);
     }
   };
 
-  // Debounce para la búsqueda del cliente
   const debounceCliente = useCallback(
     debounce(async (valor: string) => {
       await buscarCliente(valor);
@@ -41,21 +42,17 @@ export default function Cuentas() {
     []
   );
 
-  // Manejador de cambios en el input de nombre
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const valor = e.target.value;
     setNombreInput(valor);
-    debounceCliente(valor); // Llamar al debounce para buscar clientes
+    debounceCliente(valor);
   };
 
-  // Función para mostrar un cliente por su ID
-  const mostrarCliente = async (id: string) => {
+  const mostrarCliente = async (id: number) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}buscar/ver/${id}`
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}buscar/ver/${id}`);
       const data = await res.json();
-      setClienteDetalle(data); // Guardar la información del cliente seleccionado
+      setClienteDetalle(data);
     } catch (error) {
       setError("No se pudo obtener los detalles del cliente.");
     }
@@ -109,13 +106,18 @@ export default function Cuentas() {
 
         {clientesSugeridos.length > 0 && (
           <ul className="mt-2 max-h-48 overflow-y-auto bg-white shadow-lg rounded-lg border border-gray-300">
-            {clientesSugeridos.map((cliente, index) => (
+            {clientesSugeridos.map((cliente) => (
               <li
-                key={index}
+                key={cliente.id}
                 className="p-2 hover:bg-gray-200 cursor-pointer"
-                onClick={() => mostrarCliente(cliente)}
+                onClick={() => {
+                  mostrarCliente(cliente.id);
+                  setNombreInput(cliente.nombre);
+                  setNombre(cliente.nombre);
+                  setClientesSugeridos([]);
+                }}
               >
-                {cliente}
+                {cliente.nombre}
               </li>
             ))}
           </ul>
@@ -125,7 +127,6 @@ export default function Cuentas() {
           <div className="mt-4 p-4 border bg-gray-100 rounded-lg">
             <h2 className="text-xl font-bold">{clienteDetalle.nombre}</h2>
             <p>Dirección: {clienteDetalle.direccion}</p>
-            <p>Contrato ID: {clienteDetalle.contrato_id}</p>
           </div>
         )}
 
@@ -187,21 +188,6 @@ export default function Cuentas() {
             Reporte General
           </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() =>
-              handleDownload(
-                `${process.env.NEXT_PUBLIC_API_URL}pdf/reportes/semanales`,
-                "reporte_semanal.pdf"
-              )
-            }
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-600"
-          >
-            Reporte Semanal
-          </motion.button>
-
-          {/* Parámetros reporte mensual */}
           <div className="col-span-full grid grid-cols-2 gap-4">
             <select
               value={mesMensual}
@@ -244,7 +230,6 @@ export default function Cuentas() {
             Reporte Mensual
           </motion.button>
 
-          {/* Reporte anual */}
           <input
             type="text"
             placeholder="Año"

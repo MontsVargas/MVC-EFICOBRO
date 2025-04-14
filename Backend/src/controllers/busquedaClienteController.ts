@@ -18,13 +18,13 @@ export const busquedaCliente = async (req: Request, res: Response) => {
         },
       },
       select: {
+        id: true,
         nombre: true,
       },
       take: 10,
     });
 
-    const nombres = sugerencias.map((c) => c.nombre);
-    return res.status(200).json({ nombres });
+    return res.status(200).json({ clientes: sugerencias });
   } catch (error) {
     console.error("Error al buscar cliente:", error);
     return res.status(500).json({ mensaje: "Error al buscar el cliente" });
@@ -46,8 +46,8 @@ export const verCliente = async (req: Request, res: Response) => {
         id: true,
         nombre: true,
         direccion: true,
-        contrato_id: true,
-        // puedes agregar más campos aquí si lo necesitas
+      
+       
       },
     });
 
