@@ -12,7 +12,7 @@ export const Compra = async (req: Request, res: Response) => {
       include: {
         servicio: {
           include: {
-            Tiposervicio: true,  // Incluye el tipo de servicio relacionado
+            Tiposervicio: true,  
           },
         },
       },
@@ -21,7 +21,6 @@ export const Compra = async (req: Request, res: Response) => {
     if (!compra) {
       return res.status(404).json({ mensaje: "Compra no encontrada" });
     }
-
     return res.status(200).json(compra);
   } catch (error) {
     console.error("Error al obtener la compra:", error);
@@ -29,25 +28,45 @@ export const Compra = async (req: Request, res: Response) => {
   }
 };
 
+export const TiposServicio = async (req: Request, res: Response) => {
+  try {
+    const tiposervicio = await prisma.tiposervicio.findMany({
+        select: {
+            id: true,
+            nombre: true,
+        }
+    });
+
+    if (tiposervicio.length === 0) {
+        return res.status(404).json({ mensaje: "NO EXISTEN TIPOS DE SERVICIO REGISTRADOS" });
+    }
+
+    return res.status(200).json({ tiposervicio });
+} catch (error) {
+    console.error("Error en el servidor:", error);
+    return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
+}
+};
+
 export const Servicios = async (req: Request, res: Response) => {
   try {
     const servicios = await prisma.servicio.findMany({
-      select: {
-        id: true,
-        descripcion: true,
-        TipoServicioId: true,
-      },
+        select: {
+            id: true,
+            descripcion: true,
+            TipoServicioId: true,
+        }
     });
 
     if (servicios.length === 0) {
-      return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
+        return res.status(404).json({ mensaje: "NO EXISTEN SERVICIOS" });
     }
 
     return res.status(200).json({ servicios });
-  } catch (error) {
-    console.error("Error al obtener los servicios:", error);
+} catch (error) {
+    console.error("Error en el servidor:", error);
     return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
-  }
+}
 };
 
 export const Plantas = async (req: Request, res: Response) => {
@@ -71,26 +90,7 @@ export const Plantas = async (req: Request, res: Response) => {
   }
 };
 
-export const TiposServicio = async (req: Request, res: Response) => {
-  try {
-    const tiposServicio = await prisma.tiposervicio.findMany({
-      select: {
-        id: true,
-        nombre: true,
-      },
-    });
 
-    if (tiposServicio.length === 0) {
-      return res.status(404).json({ mensaje: "NO EXISTEN TIPOS DE SERVICIO REGISTRADOS" });
-    }
-
-    return res.status(200).json({ tiposServicio });
-  } catch (error) {
-    console.error("Error al obtener los tipos de servicio:", error);
-    return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
-  }
-};
-// Actualizar una compra
 export const actualizarCompra = async (req: Request, res: Response) => {
   const { cantidadServicio, servicioId, plantaId, direccionCompra } = req.body;
   
