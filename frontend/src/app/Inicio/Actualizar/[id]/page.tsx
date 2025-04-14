@@ -14,6 +14,7 @@ type Compra = {
 type Servicio = {
   id: number;
   nombre: string;
+  descripcion: string,
   TipoServicioId: number;
 };
 
@@ -85,7 +86,7 @@ export default function ActualizarCompra() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}actualizar/tiposServicio`);
         const data = await res.json();
-        setTiposServicio(Array.isArray(data.tiposServicio) ? data.tiposServicio : []);
+        setTiposServicio(Array.isArray(data.tiposervicio) ? data.tiposervicio : []);
       } catch (error) {
         console.error("Error al cargar tipos de servicio:", error);
         setTiposServicio([]);
@@ -115,7 +116,7 @@ export default function ActualizarCompra() {
 
     setCompra({
       ...compra,
-      [name]: name === "cantidadServicio" || name === "servicioId" || name === "plantaId" || name === "tipoServicioId"
+      [name]: name === "clienteId"|| "cantidadServicio" || name === "servicioId" || name === "plantaId" || name === "tipoServicioId"
         ? parseInt(value)
         : value,
     });
@@ -137,8 +138,8 @@ export default function ActualizarCompra() {
       if (!response.ok) throw new Error("Error al actualizar la compra");
 
       alert("Compra actualizada con éxito");
-      router.push("/compras");
-    } catch (error) {
+      router.push(`/Inicio/Clientes`);
+    } catch (error) { 
       console.error(error);
       setError("Hubo un error al actualizar la compra");
     }
@@ -180,27 +181,27 @@ export default function ActualizarCompra() {
         </div>
 
         <div>
-          <label htmlFor="tipoServicioId" className="block font-semibold text-gray-700 mb-1">Tipo de Servicio</label>
-          <select
-            name="tipoServicioId"
-            id="tipoServicioId"
-            value={compra.tipoServicioId || ""}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          >
-            <option value="">Selecciona un tipo de servicio</option>
-            {Array.isArray(tiposServicio) && tiposServicio.length ? (
-              tiposServicio.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.nombre}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>Cargando tipos de servicio...</option>
-            )}
-          </select>
-        </div>
+  <label htmlFor="tipoServicioId" className="block font-semibold text-gray-700 mb-1">Tipo de Servicio</label>
+  <select
+    name="tipoServicioId"
+    id="tipoServicioId"
+    value={compra.tipoServicioId || ""}
+    onChange={handleChange}
+    className="w-full p-3 border border-gray-300 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+    required
+  >
+    <option value="">Selecciona un tipo de servicio</option>
+    {Array.isArray(tiposServicio) && tiposServicio.length ? (
+      tiposServicio.map((tipo) => (
+        <option key={tipo.id} value={tipo.id}>
+          {tipo.nombre}
+        </option>
+      ))
+    ) : (
+      <option value="" disabled>Cargando tipos de servicio...</option>
+    )}
+  </select>
+</div>
 
         <div>
           <label htmlFor="servicioId" className="block font-semibold text-gray-700 mb-1">Servicio</label>
@@ -216,7 +217,7 @@ export default function ActualizarCompra() {
             {Array.isArray(filteredServicios) && filteredServicios.length ? (
               filteredServicios.map((servicio) => (
                 <option key={servicio.id} value={servicio.id}>
-                  {servicio.nombre}
+                  {servicio.descripcion}
                 </option>
               ))
             ) : (
