@@ -165,7 +165,7 @@ export default function Cuentas() {
                 return;
               }
               handleDownload(
-                `${process.env.NEXT_PUBLIC_API_URL}pdf/cliente/nombre?nombre=${encodeURIComponent(nombre)}&mes=${mesCliente}&año=${añoCliente}`,
+                `${process.env.NEXT_PUBLIC_API_URL}pdf/cliente/nombre?nombre=${encodeURIComponent(nombre)}&mes=${mesCliente}&anio=${añoCliente}`,
                 `estado_cuenta_cliente_${nombre}.pdf`
               );
             }}
@@ -221,7 +221,7 @@ export default function Cuentas() {
                 return;
               }
               handleDownload(
-                `${process.env.NEXT_PUBLIC_API_URL}pdf/reportes/mensuales?mes=${mesMensual}&año=${añoMensual}`,
+                `${process.env.NEXT_PUBLIC_API_URL}pdf/reportes/mensuales?mes=${mesMensual}&anio=${añoMensual}`,
                 `reporte_mensual_${mesMensual}_${añoMensual}.pdf`
               );
             }}
@@ -246,7 +246,7 @@ export default function Cuentas() {
                 return;
               }
               handleDownload(
-                `${process.env.NEXT_PUBLIC_API_URL}pdf/reportes/anuales?year=${añoAnual}`,
+                `${process.env.NEXT_PUBLIC_API_URL}pdf/reportes/anuales?anio=${añoAnual}`,
                 `reporte_anual_${añoAnual}.pdf`
               );
             }}
