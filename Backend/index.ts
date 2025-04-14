@@ -11,6 +11,7 @@ import rutasPdf from "./src/routes/rutasdeGReporte";
 import rutasdeHistorial from "./src/routes/rutasdeHistorial" 
 import rutasActualizar from "./src/routes/rutasActualizar"
 import rutasBusqueda from "./src/routes/rutasBusqueda"
+import rutasContratos from "./src/routes/contratosRutas"
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/pdf', rutasPdf); // Agregamos la ruta de pdf
 app.use('/historial', rutasdeHistorial); // Agregamos la ruta de historial
 app.use('/actualizar', rutasActualizar);
 app.use ('/buscar', rutasBusqueda);
+app.use ('/contratos', rutasContratos)
 
 const PORT: number = Number(process.env.PORT) || 3000
 

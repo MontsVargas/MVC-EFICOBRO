@@ -54,7 +54,7 @@ export default function ClientesNuevos() {
   const verificarContrato = async (idCliente: string) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}clientes/${idCliente}/contrato`
+        `${process.env.NEXT_PUBLIC_API_URL}contratos/${idCliente}/contrato`
       );
       const data = await response.json();
 

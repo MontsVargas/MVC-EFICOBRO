@@ -14,7 +14,7 @@ type Compra = {
 type Servicio = {
   id: number;
   nombre: string;
-  TipoServicioId: number; // Asegúrate de que los servicios tengan este campo
+  TipoServicioId: number;
 };
 
 type Planta = {
@@ -37,7 +37,6 @@ export default function ActualizarCompra() {
   const [plantas, setPlantas] = useState<Planta[]>([]);
   const [tiposServicio, setTiposServicio] = useState<TipoServicio[]>([]);
   const [error, setError] = useState<string | null>(null);
-
   const [filteredServicios, setFilteredServicios] = useState<Servicio[]>([]);
 
   useEffect(() => {
@@ -51,7 +50,7 @@ export default function ActualizarCompra() {
           cantidadServicio: data.cantidadServicio,
           servicioId: data.servicioId,
           plantaId: data.plantaId,
-          tipoServicioId: data.servicio.Tiposervicio.id,
+          tipoServicioId: data.servicio?.Tiposervicio?.id ?? 0,
           direccionCompra: data.direccionCompra,
         });
       } catch (error) {
@@ -64,9 +63,10 @@ export default function ActualizarCompra() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}actualizar/servicios`);
         const data = await res.json();
-        setServicios(data.servicios); // Guarda todos los servicios
+        setServicios(Array.isArray(data.servicios) ? data.servicios : []);
       } catch (error) {
         console.error("Error al cargar servicios:", error);
+        setServicios([]);
       }
     };
 
@@ -74,10 +74,10 @@ export default function ActualizarCompra() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}actualizar/plantas`);
         const data = await res.json();
-        setPlantas(data.plantas);  // Guarda las plantas en el estado
+        setPlantas(Array.isArray(data.plantas) ? data.plantas : []);
       } catch (error) {
         console.error("Error al cargar plantas:", error);
-        setPlantas([]);  // Establece un array vacío en caso de error
+        setPlantas([]);
       }
     };
 
@@ -85,10 +85,10 @@ export default function ActualizarCompra() {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}actualizar/tiposServicio`);
         const data = await res.json();
-        setTiposServicio(data.tiposServicio); // Guarda los tipos de servicio
+        setTiposServicio(Array.isArray(data.tiposServicio) ? data.tiposServicio : []);
       } catch (error) {
         console.error("Error al cargar tipos de servicio:", error);
-        setTiposServicio([]);  // Establece un array vacío en caso de error
+        setTiposServicio([]);
       }
     };
 
@@ -105,7 +105,7 @@ export default function ActualizarCompra() {
       const serviciosFiltrados = servicios.filter(
         (servicio) => servicio.TipoServicioId === compra.tipoServicioId
       );
-      setFilteredServicios(serviciosFiltrados); // Filtra los servicios según el tipo de servicio
+      setFilteredServicios(serviciosFiltrados);
     }
   }, [compra, servicios]);
 
@@ -144,113 +144,119 @@ export default function ActualizarCompra() {
     }
   };
 
+  if (!compra) {
+    return <p className="text-center text-gray-600">Cargando...</p>;
+  }
+
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md mt-10">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Actualizar Compra</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      {compra ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="cantidadServicio" className="block text-black">Cantidad de Servicio</label>
-            <input
-              type="number"
-              name="cantidadServicio"
-              id="cantidadServicio"
-              value={compra.cantidadServicio || ""}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-black"
-              required
-            />
-          </div>
+    <div className="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+      <h2 className="text-3xl font-bold text-center text-blue-800 mb-6">Actualizar Compra</h2>
+      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="cantidadServicio" className="block font-semibold text-gray-700 mb-1">Cantidad de Servicio</label>
+          <input
+            type="number"
+            name="cantidadServicio"
+            id="cantidadServicio"
+            value={compra.cantidadServicio || ""}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
 
-          <div>
-            <label htmlFor="direccionCompra" className="block text-black">Dirección de Compra</label>
-            <input
-              type="text"
-              name="direccionCompra"
-              id="direccionCompra"
-              value={compra.direccionCompra || ""}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-black"
-              required
-            />
-          </div>
+        <div>
+          <label htmlFor="direccionCompra" className="block font-semibold text-gray-700 mb-1">Dirección de Compra</label>
+          <input
+            type="text"
+            name="direccionCompra"
+            id="direccionCompra"
+            value={compra.direccionCompra || ""}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
 
-          {/* Campo para seleccionar el tipo de servicio */}
-          <div>
-            <label htmlFor="tipoServicioId" className="block text-black">Tipo de Servicio</label>
-            <select
-              name="tipoServicioId"
-              id="tipoServicioId"
-              value={compra.tipoServicioId || ""}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-black"
-              required
-            >
-              <option value="">Selecciona un tipo de servicio</option>
-              {tiposServicio?.length ? (
-                tiposServicio.map((tipo) => (
-                  <option key={tipo.id} value={tipo.id}>
-                    {tipo.nombre}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>Cargando tipos de servicio...</option>
-              )}
-            </select>
-          </div>
+        <div>
+          <label htmlFor="tipoServicioId" className="block font-semibold text-gray-700 mb-1">Tipo de Servicio</label>
+          <select
+            name="tipoServicioId"
+            id="tipoServicioId"
+            value={compra.tipoServicioId || ""}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          >
+            <option value="">Selecciona un tipo de servicio</option>
+            {Array.isArray(tiposServicio) && tiposServicio.length ? (
+              tiposServicio.map((tipo) => (
+                <option key={tipo.id} value={tipo.id}>
+                  {tipo.nombre}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>Cargando tipos de servicio...</option>
+            )}
+          </select>
+        </div>
 
-          <div>
-            <label htmlFor="servicioId" className="block text-black">Servicio</label>
-            <select
-              name="servicioId"
-              id="servicioId"
-              value={compra.servicioId || ""}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-black"
-              required
-            >
-              <option value="">Selecciona un servicio</option>
-              {filteredServicios?.length ? (
-                filteredServicios.map((servicio) => (
-                  <option key={servicio.id} value={servicio.id}>
-                    {servicio.nombre}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>No hay servicios disponibles</option>
-              )}
-            </select>
-          </div>
+        <div>
+          <label htmlFor="servicioId" className="block font-semibold text-gray-700 mb-1">Servicio</label>
+          <select
+            name="servicioId"
+            id="servicioId"
+            value={compra.servicioId || ""}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          >
+            <option value="">Selecciona un servicio</option>
+            {Array.isArray(filteredServicios) && filteredServicios.length ? (
+              filteredServicios.map((servicio) => (
+                <option className="text-black" key={servicio.id} value={servicio.id}>
+                  {servicio.nombre}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>No hay servicios disponibles</option>
+            )}
+          </select>
+        </div>
 
-          <div>
-            <label htmlFor="plantaId" className="block text-black">Planta</label>
-            <select
-              name="plantaId"
-              id="plantaId"
-              value={compra.plantaId || ""}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md text-black"
-              required
-            >
-              <option value="">Selecciona una planta</option>
-              {plantas?.length ? (
-                plantas.map((planta) => (
-                  <option key={planta.id} value={planta.id}>
-                    {planta.nombre}
-                  </option>
-                ))
-              ) : (
-                <option value="" disabled>No hay plantas disponibles</option>
-              )}
-            </select>
-          </div>
+        <div className="md:col-span-2">
+          <label htmlFor="plantaId" className="block font-semibold text-gray-700 mb-1">Planta</label>
+          <select
+            name="plantaId"
+            id="plantaId"
+            value={compra.plantaId || ""}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          >
+            <option value="">Selecciona una planta</option>
+            {Array.isArray(plantas) && plantas.length ? (
+              plantas.map((planta) => (
+                <option key={planta.id} value={planta.id}>
+                  {planta.nombre}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>No hay plantas disponibles</option>
+            )}
+          </select>
+        </div>
 
-          <button type="submit" className="w-full p-3 bg-blue-600 text-white rounded-md">Actualizar Compra</button>
-        </form>
-      ) : (
-        <p>Cargando....</p>
-      )}
+        <div className="md:col-span-2">
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Actualizar Compra
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
