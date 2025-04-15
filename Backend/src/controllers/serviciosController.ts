@@ -88,56 +88,64 @@ const obtenerTipoServicio = async (req: Request, res: Response) => {
     }
 };
 
- const realizarCompra = async (req: Request, res: Response) => {
-     try {
-         const { clienteId, servicioId, cantidadServicio, cobro, direccionCompra, plantaId } = req.body;
- 
-         // Validar que los datos obligatorios estén presentes
-         if (!clienteId || !servicioId || !cantidadServicio || !cobro || !direccionCompra || !plantaId) {
-             return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
-         }
- 
-         // Verificar que el cliente exista
-         const cliente = await prisma.cliente.findUnique({
-             where: { id: clienteId }
-         });
-         if (!cliente) {
-             return res.status(404).json({ mensaje: "El cliente no existe" });
-         }
- 
-         // Verificar que el servicio exista
-         const servicio = await prisma.servicio.findUnique({
-             where: { id: servicioId }
-         });
-         if (!servicio) {
-             return res.status(404).json({ mensaje: "El servicio no existe" });
-         }
- 
-         // Verificar que la planta exista
-         const planta = await prisma.planta.findUnique({
-             where: { id: plantaId }
-         });
-         if (!planta) {
-             return res.status(404).json({ mensaje: "La planta no existe" });
-         }
- 
-         // Crear la compra en la base de datos
-         const compra = await prisma.compra.create({
-             data: {
-                 clienteId,
-                 servicioId,
-                 fecha: new Date(), // Se registra la fecha actual de la compra
-                 cantidadServicio,
-                 cobro,
-                 direccionCompra,
-                 plantaId,
-             }
-         });
- 
-         return res.status(201).json({ mensaje: "Compra realizada con éxito", compra });
-     } catch (error) {
-         console.error("Error en el servidor:", error);
-         return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
-     }
- };
+const realizarCompra = async (req: Request, res: Response) => {
+    try {
+        const {
+            clienteId,
+            servicioId,
+            cantidadServicio,
+            cobro,
+            direccionCompra,
+            plantaId,
+            mesCompra,     // <-- nuevo campo opcional
+            anioCompra     // <-- nuevo campo opcional
+        } = req.body;
+
+        // Validar campos obligatorios
+        if (!clienteId || !servicioId || !cantidadServicio || !cobro || !direccionCompra || !plantaId) {
+            return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
+        }
+
+        // Validar existencia de entidades relacionadas
+        const cliente = await prisma.cliente.findUnique({ where: { id: clienteId } });
+        if (!cliente) return res.status(404).json({ mensaje: "El cliente no existe" });
+
+        const servicio = await prisma.servicio.findUnique({ where: { id: servicioId } });
+        if (!servicio) return res.status(404).json({ mensaje: "El servicio no existe" });
+
+        const planta = await prisma.planta.findUnique({ where: { id: plantaId } });
+        if (!planta) return res.status(404).json({ mensaje: "La planta no existe" });
+
+        // Determinar la fecha a registrar
+        let fechaCompra = new Date();
+        if (mesCompra && anioCompra) {
+            const mes = parseInt(mesCompra);  // 1-12
+            const anio = parseInt(anioCompra);
+            if (!isNaN(mes) && !isNaN(anio) && mes >= 1 && mes <= 12) {
+                fechaCompra = new Date(anio, mes - 1, 1); // se usa el primer día del mes
+            } else {
+                return res.status(400).json({ mensaje: "Mes o año de compra inválido" });
+            }
+        }
+
+        // Crear la compra
+        const compra = await prisma.compra.create({
+            data: {
+                clienteId,
+                servicioId,
+                fecha: fechaCompra,
+                cantidadServicio,
+                cobro,
+                direccionCompra,
+                plantaId,
+            }
+        });
+
+        return res.status(201).json({ mensaje: "Compra realizada con éxito", compra });
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        return res.status(500).json({ mensaje: "ERROR DEL SERVIDOR" });
+    }
+};
+
 export { obtenerClientes, obtenerServicios, obtenerPlantas, obtenerTipoServicio, realizarCompra };
