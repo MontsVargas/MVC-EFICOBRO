@@ -25,6 +25,8 @@ export default function SeleccionServicio() {
     costo: "",
     direccion: "",
     planta: "",
+    mesCompra: "",
+    anioCompra: "", 
   });
 
   useEffect(() => {
@@ -68,6 +70,7 @@ export default function SeleccionServicio() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const requestBody = {
       clienteId: Number(form.clienteId),
       servicioId: Number(form.servicio),
@@ -76,6 +79,8 @@ export default function SeleccionServicio() {
       cobro: Number(form.costo),
       direccionCompra: form.direccion,
       plantaId: Number(form.planta),
+      mesCompra: form.mesCompra || undefined,
+      anioCompra: form.anioCompra || undefined,
     };
 
     try {
@@ -90,6 +95,17 @@ export default function SeleccionServicio() {
       } else {
         setMensaje("Compra realizada con éxito.");
         console.log("Compra registrada:", data);
+        setForm({
+          clienteId: "",
+          tipoServicio: "",
+          servicio: "",
+          cantidad: "",
+          costo: "",
+          direccion: "",
+          planta: "",
+          mesCompra: "",
+          anioCompra: "",
+        });
       }
     } catch (err) {
       console.error("Error en la compra:", err);
@@ -184,6 +200,36 @@ export default function SeleccionServicio() {
               )}
             </div>
           ))}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="block text-lg font-medium text-gray-700">Mes de Compra</label>
+              <select
+                name="mesCompra"
+                value={form.mesCompra}
+                onChange={handleChange}
+                className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              >
+                <option value="">Seleccione mes</option>
+                {Array.from({ length: 12 }, (_, i) => i + 1).map(mes => (
+                  <option key={mes} value={mes}>
+                    {mes}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-lg font-medium text-gray-700">Año de Compra</label>
+              <input
+                type="number"
+                name="anioCompra"
+                value={form.anioCompra}
+                onChange={handleChange}
+                placeholder="Ej: 2025"
+                className="w-full p-4 border border-blue-400 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+              />
+            </div>
+          </div>
 
           <div className="text-center mt-6">
             <button

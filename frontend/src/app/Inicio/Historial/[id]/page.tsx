@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter } from "next/navigation";
 
 type Historial = {
   id: number;
-  fecha: string;
+  fechaCompra: string;     // Desde la base de datos
+  fechaCaptura: string;    // Generada en frontend
   servicioNombre: string;
   tipoServicioNombre: string;
   plantaNombre: string;
@@ -44,9 +45,12 @@ export default function HistorialCliente() {
         }
 
         const data = await response.json();
+        const fechaActual = new Date().toISOString();
+
         const compras = data.historialCompras.map((compra: any) => ({
           id: compra.id,
-          fecha: compra.fecha,
+          fechaCompra: compra.fecha, // Fecha real de la compra desde backend
+          fechaCaptura: fechaActual, // Fecha actual cuando se carga la info
           servicioNombre: compra.servicio?.nombre ?? "No disponible",
           tipoServicioNombre: compra.servicio?.tipoServicio ?? "No disponible",
           plantaNombre: compra.planta?.nombre ?? "No disponible",
@@ -70,7 +74,7 @@ export default function HistorialCliente() {
 
   return (
     <motion.div
-      className="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md"
+      className="max-w-6xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -84,11 +88,12 @@ export default function HistorialCliente() {
       ) : error ? (
         <p className="text-blue-500">{error}</p>
       ) : historial.length > 0 ? (
-        <div className="overflow-hidden rounded-lg shadow-md">
+        <div className="overflow-x-auto rounded-lg shadow-md">
           <table className="w-full bg-white border border-gray-200 rounded-lg">
             <thead className="bg-blue-600 text-white">
               <tr>
-                <th className="p-3 text-left">Fecha</th>
+                <th className="p-3 text-left">Fecha de compra</th>
+                <th className="p-3 text-left">Fecha de captura</th>
                 <th className="p-3 text-left">Servicio</th>
                 <th className="p-3 text-left">Tipo de Servicio</th>
                 <th className="p-3 text-left">Planta</th>
@@ -98,9 +103,19 @@ export default function HistorialCliente() {
             </thead>
             <tbody>
               {historial.map((item) => (
-                <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-100">
-                  <td className="p-3 text-gray-700">{new Date(item.fecha).toLocaleDateString()}</td>
-                  <td className="p-3 text-gray-600 font-semibold">{item.servicioNombre}</td>
+                <tr
+                  key={item.id}
+                  className="border-b border-gray-200 hover:bg-gray-100"
+                >
+                  <td className="p-3 text-gray-700">
+                    {new Date(item.fechaCompra).toLocaleDateString()}
+                  </td>
+                  <td className="p-3 text-gray-700">
+                    {new Date(item.fechaCaptura).toLocaleDateString()}
+                  </td>
+                  <td className="p-3 text-gray-600 font-semibold">
+                    {item.servicioNombre}
+                  </td>
                   <td className="p-3 text-gray-700">{item.tipoServicioNombre}</td>
                   <td className="p-3 text-gray-700">{item.plantaNombre}</td>
                   <td className="p-3 text-gray-700">{item.cantidadServicio}</td>
