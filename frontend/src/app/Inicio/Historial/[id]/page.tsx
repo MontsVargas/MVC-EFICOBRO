@@ -6,8 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 
 type Historial = {
   id: number;
-  fechaCompra: string; // Desde la base de datos (campo fecha)
-  fechaCaptura: string; // Desde la base de datos (campo createdAt)
+  fechaCompra: string;
+  fechaCaptura: string;
   servicioNombre: string;
   tipoServicioNombre: string;
   plantaNombre: string;
@@ -32,7 +32,7 @@ export default function HistorialCliente() {
     async function fetchHistorial() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}historial/historial/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}historial/historial/${id}`, // Corrección en la URL
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -49,7 +49,7 @@ export default function HistorialCliente() {
         const compras = data.historialCompras.map((compra: any) => ({
           id: compra.id,
           fechaCompra: compra.fecha,
-          fechaCaptura: compra.createdAt, // Usamos createdAt desde la base de datos
+          fechaCaptura: compra.createdAt,
           servicioNombre: compra.servicio?.nombre ?? "No disponible",
           tipoServicioNombre: compra.servicio?.tipoServicio ?? "No disponible",
           plantaNombre: compra.planta?.nombre ?? "No disponible",
@@ -69,7 +69,7 @@ export default function HistorialCliente() {
   }, [id]);
 
   const handleActualizar = (compraId: number) => {
-    router.push(`/Inicio/Actualizar/${compraId}`);
+    router.push(`/Inicio/Actualizar/${compraId}`); // Corrección en la interpolación de la URL
   };
 
   return (
@@ -79,63 +79,70 @@ export default function HistorialCliente() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-        Historial del Cliente
-      </h2>
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">Historial del Cliente</h2>
 
       {loading ? (
-        <p className="text-gray-500">Cargando...</p>
+        <p className="text-gray-500 text-sm">Cargando...</p>
       ) : error ? (
-        <p className="text-blue-500">{error}</p>
+        <p className="text-blue-500 text-sm">{error}</p>
       ) : historial.length > 0 ? (
         <div className="overflow-x-auto rounded-lg shadow-md">
-          <table className="w-full bg-white border border-gray-200 rounded-lg">
-            <thead className="bg-blue-600 text-white">
-              <tr>
-                <th className="p-3 text-left">Fecha de compra</th>
-                <th className="p-3 text-left">Fecha de captura</th>
-                <th className="p-3 text-left">Servicio</th>
-                <th className="p-3 text-left">Tipo de Servicio</th>
-                <th className="p-3 text-left">Planta</th>
-                <th className="p-3 text-left">Cantidad</th>
-                <th className="p-3 text-left">Actualizar</th>
-              </tr>
-            </thead>
-            <tbody>
-              {historial.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-gray-200 hover:bg-gray-100"
-                >
-                  <td className="p-3 text-gray-700">
-                    {new Date(item.fechaCompra).toLocaleDateString()}
-                  </td>
-                  <td className="p-3 text-gray-700">
-                    {new Date(item.fechaCaptura).toLocaleDateString()}
-                  </td>
-                  <td className="p-3 text-gray-600 font-semibold">
-                    {item.servicioNombre}
-                  </td>
-                  <td className="p-3 text-gray-700">
-                    {item.tipoServicioNombre}
-                  </td>
-                  <td className="p-3 text-gray-700">{item.plantaNombre}</td>
-                  <td className="p-3 text-gray-700">{item.cantidadServicio}</td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => handleActualizar(item.id)}
-                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
-                    >
-                      Actualizar
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            {/* Cabecera de la tabla */}
+            <table className="w-full bg-white border border-gray-200 rounded-lg">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="p-3 text-left text-sm w-1/6">Fecha <br /> de compra</th>
+                  <th className="p-3 text-left text-sm w-1/6">Fecha <br /> de captura</th>
+                  <th className="p-3 text-left text-sm w-1/6">Servicio</th>
+                  <th className="p-3 text-left text-sm w-1/6">Tipo de <br /> Servicio</th>
+                  <th className="p-3 text-left text-sm w-1/6">Planta</th>
+                  <th className="p-3 text-left text-sm w-1/6">Cantidad</th>
+                  <th className="p-3 text-left text-sm w-1/6">Actualizar</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+            </table>
+
+            {/* Contenedor de la tabla con scroll vertical */}
+            <div className="overflow-y-auto max-h-96">
+              <table className="w-full bg-white border border-gray-200 rounded-lg">
+                <tbody>
+                  {historial.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="border-b border-gray-200 hover:bg-gray-100"
+                    >
+                      <td className="p-3 text-center text-gray-700 text-sm w-1/6">
+                        {new Date(item.fechaCompra).toLocaleDateString()}
+                      </td>
+                      <td className="p-3 text-center text-gray-700 text-sm w-1/6">
+                        {new Date(item.fechaCaptura).toLocaleDateString()}
+                      </td>
+                      <td className="p-3 text-center text-gray-600 font-semibold text-sm w-1/6">
+                        {item.servicioNombre}
+                      </td>
+                      <td className="p-3 text-center text-gray-700 text-sm w-1/6">
+                        {item.tipoServicioNombre}
+                      </td>
+                      <td className="p-3 text-center text-gray-700 text-sm w-1/6">{item.plantaNombre}</td>
+                      <td className="p-3 text-center text-gray-700 text-sm w-1/6">{item.cantidadServicio}</td>
+                      <td className="p-3 text-center w-1/6">
+                        <button
+                          onClick={() => handleActualizar(item.id)}
+                          className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-sm"
+                        >
+                          Actualizar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       ) : (
-        <p className="text-gray-500">No hay historial disponible.</p>
+        <p className="text-gray-500 text-sm">No hay historial disponible.</p>
       )}
     </motion.div>
   );
