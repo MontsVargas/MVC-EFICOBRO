@@ -6,8 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 
 type Historial = {
   id: number;
-  fechaCompra: string;
-  fechaCaptura: string;
+  fechaCompra: string; // Desde la base de datos (campo fecha)
+  fechaCaptura: string; // Desde la base de datos (campo createdAt)
   servicioNombre: string;
   tipoServicioNombre: string;
   plantaNombre: string;
@@ -40,15 +40,16 @@ export default function HistorialCliente() {
           }
         );
 
-        if (!response.ok) throw new Error("Error al obtener el historial");
+        if (!response.ok) {
+          throw new Error("Error al obtener el historial");
+        }
 
         const data = await response.json();
-        const fechaActual = new Date().toISOString();
 
         const compras = data.historialCompras.map((compra: any) => ({
           id: compra.id,
           fechaCompra: compra.fecha,
-          fechaCaptura: fechaActual,
+          fechaCaptura: compra.createdAt, // Usamos createdAt desde la base de datos
           servicioNombre: compra.servicio?.nombre ?? "No disponible",
           tipoServicioNombre: compra.servicio?.tipoServicio ?? "No disponible",
           plantaNombre: compra.planta?.nombre ?? "No disponible",
@@ -58,6 +59,7 @@ export default function HistorialCliente() {
         setHistorial(compras);
       } catch (error) {
         setError("No se pudo cargar el historial");
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -86,8 +88,8 @@ export default function HistorialCliente() {
       ) : error ? (
         <p className="text-blue-500">{error}</p>
       ) : historial.length > 0 ? (
-        <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md">
-          <table className="table-fixed min-w-full bg-white">
+        <div className="overflow-x-auto rounded-lg shadow-md">
+          <table className="w-full bg-white border border-gray-200 rounded-lg">
             <thead className="bg-blue-600 text-white">
               <tr>
                 <th className="p-3 text-left">Fecha de compra</th>
@@ -99,40 +101,38 @@ export default function HistorialCliente() {
                 <th className="p-3 text-left">Actualizar</th>
               </tr>
             </thead>
+            <tbody>
+              {historial.map((item) => (
+                <tr
+                  key={item.id}
+                  className="border-b border-gray-200 hover:bg-gray-100"
+                >
+                  <td className="p-3 text-gray-700">
+                    {new Date(item.fechaCompra).toLocaleDateString()}
+                  </td>
+                  <td className="p-3 text-gray-700">
+                    {new Date(item.fechaCaptura).toLocaleDateString()}
+                  </td>
+                  <td className="p-3 text-gray-600 font-semibold">
+                    {item.servicioNombre}
+                  </td>
+                  <td className="p-3 text-gray-700">
+                    {item.tipoServicioNombre}
+                  </td>
+                  <td className="p-3 text-gray-700">{item.plantaNombre}</td>
+                  <td className="p-3 text-gray-700">{item.cantidadServicio}</td>
+                  <td className="p-3">
+                    <button
+                      onClick={() => handleActualizar(item.id)}
+                      className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
+                    >
+                      Actualizar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
-          <div className="max-h-96 overflow-y-auto">
-            <table className="table-fixed min-w-full bg-white">
-              <tbody>
-                {historial.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="border-b border-gray-200 hover:bg-gray-100"
-                  >
-                    <td className="p-3 text-gray-700">
-                      {new Date(item.fechaCompra).toLocaleDateString()}
-                    </td>
-                    <td className="p-3 text-gray-700">
-                      {new Date(item.fechaCaptura).toLocaleDateString()}
-                    </td>
-                    <td className="p-3 text-gray-600 font-semibold">
-                      {item.servicioNombre}
-                    </td>
-                    <td className="p-3 text-gray-700">{item.tipoServicioNombre}</td>
-                    <td className="p-3 text-gray-700">{item.plantaNombre}</td>
-                    <td className="p-3 text-gray-700">{item.cantidadServicio}</td>
-                    <td className="p-3">
-                      <button
-                        onClick={() => handleActualizar(item.id)}
-                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
-                      >
-                        Actualizar
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       ) : (
         <p className="text-gray-500">No hay historial disponible.</p>
