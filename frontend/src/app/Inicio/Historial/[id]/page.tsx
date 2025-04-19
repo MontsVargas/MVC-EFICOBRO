@@ -19,8 +19,14 @@ export default function HistorialCliente() {
   const router = useRouter();
 
   const [historial, setHistorial] = useState<Historial[]>([]);
+  const [filteredHistorial, setFilteredHistorial] = useState<Historial[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [showFilter, setShowFilter] = useState(false);
+  const [selectedServicio, setSelectedServicio] = useState<string>("");
+  const [selectedMes, setSelectedMes] = useState<string>("");
+  const [selectedAnio, setSelectedAnio] = useState<string>("");
 
   useEffect(() => {
     if (!id) {
@@ -32,7 +38,7 @@ export default function HistorialCliente() {
     async function fetchHistorial() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}historial/historial/${id}`, // Corrección en la URL
+          `${process.env.NEXT_PUBLIC_API_URL}historial/historial/${id}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -57,6 +63,7 @@ export default function HistorialCliente() {
         }));
 
         setHistorial(compras);
+        setFilteredHistorial(compras);
       } catch (error) {
         setError("No se pudo cargar el historial");
         console.error(error);
@@ -69,8 +76,45 @@ export default function HistorialCliente() {
   }, [id]);
 
   const handleActualizar = (compraId: number) => {
-    router.push(`/Inicio/Actualizar/${compraId}`); // Corrección en la interpolación de la URL
+    router.push(`/Inicio/Actualizar/${compraId}`);
   };
+
+  const aplicarFiltros = () => {
+    let filtrado = [...historial];
+
+    if (selectedServicio) {
+      filtrado = filtrado.filter((item) => item.servicioNombre === selectedServicio);
+    }
+
+    if (selectedMes) {
+      filtrado = filtrado.filter(
+        (item) => new Date(item.fechaCompra).getMonth() + 1 === parseInt(selectedMes)
+      );
+    }
+
+    if (selectedAnio) {
+      filtrado = filtrado.filter(
+        (item) => new Date(item.fechaCompra).getFullYear() === parseInt(selectedAnio)
+      );
+    }
+
+    setFilteredHistorial(filtrado);
+  };
+
+  useEffect(() => {
+    aplicarFiltros();
+  }, [selectedServicio, selectedMes, selectedAnio]);
+
+  const uniqueServicios = Array.from(new Set(historial.map((item) => item.servicioNombre)));
+
+  // Extraer los años y meses únicos del historial
+  const uniqueAnios = Array.from(
+    new Set(historial.map((item) => new Date(item.fechaCompra).getFullYear()))
+  );
+
+  const uniqueMeses = Array.from(
+    new Set(historial.map((item) => new Date(item.fechaCompra).getMonth() + 1))
+  ).map((mes) => ({ value: mes.toString(), label: new Date(0, mes - 1).toLocaleString('es', { month: 'long' }) }));
 
   return (
     <motion.div
@@ -79,16 +123,76 @@ export default function HistorialCliente() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Historial del Cliente</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 mb-4">Historial del Cliente</h2>
+
+      <div className="flex justify-end mb-4">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+          onClick={() => setShowFilter((prev) => !prev)}
+        >
+          {showFilter ? "Ocultar Filtro" : "Mostrar Filtro"}
+        </button>
+      </div>
+
+      {showFilter && (
+        <div className="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="text-sm font-medium text-blue-600">Servicio:</label>
+            <select
+              value={selectedServicio}
+              onChange={(e) => setSelectedServicio(e.target.value)}
+              className="w-full p-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 text-blue-600"
+            >
+              <option value="">Todos</option>
+              {uniqueServicios.map((servicio, index) => (
+                <option key={index} value={servicio}>
+                  {servicio}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-blue-600">Mes:</label>
+            <select
+              value={selectedMes}
+              onChange={(e) => setSelectedMes(e.target.value)}
+              className="w-full p-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 text-blue-600"
+            >
+              <option value="">Todos</option>
+              {uniqueMeses.map((mes) => (
+                <option key={mes.value} value={mes.value}>
+                  {mes.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-blue-600">Año:</label>
+            <select
+              value={selectedAnio}
+              onChange={(e) => setSelectedAnio(e.target.value)}
+              className="w-full p-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-blue-50 text-blue-600"
+            >
+              <option value="">Todos</option>
+              {uniqueAnios.map((anio, index) => (
+                <option key={index} value={anio.toString()}>
+                  {anio}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <p className="text-gray-500 text-sm">Cargando...</p>
       ) : error ? (
-        <p className="text-blue-500 text-sm">{error}</p>
-      ) : historial.length > 0 ? (
+        <p className="text-red-500 text-sm">{error}</p>
+      ) : filteredHistorial.length > 0 ? (
         <div className="overflow-x-auto rounded-lg shadow-md">
           <div className="overflow-x-auto">
-            {/* Cabecera de la tabla */}
             <table className="w-full bg-white border border-gray-200 rounded-lg">
               <thead className="bg-blue-600 text-white">
                 <tr>
@@ -103,15 +207,11 @@ export default function HistorialCliente() {
               </thead>
             </table>
 
-            {/* Contenedor de la tabla con scroll vertical */}
             <div className="overflow-y-auto max-h-96">
               <table className="w-full bg-white border border-gray-200 rounded-lg">
                 <tbody>
-                  {historial.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="border-b border-gray-200 hover:bg-gray-100"
-                    >
+                  {filteredHistorial.map((item) => (
+                    <tr key={item.id} className="border-b border-gray-200 hover:bg-gray-100">
                       <td className="p-3 text-center text-gray-700 text-sm w-1/6">
                         {new Date(item.fechaCompra).toLocaleDateString()}
                       </td>
